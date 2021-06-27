@@ -6,7 +6,6 @@ import android.view.View
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import com.squareup.picasso.Picasso
-import com.squareup.picasso.Transformation
 import java.io.File
 
 
@@ -28,6 +27,11 @@ class ReaderActivity : AppCompatActivity() {
             Picasso.get().load(File("/storage/emulated/0/000.jpg")).into(page)
         }
 
+    }
+
+    override fun onResume() {
+        super.onResume()
+        hideSystemUi()
     }
 
 
