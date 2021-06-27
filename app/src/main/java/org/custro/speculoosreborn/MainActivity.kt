@@ -14,7 +14,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun startReader(view: View) {
+        val b = Bundle()
+        b.putString("file", "/storage/emulated/0/aoe.cbz")
         val intent = Intent(this, ReaderActivity::class.java)
+        intent.putExtras(b)
         startActivity(intent)
     }
 }
