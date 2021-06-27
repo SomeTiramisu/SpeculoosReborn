@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name_mini">Spe:RE</string>
     <string name="app_name">SpeculoosReborn</string>
+    <string name="title_activity_reader">FullscreenActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
 </resources>
