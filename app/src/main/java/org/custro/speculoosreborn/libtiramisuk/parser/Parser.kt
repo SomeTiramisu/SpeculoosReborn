@@ -21,8 +21,8 @@ class Parser(file: File) {
 
     fun at(index: Int): ByteArray {
         val iStream = mZip.getInputStream(headers[index])
-        val r = ByteArray(headers[index].size.toInt())
-        iStream.read(r)
+        val r = iStream.readBytes()
+        iStream.close()
         return r
     }
 
