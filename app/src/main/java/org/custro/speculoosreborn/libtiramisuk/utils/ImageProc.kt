@@ -34,16 +34,16 @@ fun scale(src: Mat, dst: Mat, width: Int, height: Int) {
     var fy = 1.0
 
     if (width==0 && height>0) {
-        fy = (height/imgHeight).toDouble()
+        fy = height.toDouble()/imgHeight.toDouble()
         fx = fy
     }
     if (height==0 && width>0) {
-        fx = (width/imgWidth).toDouble()
-        fy = fy
+        fx = width.toDouble()/imgWidth.toDouble()
+        fy = fx
     }
     if (width>0 && height>0) {
-        fx = (width/imgWidth).toDouble()
-        fy = (height/imgHeight).toDouble()
+        fx = width.toDouble()/imgWidth.toDouble()
+        fy = height.toDouble()/imgHeight.toDouble()
     }
     val f = min(fx, fy)
     if (f > 1) {
@@ -63,6 +63,7 @@ fun cropScaleProcess(src: Mat, dst: Mat, roi: Rect, width: Int, height: Int) {
     val tmp = Mat()
     val mask = Mat()
     var froi = if (roi.empty()) Rect(0, 0, src.cols(), src.rows()) else roi
-    scale(src.submat(froi), tmp, width, height)
+    scale(src, tmp, width, height)
+    //src.copyTo(tmp)
     tmp.copyTo(dst, mask)
 }

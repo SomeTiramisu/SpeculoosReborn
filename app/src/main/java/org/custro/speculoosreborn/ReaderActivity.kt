@@ -5,7 +5,6 @@ import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
-import com.squareup.picasso.Picasso
 import org.custro.speculoosreborn.libtiramisuk.Tiramisuk
 import org.opencv.android.Utils
 import java.io.File
@@ -26,9 +25,6 @@ class ReaderActivity : AppCompatActivity() {
             file = b.getString("file")
         }
         if (file != null) {
-            //val page = findViewById<ImageView>(R.id.pageView)
-            //Log.d("DEBUG", "000")
-            //Picasso.get().load(File("/storage/emulated/0/000.jpg")).into(page)
             val page = findViewById<PageImageView>(R.id.pageImageView)
             page.setIndex(0)
 

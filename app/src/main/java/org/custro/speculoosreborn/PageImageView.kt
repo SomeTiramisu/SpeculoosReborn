@@ -3,6 +3,10 @@ package org.custro.speculoosreborn
 import android.content.Context
 import android.graphics.Bitmap
 import android.util.AttributeSet
+import android.util.DisplayMetrics
+import android.util.Log
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import org.custro.speculoosreborn.libtiramisuk.Tiramisuk
 import org.custro.speculoosreborn.libtiramisuk.utils.PageRequest
 import org.opencv.android.Utils
@@ -29,11 +33,12 @@ class PageImageView: androidx.appcompat.widget.AppCompatImageView {
     }
 
     fun init() {
-        System.loadLibrary("opencv_java4")
         mTiramisu.connectImage { img: Mat ->
             mImage = Bitmap.createBitmap(img.cols(), img.rows(), Bitmap.Config.ARGB_8888)
             Utils.matToBitmap(img, mImage)
-            setImageBitmap(mImage)
+            runBlocking(Dispatchers.Main) {
+                setImageBitmap(mImage)
+            }
         }
         mTiramisu.connectBookSize { bookSize: Int ->
             mBookSize = bookSize
@@ -42,7 +47,12 @@ class PageImageView: androidx.appcompat.widget.AppCompatImageView {
 
     fun setIndex(index: Int) {
         mIndex = index
+        val metrics: DisplayMetrics = context.resources.displayMetrics
+        val width = metrics.widthPixels
+        val height = metrics.heightPixels
+        Log.d("SIZE", "$width, $height")
         mReq = PageRequest(index, width, height, File("/storage/emulated/0/aoe.cbz"))
+        //mReq = PageRequest(index, 100, 100, File("/storage/emulated/0/aoe.cbz"))
         mTiramisu.get(mReq)
     }
 }

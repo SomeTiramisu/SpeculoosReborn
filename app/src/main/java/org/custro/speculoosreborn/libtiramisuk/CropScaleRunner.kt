@@ -1,13 +1,8 @@
 package org.custro.speculoosreborn.libtiramisuk
 
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import org.custro.speculoosreborn.libtiramisuk.parser.Parser
-import org.custro.speculoosreborn.libtiramisuk.utils.PagePair
-import org.custro.speculoosreborn.libtiramisuk.utils.PageRequest
-import org.custro.speculoosreborn.libtiramisuk.utils.PngPair
-import org.custro.speculoosreborn.libtiramisuk.utils.fromByteArray
+import org.custro.speculoosreborn.libtiramisuk.utils.*
 import org.opencv.core.Mat
 import org.opencv.core.Rect
 
@@ -17,8 +12,9 @@ class CropScaleRunner(parser: Parser) {
     private var mPageRes: PagePair? = null
     private var mPngRes: PngPair? = null
     private var mSlot: (PagePair) -> Unit = {}
+    private var mCoroutineScope = CoroutineScope(Dispatchers.Default)
 
-    private fun runScale() = runBlocking {
+    private fun runScale() = mCoroutineScope.launch {
         if (mPngRes == null) { //maybe need a .join after launch
             mPngRes = cropDetect(mParser.at(mReq!!.index), mReq!!.index)
         }
@@ -26,7 +22,7 @@ class CropScaleRunner(parser: Parser) {
         mSlot(mPageRes!!)
     }
 
-    private fun runDetect() = runBlocking { //what if we runscale before completion ?
+    private fun runDetect() = mCoroutineScope.launch { //what if we runscale before completion ?
         mPngRes = cropDetect(mParser.at(mReq!!.index), mReq!!.index)
     }
 
@@ -57,12 +53,18 @@ class CropScaleRunner(parser: Parser) {
 
     private suspend fun cropScale(p: PngPair, req: PageRequest): PagePair {
         val img = fromByteArray(p.png)
-        //TODO
+        if (!img.empty()) {
+            cropScaleProcess(img, img, p.rec, req.width, req.height)
+        }
         return PagePair(img, req)
     }
 
     private suspend fun cropDetect(png: ByteArray, index: Int): PngPair{
-        //TODO
+        val img = fromByteArray(png)
+        var roi = Rect()
+        if (!img.empty() && index != 0) {
+            roi = cropDetect(img)
+        }
         return PngPair(png, Rect())
     }
 }
