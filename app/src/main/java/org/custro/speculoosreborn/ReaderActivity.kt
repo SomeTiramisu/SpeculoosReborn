@@ -6,10 +6,14 @@ import android.view.View
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import com.squareup.picasso.Picasso
+import org.custro.speculoosreborn.libtiramisuk.Tiramisuk
+import org.opencv.android.Utils
 import java.io.File
 
 
 class ReaderActivity : AppCompatActivity() {
+    private val tiramisuk = Tiramisuk()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_reader)
