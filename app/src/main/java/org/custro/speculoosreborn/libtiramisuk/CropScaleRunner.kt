@@ -1,9 +1,10 @@
 package org.custro.speculoosreborn.libtiramisuk
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.custro.speculoosreborn.libtiramisuk.parser.Parser
 import org.custro.speculoosreborn.libtiramisuk.utils.*
-import org.opencv.core.Mat
 import org.opencv.core.Rect
 
 class CropScaleRunner(parser: Parser) {

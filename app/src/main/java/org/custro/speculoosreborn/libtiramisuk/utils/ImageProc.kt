@@ -1,8 +1,11 @@
 package org.custro.speculoosreborn.libtiramisuk.utils
 
-import android.os.strictmode.ImplicitDirectBootViolation
-import org.opencv.core.*
-import org.opencv.core.Core.*
+import org.opencv.core.Core.merge
+import org.opencv.core.Core.split
+import org.opencv.core.Mat
+import org.opencv.core.MatOfByte
+import org.opencv.core.Rect
+import org.opencv.core.Size
 import org.opencv.imgcodecs.Imgcodecs
 import org.opencv.imgproc.Imgproc
 import java.nio.ByteBuffer

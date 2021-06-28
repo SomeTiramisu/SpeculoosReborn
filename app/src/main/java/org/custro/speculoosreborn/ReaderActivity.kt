@@ -1,17 +1,12 @@
 package org.custro.speculoosreborn
 
 import android.graphics.BitmapFactory
-import android.graphics.ImageDecoder
 import android.graphics.Shader
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
-import org.custro.speculoosreborn.libtiramisuk.Tiramisuk
-import org.opencv.android.Utils
-import java.io.File
 import java.io.InputStream
 
 
