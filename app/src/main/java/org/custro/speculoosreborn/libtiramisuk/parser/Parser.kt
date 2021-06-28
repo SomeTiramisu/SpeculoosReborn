@@ -1,4 +1,4 @@
-package org.custro.speculoosreborn.parser
+package org.custro.speculoosreborn.libtiramisuk.parser
 
 import java.io.File
 import java.util.zip.ZipEntry
@@ -26,7 +26,12 @@ class Parser(file: File) {
         return r
     }
 
+    val size: Int
+        get() = mZip.size()
+
     fun destroy() {
         mZip.close()
     }
+
+
 }
