@@ -7,11 +7,11 @@
     tools:context=".ReaderActivity">
 
     <ImageView
-        android:id="@+id/pageView"
+        android:id="@+id/backgroundView"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:scaleType="center"
-        android:visibility="invisible"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -21,9 +21,10 @@
         android:id="@+id/pageImageView"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="@+id/pageView"
+        android:scaleType="center"
+        app:layout_constraintBottom_toBottomOf="@+id/backgroundView"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/pageView"
-        app:layout_constraintTop_toTopOf="@+id/pageView"
+        app:layout_constraintStart_toStartOf="@+id/backgroundView"
+        app:layout_constraintTop_toTopOf="@+id/backgroundView"
         app:srcCompat="@android:mipmap/sym_def_app_icon" />
 </androidx.constraintlayout.widget.ConstraintLayout>
