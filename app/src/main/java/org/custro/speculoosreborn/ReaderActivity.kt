@@ -1,5 +1,9 @@
 package org.custro.speculoosreborn
 
+import android.graphics.BitmapFactory
+import android.graphics.ImageDecoder
+import android.graphics.Shader
+import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -8,11 +12,10 @@ import androidx.appcompat.app.AppCompatActivity
 import org.custro.speculoosreborn.libtiramisuk.Tiramisuk
 import org.opencv.android.Utils
 import java.io.File
+import java.io.InputStream
 
 
 class ReaderActivity : AppCompatActivity() {
-    private val tiramisuk = Tiramisuk()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_reader)
@@ -30,6 +33,8 @@ class ReaderActivity : AppCompatActivity() {
 
         }
 
+        val bgStream = assets.open("background.png")
+        setBackground(bgStream)
     }
 
     override fun onResume() {
@@ -46,5 +51,12 @@ class ReaderActivity : AppCompatActivity() {
                     View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
                     View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
                     View.SYSTEM_UI_FLAG_FULLSCREEN
+    }
+
+    private fun setBackground(stream: InputStream) {
+        val bgBitmap = BitmapFactory.decodeStream(stream)
+        val bgDrawable = BitmapDrawable(resources, bgBitmap)
+        bgDrawable.setTileModeXY(Shader.TileMode.REPEAT, Shader.TileMode.REPEAT)
+        findViewById<ImageView>(R.id.pageImageView).background = bgDrawable
     }
 }

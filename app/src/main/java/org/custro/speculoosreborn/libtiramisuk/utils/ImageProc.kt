@@ -1,6 +1,8 @@
 package org.custro.speculoosreborn.libtiramisuk.utils
 
+import android.os.strictmode.ImplicitDirectBootViolation
 import org.opencv.core.*
+import org.opencv.core.Core.*
 import org.opencv.imgcodecs.Imgcodecs
 import org.opencv.imgproc.Imgproc
 import java.nio.ByteBuffer
@@ -64,6 +66,13 @@ fun cropScaleProcess(src: Mat, dst: Mat, roi: Rect, width: Int, height: Int) {
     val mask = Mat()
     var froi = if (roi.empty()) Rect(0, 0, src.cols(), src.rows()) else roi
     scale(src, tmp, width, height)
-    //src.copyTo(tmp)
+    createMask(tmp, mask)
     tmp.copyTo(dst, mask)
+}
+
+fun RGBA2ARGB(src: Mat, dst: Mat) {
+    val srcChannels = mutableListOf<Mat>()
+    split(src, srcChannels)
+    val dstChannels = listOf<Mat>(srcChannels[3], srcChannels[0], srcChannels[1], srcChannels[2])
+    merge(dstChannels, dst)
 }

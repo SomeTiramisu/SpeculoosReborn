@@ -6,16 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".ReaderActivity">
 
-    <ImageView
-        android:id="@+id/backgroundView"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:scaleType="center"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <org.custro.speculoosreborn.PageImageView
         android:id="@+id/pageImageView"
         android:layout_width="0dp"
