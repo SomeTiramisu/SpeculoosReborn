@@ -18,7 +18,7 @@ class PageScheduler {
             mFile = req.file
             mParser = Parser(mFile!!)
             mSizeSlot(mParser!!.size)
-            for (i in 0..mParser!!.size) {
+            for (i in 0 until mParser!!.size) {
                 mPages.add(CropScaleRunner(mParser!!))
                 mPages[i].connectSlot(mPageSlot)
             }
@@ -42,7 +42,7 @@ class PageScheduler {
     }
 
     private fun seekPages(req: PageRequest) {
-        for (i in 0..mPages.size) {
+        for (i in 0 until mPages.size) {
             val nreq = PageRequest(i, req.width, req.height, req.file)
             if ((req.index - mImagePreload <= i) && (i <= req.index + mImagePreload)) {
                 mPages[i].get(nreq)

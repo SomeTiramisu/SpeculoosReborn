@@ -2,6 +2,7 @@ package org.custro.speculoosreborn
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.util.AttributeSet
 import org.custro.speculoosreborn.libtiramisuk.Tiramisuk
 import org.custro.speculoosreborn.libtiramisuk.utils.PageRequest
 import org.opencv.android.Utils
@@ -14,14 +15,25 @@ class PageImageView: androidx.appcompat.widget.AppCompatImageView {
     private var mPreloaderProgress: Int = 0
     private var mIndex: Int = 0
     private var mReq = PageRequest()
-    private var mImage = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+    private var mImage = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)
     //private var mTmpImage
     //private var mResizeTimer
 
 
     constructor(context: Context) : super(context) {
+        init()
+    }
+
+    constructor(context: Context, attrs: AttributeSet): super(context, attrs) {
+        init()
+    }
+
+    fun init() {
+        System.loadLibrary("opencv_java4")
         mTiramisu.connectImage { img: Mat ->
+            mImage = Bitmap.createBitmap(img.cols(), img.rows(), Bitmap.Config.ARGB_8888)
             Utils.matToBitmap(img, mImage)
+            setImageBitmap(mImage)
         }
         mTiramisu.connectBookSize { bookSize: Int ->
             mBookSize = bookSize

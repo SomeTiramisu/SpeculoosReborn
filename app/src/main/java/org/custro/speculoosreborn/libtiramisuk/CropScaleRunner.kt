@@ -19,7 +19,7 @@ class CropScaleRunner(parser: Parser) {
     private var mSlot: (PagePair) -> Unit = {}
 
     private fun runScale() = runBlocking {
-        if (mPngRes != null) { //maybe need a .join after launch
+        if (mPngRes == null) { //maybe need a .join after launch
             mPngRes = cropDetect(mParser.at(mReq!!.index), mReq!!.index)
         }
         mPageRes = cropScale(mPngRes!!, mReq!!)

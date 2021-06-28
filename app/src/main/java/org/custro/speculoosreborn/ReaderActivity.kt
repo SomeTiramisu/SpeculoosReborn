@@ -26,9 +26,12 @@ class ReaderActivity : AppCompatActivity() {
             file = b.getString("file")
         }
         if (file != null) {
-            val page = findViewById<ImageView>(R.id.pageView)
-            Log.d("DEBUG", "000")
-            Picasso.get().load(File("/storage/emulated/0/000.jpg")).into(page)
+            //val page = findViewById<ImageView>(R.id.pageView)
+            //Log.d("DEBUG", "000")
+            //Picasso.get().load(File("/storage/emulated/0/000.jpg")).into(page)
+            val page = findViewById<PageImageView>(R.id.pageImageView)
+            page.setIndex(0)
+
         }
 
     }
