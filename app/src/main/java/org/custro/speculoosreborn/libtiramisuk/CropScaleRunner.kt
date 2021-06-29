@@ -1,5 +1,6 @@
 package org.custro.speculoosreborn.libtiramisuk
 
+import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -7,8 +8,7 @@ import org.custro.speculoosreborn.libtiramisuk.parser.Parser
 import org.custro.speculoosreborn.libtiramisuk.utils.*
 import org.opencv.core.Rect
 
-class CropScaleRunner(parser: Parser) {
-    private val mParser = parser
+class CropScaleRunner(private val parser: Parser) {
     private var mReq: PageRequest? = null
     private var mPageRes: PagePair? = null
     private var mPngRes: PngPair? = null
@@ -17,14 +17,14 @@ class CropScaleRunner(parser: Parser) {
 
     private fun runScale() = mCoroutineScope.launch {
         if (mPngRes == null) { //maybe need a .join after launch
-            mPngRes = cropDetect(mParser.at(mReq!!.index), mReq!!.index)
+            mPngRes = cropDetect(parser.at(mReq!!.index), mReq!!.index)
         }
         mPageRes = cropScale(mPngRes!!, mReq!!)
         mSlot(mPageRes!!)
     }
 
     private fun runDetect() = mCoroutineScope.launch { //what if we runscale before completion ?
-        mPngRes = cropDetect(mParser.at(mReq!!.index), mReq!!.index)
+        mPngRes = cropDetect(parser.at(mReq!!.index), mReq!!.index)
     }
 
 
@@ -57,6 +57,7 @@ class CropScaleRunner(parser: Parser) {
         if (!img.empty()) {
             cropScaleProcess(img, img, p.rec, req.width, req.height)
         }
+        Log.d("CropScale", "running: ${req.index}");
         return PagePair(img, req)
     }
 
@@ -66,6 +67,7 @@ class CropScaleRunner(parser: Parser) {
         if (!img.empty() && index != 0) {
             roi = cropDetect(img)
         }
+        Log.d("CropDetect", "running: ${index}");
         return PngPair(png, roi)
     }
 }

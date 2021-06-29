@@ -34,6 +34,7 @@ class PageScheduler {
             mPageSlot(PagePair())
             return
         }
+        Log.d("Scheduler", "get ${req.index}")
         mPages[index].get(req)
         seekPages(req)
     }
