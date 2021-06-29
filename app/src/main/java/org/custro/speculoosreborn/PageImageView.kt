@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.util.AttributeSet
 import android.util.DisplayMetrics
 import android.util.Log
+import android.view.MotionEvent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import org.custro.speculoosreborn.libtiramisuk.Tiramisuk
@@ -60,5 +61,16 @@ class PageImageView: androidx.appcompat.widget.AppCompatImageView {
         mTiramisu.connectBookSize { value: Int ->
             bookSize = value
         }
+    }
+
+    override fun onTouchEvent(event: MotionEvent?): Boolean {
+        Log.d("PageImageView", "Touched")
+        if (event!!.x > 2*width/3 && index < bookSize-1) {
+            index++
+        } else if (event!!.x < width/3 && index > 0) {
+            index--
+        }
+        return true
+        return super.onTouchEvent(event)
     }
 }

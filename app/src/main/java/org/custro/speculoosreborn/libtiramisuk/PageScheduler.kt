@@ -1,5 +1,6 @@
 package org.custro.speculoosreborn.libtiramisuk
 
+import android.util.Log
 import org.custro.speculoosreborn.libtiramisuk.parser.Parser
 import org.custro.speculoosreborn.libtiramisuk.utils.PagePair
 import org.custro.speculoosreborn.libtiramisuk.utils.PageRequest
@@ -12,6 +13,10 @@ class PageScheduler {
     private var mSizeSlot: (Int) -> Unit = {}
     private var mFile: File? = null
     private var mParser: Parser? = null
+
+    init {
+        Log.d("Scheduler", "created")
+    }
 
     fun at(req: PageRequest) {
         if (req.file != mFile) {
