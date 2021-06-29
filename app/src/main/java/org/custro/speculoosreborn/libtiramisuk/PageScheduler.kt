@@ -10,7 +10,7 @@ import java.io.File
 
 class PageScheduler {
     private val mImagePreload: Int = 5
-    private val mPages = mutableListOf<CropScaleRunner>()
+    private var mPages: List<CropScaleRunner> = listOf()
     private var mPageSlot: (PagePair) -> Unit = {}
     private var mSizeSlot: (Int) -> Unit = {}
     private var mFile: File? = null
@@ -26,9 +26,10 @@ class PageScheduler {
             mFile = req.file
             mParser = Parser(mFile!!)
             mSizeSlot(mParser!!.size)
-            for (i in 0 until mParser!!.size) {
-                mPages.add(CropScaleRunner(mParser!!, mCoroutineScope))
-                mPages[i].connectSlot(mPageSlot)
+            mPages = List(mParser!!.size) { index ->
+                val r = CropScaleRunner(mParser!!, mCoroutineScope)
+                r.connectSlot(mPageSlot)
+                r
             }
         }
         val index = req.index
@@ -51,7 +52,7 @@ class PageScheduler {
     }
 
     private fun seekPages(req: PageRequest) {
-        for (i in 0 until mPages.size) {
+        for (i in mPages.indices) {
             val nreq = PageRequest(i, req.width, req.height, req.file)
             if ((req.index - mImagePreload <= i) && (i <= req.index + mImagePreload)) {
                 mPages[i].get(nreq)
