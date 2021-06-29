@@ -31,16 +31,17 @@ class Tiramisuk {
         mScheduler.at(req)
     }
 
+
     fun connectPreloaderProgress(slot: (Int) -> Unit) {
         mPreloaderProgressSlot = slot
     }
 
     fun connectBookSize(slot: (Int) -> Unit) {
         mBookSizeSlot = slot
+        mScheduler.sendBookSize() //keep an eye on it for book changing
     }
 
     fun connectImage(slot: (Mat) -> Unit) {
         mSchedulerImageSlot = slot
     }
-
 }

@@ -54,13 +54,19 @@ class PageScheduler {
         mSizeSlot = slot
     }
 
+    fun sendBookSize() {
+        if (mParser != null) {
+            mSizeSlot(mParser!!.size)
+        }
+    }
+
     private fun seekPages(req: PageRequest) {
         for (i in mPages.indices) {
             val nreq = PageRequest(i, req.width, req.height, req.file)
             if ((req.index - mImagePreload <= i) && (i <= req.index + mImagePreload)) {
                 mPages[i].get(nreq)
             } else {
-                //mPages[i].preload(nreq)
+                mPages[i].preload(nreq)
                 mPages[i].clear()
             }
         }
