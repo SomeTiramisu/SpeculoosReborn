@@ -86,9 +86,14 @@ fun cropDetect(src: Mat): Rect {
 }
 */
 fun cropDetect(src: Mat): Rect {
-    val mask = Mat()
-    createMask(src, mask)
-    return boundingRect(mask)
+    val maskWhite = Mat()
+    val maskBlack = Mat()
+    createMask(src, maskWhite)
+    createMask(src, maskBlack, true)
+    val recWhite = boundingRect(maskWhite)
+    val recBlack = boundingRect(maskBlack)
+
+    return if (recWhite.area()>recBlack.area()) recBlack else recWhite
 }
 
 
