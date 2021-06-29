@@ -15,9 +15,26 @@ import java.io.File
 
 class PageImageView: androidx.appcompat.widget.AppCompatImageView {
     private val mTiramisu = Tiramisuk()
-    private var mBookSize: Int = 0
-    private var mPreloaderProgress: Int = 0
-    private var mIndex: Int = 0
+    var file: File? = null
+        set(value) {
+            field = value
+            index = 0
+        }
+    var bookSize: Int = 0
+        private set
+    var preloaderProgress: Int = 0
+        private set
+    var index: Int = 0
+        set(value) {
+            field = value
+            val metrics: DisplayMetrics = context.resources.displayMetrics
+            val width = metrics.widthPixels
+            val height = metrics.heightPixels
+            Log.d("SIZE", "$width, $height")
+            mReq = PageRequest(index, width, height, File("/storage/emulated/0/aoe.cbz"))
+            //mReq = PageRequest(index, 100, 100, File("/storage/emulated/0/aoe.cbz"))
+            mTiramisu.get(mReq)
+        }
     private var mReq = PageRequest()
     private var mImage = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)
     //private var mTmpImage
@@ -32,27 +49,16 @@ class PageImageView: androidx.appcompat.widget.AppCompatImageView {
         init()
     }
 
-    fun init() {
+    private fun init() {
         mTiramisu.connectImage { img: Mat ->
             mImage = Bitmap.createBitmap(img.cols(), img.rows(), Bitmap.Config.ARGB_8888)
             Utils.matToBitmap(img, mImage)
             runBlocking(Dispatchers.Main) {
-                setImageBitmap(mImage)
+                setImageBitmap(mImage) //workaround to call setImageBitmap in main thread
             }
         }
-        mTiramisu.connectBookSize { bookSize: Int ->
-            mBookSize = bookSize
+        mTiramisu.connectBookSize { value: Int ->
+            bookSize = value
         }
-    }
-
-    fun setIndex(index: Int) {
-        mIndex = index
-        val metrics: DisplayMetrics = context.resources.displayMetrics
-        val width = metrics.widthPixels
-        val height = metrics.heightPixels
-        Log.d("SIZE", "$width, $height")
-        mReq = PageRequest(index, width, height, File("/storage/emulated/0/aoe.cbz"))
-        //mReq = PageRequest(index, 100, 100, File("/storage/emulated/0/aoe.cbz"))
-        mTiramisu.get(mReq)
     }
 }

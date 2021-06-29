@@ -17,14 +17,10 @@ class ReaderActivity : AppCompatActivity() {
         hideSystemUi()
         supportActionBar?.hide()
 
-        val b = intent.extras
-        var file: String? = null
-        if (b != null) {
-            file = b.getString("file")
-        }
+        val file = intent.extras?.getString("file")
         if (file != null) {
             val page = findViewById<PageImageView>(R.id.pageImageView)
-            page.setIndex(0)
+            page.index = 70
 
         }
 
