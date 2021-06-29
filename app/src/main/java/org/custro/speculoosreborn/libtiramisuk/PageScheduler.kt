@@ -3,10 +3,12 @@ package org.custro.speculoosreborn.libtiramisuk
 import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.asCoroutineDispatcher
 import org.custro.speculoosreborn.libtiramisuk.parser.Parser
 import org.custro.speculoosreborn.libtiramisuk.utils.PagePair
 import org.custro.speculoosreborn.libtiramisuk.utils.PageRequest
 import java.io.File
+import java.util.concurrent.Executors
 
 class PageScheduler {
     private val mImagePreload: Int = 5
@@ -15,7 +17,8 @@ class PageScheduler {
     private var mSizeSlot: (Int) -> Unit = {}
     private var mFile: File? = null
     private var mParser: Parser? = null
-    private val mCoroutineScope = CoroutineScope(Dispatchers.Default)
+    private val mScaleCoScope = CoroutineScope(Executors.newFixedThreadPool(4).asCoroutineDispatcher())
+    private val mDetectCoScope = CoroutineScope(Executors.newFixedThreadPool(2).asCoroutineDispatcher())
 
     init {
         Log.d("Scheduler", "created")
@@ -27,7 +30,7 @@ class PageScheduler {
             mParser = Parser(mFile!!)
             mSizeSlot(mParser!!.size)
             mPages = List(mParser!!.size) { index ->
-                val r = CropScaleRunner(mParser!!, mCoroutineScope)
+                val r = CropScaleRunner(mParser!!, mScaleCoScope, mDetectCoScope)
                 r.connectSlot(mPageSlot)
                 r
             }
