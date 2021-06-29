@@ -31,20 +31,6 @@ class ReaderActivity : AppCompatActivity() {
         setBackground(bgStream)
         bgStream.close()
 
-        page.setOnTouchListener(object: View.OnTouchListener {
-            override fun onTouch(v: View?, event: MotionEvent?): Boolean {
-                val v = v as PageImageView
-                //Log.d("PageImageView", "Touched")
-                if (event!!.action == MotionEvent.ACTION_UP) {
-                    if (event.x > 2 * v.width / 3 && v.index < v.bookSize - 1) {
-                        v.incIndex()
-                    } else if (event.x < v.width / 3 && v.index > 0) {
-                        v.decIndex()
-                    }
-                }
-                return true
-            }
-        })
     }
 
     override fun onResume() {
