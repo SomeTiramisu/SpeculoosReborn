@@ -60,7 +60,7 @@ class PageScheduler {
             if ((req.index - mImagePreload <= i) && (i <= req.index + mImagePreload)) {
                 mPages[i].get(nreq)
             } else {
-                mPages[i].preload(nreq)
+                //mPages[i].preload(nreq)
                 mPages[i].clear()
             }
         }

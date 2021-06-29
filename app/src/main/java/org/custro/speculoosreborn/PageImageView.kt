@@ -17,7 +17,6 @@ import org.opencv.core.Mat
 import java.io.File
 
 class PageImageView: androidx.appcompat.widget.AppCompatImageView {
-    private val mTiramisu = Tiramisuk()
     var file: File? = null
         set(value) {
             field = value
@@ -53,6 +52,7 @@ class PageImageView: androidx.appcompat.widget.AppCompatImageView {
     }
 
     private fun init() {
+        Log.d("PageImageView", "created")
         mTiramisu.connectImage { img: Mat ->
             mImage = Bitmap.createBitmap(img.cols(), img.rows(), Bitmap.Config.ARGB_8888)
             Utils.matToBitmap(img, mImage)
@@ -64,26 +64,21 @@ class PageImageView: androidx.appcompat.widget.AppCompatImageView {
             bookSize = value
         }
     }
-    
+
     override fun onTouchEvent(event: MotionEvent?): Boolean {
-        //Log.d("PageImageView", "Touched")
         if (event!!.action == MotionEvent.ACTION_UP) {
+            Log.d("PageImageView", "Touched")
             if (event.x > 2 * width / 3 && index < bookSize - 1) {
-                incIndex()
+                index += 1
             } else if (event.x < width / 3 && index > 0) {
-                decIndex()
+                index -= 1
             }
         }
         return true
     }
 
 
-
-    fun incIndex() {
-        index += 1
-    }
-
-    fun decIndex() {
-        index -= 1
+    companion object {
+        private val mTiramisu = Tiramisuk()
     }
  }
