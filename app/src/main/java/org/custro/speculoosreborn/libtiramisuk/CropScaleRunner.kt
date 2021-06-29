@@ -28,14 +28,15 @@ class CropScaleRunner(private val parser: Parser, private val coroutineScope: Co
 
 
     fun get(req: PageRequest) {
+        coroutineScope.launch {
         if (mReq != req || mPageRes == null) {
             Log.d("Runner", "Request it ${req.index}")
             mReq = req
             runScale()
-            return
+            return@launch
         }
         Log.d("Runner", "Have it ${req.index}")
-        coroutineScope.launch { mSlot(mPageRes!!) }
+        mSlot(mPageRes!!) }
     }
 
     fun preload(req: PageRequest) {
