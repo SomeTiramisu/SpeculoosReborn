@@ -13,7 +13,6 @@ class CropScaleRunner(private val parser: Parser, private val coroutineScope: Co
     private var mPageRes: PagePair? = null
     private var mPngRes: PngPair? = null
     private var mSlot: (PagePair) -> Unit = {}
-    //private var mCoroutineScope = CoroutineScope(Dispatchers.Default)
 
     private fun runScale() = coroutineScope.launch {
         if (mPngRes == null) { //maybe need a .join after launch
@@ -30,11 +29,13 @@ class CropScaleRunner(private val parser: Parser, private val coroutineScope: Co
 
     fun get(req: PageRequest) {
         if (mReq != req || mPageRes == null) {
+            Log.d("Runner", "Request it ${req.index}")
             mReq = req
             runScale()
             return
         }
-        mSlot(mPageRes!!)
+        Log.d("Runner", "Have it ${req.index}")
+        coroutineScope.launch { mSlot(mPageRes!!) }
     }
 
     fun preload(req: PageRequest) {

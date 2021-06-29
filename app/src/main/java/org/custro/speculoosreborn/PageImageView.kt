@@ -19,23 +19,14 @@ class PageImageView: androidx.appcompat.widget.AppCompatImageView {
     var file: File? = null
         set(value) {
             field = value
-            index = 0
+            updateIndex(0)
         }
     var bookSize: Int = 0
         private set
     var preloaderProgress: Int = 0
         private set
     var index: Int = 0
-        set(value) {
-            field = value
-            val metrics: DisplayMetrics = context.resources.displayMetrics
-            val width = metrics.widthPixels
-            val height = metrics.heightPixels
-            Log.d("SIZE", "$width, $height")
-            mReq = PageRequest(index, width, height, file)
-            //mReq = PageRequest(index, 100, 100, File("/storage/emulated/0/aoe.cbz"))
-            mTiramisu.get(mReq)
-        }
+        private set
     private var mReq = PageRequest()
     private var mImage = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)
     //private var mTmpImage
@@ -64,13 +55,34 @@ class PageImageView: androidx.appcompat.widget.AppCompatImageView {
     }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
-        Log.d("PageImageView", "Touched")
+        Log.d("PageImageView", "Touched, ${event?.action}")
+        if (event!!.action != MotionEvent.ACTION_DOWN) {
+            return super.onTouchEvent(event)
+        }
         if (event!!.x > 2*width/3 && index < bookSize-1) {
-            index++
+            incIndex()
         } else if (event!!.x < width/3 && index > 0) {
-            index--
+            decIndex()
         }
         return true
-        return super.onTouchEvent(event)
     }
-}
+
+    fun updateIndex(value: Int) {
+        index = value
+        val metrics: DisplayMetrics = context.resources.displayMetrics
+        val width = metrics.widthPixels
+        val height = metrics.heightPixels
+        Log.d("SIZE", "$width, $height")
+        mReq = PageRequest(index, width, height, file)
+        //mReq = PageRequest(index, 100, 100, File("/storage/emulated/0/aoe.cbz"))
+        mTiramisu.get(mReq)
+    }
+
+    fun incIndex() {
+        updateIndex(index+1)
+    }
+
+    fun decIndex() {
+        updateIndex(index-1)
+    }
+ }
