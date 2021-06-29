@@ -1,6 +1,8 @@
 package org.custro.speculoosreborn.libtiramisuk
 
 import android.util.Log
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import org.custro.speculoosreborn.libtiramisuk.parser.Parser
 import org.custro.speculoosreborn.libtiramisuk.utils.PagePair
 import org.custro.speculoosreborn.libtiramisuk.utils.PageRequest
@@ -13,6 +15,7 @@ class PageScheduler {
     private var mSizeSlot: (Int) -> Unit = {}
     private var mFile: File? = null
     private var mParser: Parser? = null
+    private val mCoroutineScope = CoroutineScope(Dispatchers.Default)
 
     init {
         Log.d("Scheduler", "created")
@@ -24,7 +27,7 @@ class PageScheduler {
             mParser = Parser(mFile!!)
             mSizeSlot(mParser!!.size)
             for (i in 0 until mParser!!.size) {
-                mPages.add(CropScaleRunner(mParser!!))
+                mPages.add(CropScaleRunner(mParser!!, mCoroutineScope))
                 mPages[i].connectSlot(mPageSlot)
             }
         }

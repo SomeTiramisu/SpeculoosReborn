@@ -8,14 +8,14 @@ import org.custro.speculoosreborn.libtiramisuk.parser.Parser
 import org.custro.speculoosreborn.libtiramisuk.utils.*
 import org.opencv.core.Rect
 
-class CropScaleRunner(private val parser: Parser) {
+class CropScaleRunner(private val parser: Parser, private val coroutineScope: CoroutineScope) {
     private var mReq: PageRequest? = null
     private var mPageRes: PagePair? = null
     private var mPngRes: PngPair? = null
     private var mSlot: (PagePair) -> Unit = {}
-    private var mCoroutineScope = CoroutineScope(Dispatchers.Default)
+    //private var mCoroutineScope = CoroutineScope(Dispatchers.Default)
 
-    private fun runScale() = mCoroutineScope.launch {
+    private fun runScale() = coroutineScope.launch {
         if (mPngRes == null) { //maybe need a .join after launch
             mPngRes = cropDetect(parser.at(mReq!!.index), mReq!!.index)
         }
@@ -23,7 +23,7 @@ class CropScaleRunner(private val parser: Parser) {
         mSlot(mPageRes!!)
     }
 
-    private fun runDetect() = mCoroutineScope.launch { //what if we runscale before completion ?
+    private fun runDetect() = coroutineScope.launch { //what if we runscale before completion ?
         mPngRes = cropDetect(parser.at(mReq!!.index), mReq!!.index)
     }
 

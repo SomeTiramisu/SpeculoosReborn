@@ -17,6 +17,7 @@ class Parser(private val file: File) {
                 headers.add(e)
             }
         }
+        zip.close()
         val entryNaturalOrder = compareBy<ZipEntry>{it.name}
         headers.sortWith(entryNaturalOrder)
     }
@@ -26,6 +27,7 @@ class Parser(private val file: File) {
         val iStream = zip.getInputStream(headers[index])
         val r = iStream.readBytes()
         iStream.close()
+        zip.close()
         return r
     }
 }

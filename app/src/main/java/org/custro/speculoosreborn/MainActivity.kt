@@ -10,8 +10,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         System.loadLibrary("opencv_java4")
-
-
     }
 
     fun startReader(view: View) {

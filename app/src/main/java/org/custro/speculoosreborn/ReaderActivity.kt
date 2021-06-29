@@ -28,6 +28,7 @@ class ReaderActivity : AppCompatActivity() {
 
         val bgStream = assets.open("background.png")
         setBackground(bgStream)
+        bgStream.close()
     }
 
     override fun onResume() {
