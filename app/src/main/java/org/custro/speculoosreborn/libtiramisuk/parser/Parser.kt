@@ -5,11 +5,13 @@ import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
 
 
-class Parser(file: File) {
+class Parser(private val file: File) {
     private val headers: MutableList<ZipEntry> = mutableListOf()
-    private val mZip: ZipFile = ZipFile(file.absolutePath)
+    var size: Int = 0
     init {
-        for (e in mZip.entries()) {
+        val zip = ZipFile(file)
+        size = zip.size()
+        for (e in zip.entries()) {
             val name = e.name
             if (!e.isDirectory and ((".jpg" in name) or (".png" in name ))) {
                 headers.add(e)
@@ -20,18 +22,10 @@ class Parser(file: File) {
     }
 
     fun at(index: Int): ByteArray {
-        val iStream = mZip.getInputStream(headers[index])
+        val zip = ZipFile(file)
+        val iStream = zip.getInputStream(headers[index])
         val r = iStream.readBytes()
         iStream.close()
         return r
     }
-
-    val size: Int
-        get() = mZip.size()
-
-    fun destroy() {
-        mZip.close()
-    }
-
-
 }
