@@ -54,19 +54,6 @@ class PageImageView: androidx.appcompat.widget.AppCompatImageView {
         }
     }
 
-    override fun onTouchEvent(event: MotionEvent?): Boolean {
-        Log.d("PageImageView", "Touched, ${event?.action}")
-        if (event!!.action != MotionEvent.ACTION_DOWN) {
-            return super.onTouchEvent(event)
-        }
-        if (event!!.x > 2*width/3 && index < bookSize-1) {
-            incIndex()
-        } else if (event!!.x < width/3 && index > 0) {
-            decIndex()
-        }
-        return true
-    }
-
     fun updateIndex(value: Int) {
         index = value
         val metrics: DisplayMetrics = context.resources.displayMetrics
