@@ -31,7 +31,7 @@ class PageImageView: androidx.appcompat.widget.AppCompatImageView {
             val width = metrics.widthPixels
             val height = metrics.heightPixels
             Log.d("SIZE", "$width, $height")
-            mReq = PageRequest(index, width, height, File("/storage/emulated/0/aoe.cbz"))
+            mReq = PageRequest(index, width, height, file)
             //mReq = PageRequest(index, 100, 100, File("/storage/emulated/0/aoe.cbz"))
             mTiramisu.get(mReq)
         }

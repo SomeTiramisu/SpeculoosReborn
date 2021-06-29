@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
+import java.io.File
 import java.io.InputStream
 
 
@@ -20,7 +21,8 @@ class ReaderActivity : AppCompatActivity() {
         val file = intent.extras?.getString("file")
         if (file != null) {
             val page = findViewById<PageImageView>(R.id.pageImageView)
-            page.index = 70
+            page.file = File(file)
+            //page.index = 70
 
         }
 
