@@ -66,6 +66,6 @@ class CropScaleRunner(parser: Parser) {
         if (!img.empty() && index != 0) {
             roi = cropDetect(img)
         }
-        return PngPair(png, Rect())
+        return PngPair(png, roi)
     }
 }
