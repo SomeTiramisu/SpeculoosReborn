@@ -8,8 +8,15 @@ import org.opencv.core.Rect
 import org.opencv.core.Size
 import org.opencv.imgcodecs.Imgcodecs
 import org.opencv.imgproc.Imgproc
+import org.opencv.imgproc.Imgproc.boundingRect
 import java.nio.ByteBuffer
 import kotlin.math.min
+
+// A line will be considered as having content if 0.25% of it is filled.
+const val FILLEDRATIOLIMIT = 0.0025;
+
+// When the threshold is closer to 1, less content will be cropped.
+const val THRESHOLD = 0.75
 
 fun fromByteArray(src: ByteArray): Mat {
     if (src.isEmpty()) {
@@ -27,9 +34,10 @@ fun toPng(src: Mat): ByteArray {
     TODO()
 }
 
-fun createMask(src: Mat, dst: Mat) {
+fun createMask(src: Mat, dst: Mat, notInv: Boolean = false) {
     Imgproc.cvtColor(src, dst, Imgproc.COLOR_RGBA2GRAY)
-    Imgproc.threshold(dst, dst, 240.0, 255.0, Imgproc.THRESH_BINARY_INV)
+    Imgproc.threshold(dst, dst, 242.35, 255.0,
+        if (notInv) Imgproc.THRESH_BINARY else Imgproc.THRESH_BINARY_INV)
 }
 
 fun scale(src: Mat, dst: Mat, width: Int, height: Int) {
@@ -57,18 +65,41 @@ fun scale(src: Mat, dst: Mat, width: Int, height: Int) {
         Imgproc.resize(src, dst, Size(), f, f, Imgproc.INTER_AREA)
     }
 }
+/*
+fun cropDetect(src: Mat): Rect {
+    val mask1 = Mat()
+    val mask2 = Mat()
+    //createMask(src, mask)
+    //TODO
+    createMask(src, mask1)
+    createMask(src, mask2, true)
+    val rec1 = boundingRect(mask1)
+    val rec2 = boundingRect(mask2)
+    val rec3 = Rect()
 
+    rec3.x = if (rec1.x>rec2.x) rec1.x else rec2.x
+    rec3.y = if (rec1.y>rec2.y) rec1.x else rec2.x
+    rec3.width = if (rec1.width>rec2.width) rec2.width else rec1.width
+    rec3.height = if (rec1.height>rec2.height) rec2.height else rec1.height
+
+    return rec3
+}
+*/
 fun cropDetect(src: Mat): Rect {
     val mask = Mat()
     createMask(src, mask)
-    //TODO
-    return Rect()
+    return boundingRect(mask)
 }
+
+
 fun cropScaleProcess(src: Mat, dst: Mat, roi: Rect, width: Int, height: Int) {
     val tmp = Mat()
     val mask = Mat()
-    var froi = if (roi.empty()) Rect(0, 0, src.cols(), src.rows()) else roi
-    scale(src, tmp, width, height)
+    if (roi.empty()) {
+        scale(src, tmp, width, height)
+    } else {
+        scale(src.submat(roi), tmp, width, height)
+    }
     createMask(tmp, mask)
     tmp.copyTo(dst, mask)
 }
