@@ -1,5 +1,6 @@
 package org.custro.speculoosreborn
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
 import android.util.AttributeSet
@@ -20,14 +21,23 @@ class PageImageView: androidx.appcompat.widget.AppCompatImageView {
     var file: File? = null
         set(value) {
             field = value
-            updateIndex(0)
+            index = 0
         }
     var bookSize: Int = 0
         private set
     var preloaderProgress: Int = 0
         private set
     var index: Int = 0
-        private set
+        set (value: Int) {
+        field = value
+        val metrics: DisplayMetrics = context.resources.displayMetrics
+        val width = metrics.widthPixels
+        val height = metrics.heightPixels
+        Log.d("SIZE", "$width, $height")
+        mReq = PageRequest(index, width, height, file)
+        //mReq = PageRequest(index, 100, 100, File("/storage/emulated/0/aoe.cbz"))
+        mTiramisu.get(mReq)
+    }
     private var mReq = PageRequest()
     private var mImage = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)
     //private var mTmpImage
@@ -54,7 +64,7 @@ class PageImageView: androidx.appcompat.widget.AppCompatImageView {
             bookSize = value
         }
     }
-
+    
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         //Log.d("PageImageView", "Touched")
         if (event!!.action == MotionEvent.ACTION_UP) {
@@ -67,22 +77,13 @@ class PageImageView: androidx.appcompat.widget.AppCompatImageView {
         return true
     }
 
-    fun updateIndex(value: Int) {
-        index = value
-        val metrics: DisplayMetrics = context.resources.displayMetrics
-        val width = metrics.widthPixels
-        val height = metrics.heightPixels
-        Log.d("SIZE", "$width, $height")
-        mReq = PageRequest(index, width, height, file)
-        //mReq = PageRequest(index, 100, 100, File("/storage/emulated/0/aoe.cbz"))
-        mTiramisu.get(mReq)
-    }
+
 
     fun incIndex() {
-        updateIndex(index+1)
+        index += 1
     }
 
     fun decIndex() {
-        updateIndex(index-1)
+        index -= 1
     }
  }
