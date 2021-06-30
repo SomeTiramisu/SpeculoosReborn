@@ -36,7 +36,14 @@ class ReaderActivity : AppCompatActivity() {
         file =  File(intent.extras!!.getString("file")!!)
         pageImageView?.setOnTouchListener { v, event ->  onPageTouchEvent(v, event)}
 
-        seekBar.to
+        seekBar = findViewById(R.id.seekBar)
+        seekBar?.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {}
+            override fun onStartTrackingTouch(seekBar: SeekBar) {}
+            override fun onStopTrackingTouch(seekBar: SeekBar) {
+                index = seekBar.progress
+            }
+        })
 
         val bgStream = assets.open("background.png")
         setBackground(bgStream)
@@ -86,6 +93,11 @@ class ReaderActivity : AppCompatActivity() {
                 } else if (event.x < v.width / 3 && index > 0) {
                     index -= 1
                 }
+                if (seekBar?.visibility == View.VISIBLE && index >= 0 && index <= bookSize-1) {
+                    seekBar?.visibility = View.INVISIBLE
+                } else if ((event.x > v.width/3 && event.x < 2*v.width/3) /*|| index == 0 || index == bookSize*/) {
+                    seekBar?.visibility = View.VISIBLE
+                }
             }
             else -> {}
         }
@@ -101,10 +113,15 @@ class ReaderActivity : AppCompatActivity() {
             index = 0
         }
     private var bookSize: Int = 0
+        set(value) {
+            field = value
+            seekBar?.max = value-1
+        }
     private var preloaderProgress: Int = 0
     private var index: Int = 0
         set (value: Int) {
             field = value
+            seekBar?.progress = value
             val metrics: DisplayMetrics = resources.displayMetrics
             val width = metrics.widthPixels
             val height = metrics.heightPixels
