@@ -49,8 +49,7 @@ class ReaderActivity : AppCompatActivity() {
         setBackground(bgStream)
         bgStream.close()
 
-        mTiramisu.connectImage { img: Mat -> setImage(img) }
-        mTiramisu.connectBookSize { value: Int -> bookSize = value }
+        mTiramisu.init({ img: Mat -> setImage(img) }, { value: Int -> bookSize = value })
     }
 
     override fun onResume() {
