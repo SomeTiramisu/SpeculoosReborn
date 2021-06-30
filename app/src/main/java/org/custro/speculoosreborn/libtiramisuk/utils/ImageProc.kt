@@ -108,7 +108,9 @@ fun cropScaleProcess(src: Mat, dst: Mat, roi: Rect, width: Int, height: Int) {
 
 fun addBlackBorders(src: Mat, dst: Mat, width: Int, height: Int) {
     Mat(height, width, src.type(), Scalar(0.0, 0.0, 0.0, 255.0)).copyTo(dst)
-    //dst.setTo(MatOfByte(*ByteArray(4) { 255.toByte() }))
+    val xOffset = (width-src.cols())/2
+    val yOffset = (height-src.rows())/2
+    src.assignTo(Mat(dst, Rect(xOffset, yOffset,  src.width()+xOffset, src.height()+yOffset)))
 }
 
 fun RGBA2ARGB(src: Mat, dst: Mat) {
