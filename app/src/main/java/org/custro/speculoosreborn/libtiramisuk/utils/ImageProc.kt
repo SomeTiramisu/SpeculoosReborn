@@ -1,11 +1,8 @@
 package org.custro.speculoosreborn.libtiramisuk.utils
 
+import org.opencv.core.*
 import org.opencv.core.Core.merge
 import org.opencv.core.Core.split
-import org.opencv.core.Mat
-import org.opencv.core.MatOfByte
-import org.opencv.core.Rect
-import org.opencv.core.Size
 import org.opencv.imgcodecs.Imgcodecs
 import org.opencv.imgproc.Imgproc
 import org.opencv.imgproc.Imgproc.boundingRect
@@ -85,7 +82,7 @@ fun cropDetect(src: Mat): Rect {
     return rec3
 }
 */
-fun cropDetect(src: Mat): Rect {
+fun cropDetect(src: Mat): Pair<Rect, Boolean> {
     val maskWhite = Mat()
     val maskBlack = Mat()
     createMask(src, maskWhite)
@@ -93,7 +90,7 @@ fun cropDetect(src: Mat): Rect {
     val recWhite = boundingRect(maskWhite)
     val recBlack = boundingRect(maskBlack)
 
-    return if (recWhite.area()>recBlack.area()) recBlack else recWhite
+    return if (recWhite.area()>recBlack.area()) Pair(recBlack, true) else Pair(recWhite, false)
 }
 
 
@@ -107,6 +104,11 @@ fun cropScaleProcess(src: Mat, dst: Mat, roi: Rect, width: Int, height: Int) {
     }
     createMask(tmp, mask)
     tmp.copyTo(dst, mask)
+}
+
+fun addBlackBorders(src: Mat, dst: Mat, width: Int, height: Int) {
+    Mat(height, width, src.type(), Scalar(0.0, 0.0, 0.0, 255.0)).copyTo(dst)
+    //dst.setTo(MatOfByte(*ByteArray(4) { 255.toByte() }))
 }
 
 fun RGBA2ARGB(src: Mat, dst: Mat) {

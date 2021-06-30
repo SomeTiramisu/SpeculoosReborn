@@ -58,6 +58,9 @@ class CropScaleRunner(private val parser: Parser, private val scaleCoScope: Coro
         val img = fromByteArray(p.png)
         if (!img.empty()) {
             cropScaleProcess(img, img, p.rec, req.width, req.height)
+            if (p.isBlack) {
+                //addBlackBorders(img, img, req.width, req.height)
+            }
         }
         Log.d("CropScale", "running: ${req.index}");
         return PagePair(img, req)
@@ -66,10 +69,14 @@ class CropScaleRunner(private val parser: Parser, private val scaleCoScope: Coro
     private fun cropDetect(png: ByteArray, index: Int): PngPair{
         val img = fromByteArray(png)
         var roi = Rect()
+        var isBlack = false
         if (!img.empty() && index != 0) {
-            roi = cropDetect(img)
+            var (r, b) = cropDetect(img)
+            roi = r
+            isBlack = b
+
         }
-        Log.d("CropDetect", "running: ${index}");
-        return PngPair(png, roi)
+        Log.d("CropDetect", "running: $index");
+        return PngPair(png, roi, isBlack)
     }
 }
