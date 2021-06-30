@@ -12,6 +12,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.widget.ImageView
 import android.widget.SeekBar
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.motion.widget.MotionHelper
 import kotlinx.coroutines.Dispatchers
@@ -32,13 +33,17 @@ class ReaderActivity : AppCompatActivity() {
         hideSystemUi()
         //supportActionBar?.hide()
 
+        indexView = findViewById(R.id.indexView)
+        indexView?.text = index.toString()
         pageImageView = findViewById(R.id.pageImageView)
         file =  File(intent.extras!!.getString("file")!!)
         pageImageView?.setOnTouchListener { v, event ->  onPageTouchEvent(v, event)}
 
         seekBar = findViewById(R.id.seekBar)
         seekBar?.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {}
+            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+                indexView?.text = progress.toString()
+            }
             override fun onStartTrackingTouch(seekBar: SeekBar) {}
             override fun onStopTrackingTouch(seekBar: SeekBar) {
                 index = seekBar.progress
@@ -94,8 +99,10 @@ class ReaderActivity : AppCompatActivity() {
                 }
                 if (seekBar?.visibility == View.VISIBLE && index >= 0 && index <= bookSize-1) {
                     seekBar?.visibility = View.INVISIBLE
+                    indexView?.visibility = View.INVISIBLE
                 } else if ((event.x > v.width/3 && event.x < 2*v.width/3) /*|| index == 0 || index == bookSize*/) {
                     seekBar?.visibility = View.VISIBLE
+                    indexView?.visibility = View.VISIBLE
                 }
             }
             else -> {}
@@ -106,6 +113,7 @@ class ReaderActivity : AppCompatActivity() {
 
     private var pageImageView: ImageView? = null
     private var seekBar: SeekBar? = null
+    private var indexView: TextView? = null
     private var file: File? = null
         set(value) {
             field = value
@@ -121,6 +129,7 @@ class ReaderActivity : AppCompatActivity() {
         set (value: Int) {
             field = value
             seekBar?.progress = value
+            indexView?.text = value.toString()
             val metrics: DisplayMetrics = resources.displayMetrics
             val width = metrics.widthPixels
             val height = metrics.heightPixels
