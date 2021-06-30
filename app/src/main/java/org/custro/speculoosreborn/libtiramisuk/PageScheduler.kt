@@ -51,7 +51,7 @@ class PageScheduler {
         if (index<0 || index >= bookSize) {
             return
         }
-        Log.d("Scheduler", "get ${req.index}")
+        //Log.d("Scheduler", "get ${req.index}")
         mPages[index].get(req)
         seekPages(req)
     }

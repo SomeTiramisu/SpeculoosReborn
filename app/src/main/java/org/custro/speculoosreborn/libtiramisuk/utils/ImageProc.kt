@@ -1,5 +1,6 @@
 package org.custro.speculoosreborn.libtiramisuk.utils
 
+import android.util.Log
 import org.opencv.core.*
 import org.opencv.core.Core.merge
 import org.opencv.core.Core.split
@@ -90,9 +91,36 @@ fun cropDetect(src: Mat): Pair<Rect, Boolean> {
     val recWhite = boundingRect(maskWhite)
     val recBlack = boundingRect(maskBlack)
 
-    return if (recWhite.area()>recBlack.area()) Pair(recBlack, true) else Pair(recWhite, false)
+    val isBlack = blackDetect(src)
+    //return if (recWhite.area()>recBlack.area()) Pair(recBlack, true) else Pair(recWhite, false)
+    return if (recWhite.area()>recBlack.area()) Pair(recBlack, isBlack) else Pair(recWhite, isBlack)
 }
 
+fun blackDetect(src: Mat): Boolean {
+    val mask = Mat()
+    createMask(src, mask)
+    val total = (src.width()+src.height())*2
+    var blacks = 0
+    for (i in 0 until mask.cols()) {
+        //Log.d("ImageProc", "coucou: ${mask.get(0, i).contentToString()}")
+        if (mask.get(0, i).contentEquals(doubleArrayOf(255.0))) {
+            blacks += 1
+        }
+        if (mask.get(mask.rows()-1, i).contentEquals(doubleArrayOf(255.0))) {
+            blacks += 1
+        }
+    }
+    for (i in 0 until mask.rows()) {
+        if (mask.get(i, 0).contentEquals(doubleArrayOf(255.0))) {
+            blacks += 1
+        }
+        if (mask.get(i, src.cols()-1).contentEquals(doubleArrayOf(255.0))) {
+            blacks += 1
+        }
+    }
+    Log.d("ImageProc", "blacks: $blacks")
+    return blacks.toDouble() > 0.75*total.toDouble()
+}
 
 fun cropScaleProcess(src: Mat, dst: Mat, roi: Rect, width: Int, height: Int) {
     val tmp = Mat()
@@ -110,7 +138,9 @@ fun addBlackBorders(src: Mat, dst: Mat, width: Int, height: Int) {
     Mat(height, width, src.type(), Scalar(0.0, 0.0, 0.0, 255.0)).copyTo(dst)
     val xOffset = (width-src.cols())/2
     val yOffset = (height-src.rows())/2
-    src.assignTo(Mat(dst, Rect(xOffset, yOffset,  src.width()+xOffset, src.height()+yOffset)))
+    val subRec = Rect(xOffset, yOffset,  src.width()+xOffset, src.height()+yOffset)
+    val subMat = Mat(dst, subRec)
+    //src.copyTo(dst)
 }
 
 fun RGBA2ARGB(src: Mat, dst: Mat) {

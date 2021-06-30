@@ -29,11 +29,11 @@ class CropScaleRunner(private val parser: Parser, private val scaleCoScope: Coro
 
     fun get(req: PageRequest) = scaleCoScope.launch {
         if (mReq != req || mPageRes == null) {
-            Log.d("Runner", "Request it ${req.index}")
+            //Log.d("Runner", "Request it ${req.index}")
             mReq = req
             runScale()
         } else {
-            Log.d("Runner", "Have it ${req.index}")
+            //Log.d("Runner", "Have it ${req.index}")
             mSlot(mPageRes!!)
         }
     }
@@ -59,10 +59,11 @@ class CropScaleRunner(private val parser: Parser, private val scaleCoScope: Coro
         if (!img.empty()) {
             cropScaleProcess(img, img, p.rec, req.width, req.height)
             if (p.isBlack) {
+                Log.d("Runner", "is black")
                 //addBlackBorders(img, img, req.width, req.height)
             }
         }
-        Log.d("CropScale", "running: ${req.index}");
+        //Log.d("CropScale", "running: ${req.index}");
         return PagePair(img, req)
     }
 
@@ -76,7 +77,7 @@ class CropScaleRunner(private val parser: Parser, private val scaleCoScope: Coro
             isBlack = b
 
         }
-        Log.d("CropDetect", "running: $index");
+        //Log.d("CropDetect", "running: $index");
         return PngPair(png, roi, isBlack)
     }
 }

@@ -14,7 +14,6 @@ import android.widget.ImageView
 import android.widget.SeekBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.constraintlayout.motion.widget.MotionHelper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import org.custro.speculoosreborn.libtiramisuk.Tiramisuk
@@ -91,7 +90,7 @@ class ReaderActivity : AppCompatActivity() {
     private fun onPageTouchEvent(v: View, event: MotionEvent): Boolean {
         when (event.action) {
             MotionEvent.ACTION_UP -> {
-                Log.d("PageImageView", "Touched")
+                //Log.d("PageImageView", "Touched")
                 if (event.x > 2 * v.width / 3 && index < bookSize - 1) {
                     index += 1
                 } else if (event.x < v.width / 3 && index > 0) {
@@ -133,7 +132,7 @@ class ReaderActivity : AppCompatActivity() {
             val metrics: DisplayMetrics = resources.displayMetrics
             val width = metrics.widthPixels
             val height = metrics.heightPixels
-            Log.d("SIZE", "$width, $height")
+            //Log.d("SIZE", "$width, $height")
             val req = PageRequest(index, width, height, file)
             //mReq = PageRequest(index, 100, 100, File("/storage/emulated/0/aoe.cbz"))
             mTiramisu.get(req)
