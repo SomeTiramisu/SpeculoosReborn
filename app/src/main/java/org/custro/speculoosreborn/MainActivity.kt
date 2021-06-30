@@ -11,7 +11,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         System.loadLibrary("opencv_java4")
 
-        startReader(null)
+        //startReader(null)
     }
 
     fun startReader(view: View?) {
