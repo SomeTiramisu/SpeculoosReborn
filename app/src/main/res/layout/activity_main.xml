@@ -7,14 +7,25 @@
     tools:context=".MainActivity">
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/pickButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="startReader"
-        android:text="@string/button"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:onClick="pickFile"
+        android:text="@string/pickButton"
+        app:layout_constraintBottom_toTopOf="@+id/startButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/startButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="startReader"
+        android:text="@string/startButton"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pickButton" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
