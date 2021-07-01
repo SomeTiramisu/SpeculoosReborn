@@ -139,9 +139,7 @@ class ReaderActivity : AppCompatActivity() {
             val metrics: DisplayMetrics = resources.displayMetrics
             val width = metrics.widthPixels
             val height = metrics.heightPixels
-            //Log.d("SIZE", "$width, $height")
             val req = PageRequest(index, width, height, file)
-            //mReq = PageRequest(index, 100, 100, File("/storage/emulated/0/aoe.cbz"))
             mTiramisu.get(req)
         }
     companion object {

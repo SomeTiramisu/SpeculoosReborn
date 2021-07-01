@@ -10,13 +10,10 @@ import androidx.activity.result.contract.ActivityResultContracts.OpenDocument
 import androidx.appcompat.app.AppCompatActivity
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.files.fileChooser
+import java.io.File
 
 class MainActivity : AppCompatActivity() {
-    private val resultLauncher = registerForActivityResult(OpenDocument()) { uri: Uri ->
-        path = "storage/emulated/0/" + uri.path?.split(":")?.last()
-        Log.d("MainActivity", "$path")
-    }
-    private var path: String? = "/storage/emulated/0/aoe.cbz"
+    private var archiveFile: File? = File("/storage/emulated/0/aoe.cbz")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -27,7 +24,7 @@ class MainActivity : AppCompatActivity() {
 
     fun startReader(view: View?) {
         val b = Bundle()
-        b.putString("file", path)
+        b.putString("file", archiveFile?.absolutePath)
         val intent = Intent(this, ReaderActivity::class.java)
         intent.putExtras(b)
         startActivity(intent)
@@ -37,9 +34,8 @@ class MainActivity : AppCompatActivity() {
         //resultLauncher.launch(arrayOf("*/*"))
         MaterialDialog(this).show {
             fileChooser(context, initialDirectory = getExternalStorageDirectory(), filter =  { file -> file.isDirectory || file.extension == "cbz" }) { dialog, file ->
-                path = file.absolutePath
+                archiveFile = file
             }
         }
-        //resultLauncher.launch(arrayOf("application/cbz"))
     }
 }

@@ -7,10 +7,12 @@ import java.util.zip.ZipFile
 
 class Parser(private val file: File) {
     private val headers: MutableList<ZipEntry> = mutableListOf()
-    var size: Int = 0
+    val size: Int
+        get() {
+            return headers.size
+        }
     init {
         val zip = ZipFile(file)
-        size = zip.size()
         for (e in zip.entries()) {
             val name = e.name
             if (!e.isDirectory and ((".jpg" in name) or (".png" in name ))) {
