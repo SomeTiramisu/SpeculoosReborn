@@ -17,8 +17,6 @@ class PageScheduler {
     private var mSizeSlot: (Int) -> Unit = {}
     private var mFile: File? = null
     private var mParser: Parser? = null
-    private val mScaleCoScope = CoroutineScope(Executors.newFixedThreadPool(4).asCoroutineDispatcher())
-    private val mDetectCoScope = CoroutineScope(Executors.newFixedThreadPool(2).asCoroutineDispatcher())
 
     init {
         Log.d("Scheduler", "created")
@@ -41,7 +39,7 @@ class PageScheduler {
             mParser = Parser(mFile!!)
             mSizeSlot(mParser!!.size)
             mPages = List(mParser!!.size) { index ->
-                val r = CropScaleRunner(mParser!!, mScaleCoScope, mDetectCoScope)
+                val r = CropScaleRunner(index, mParser!!)
                 r.connectSlot(mPageSlot)
                 r
             }
@@ -62,7 +60,6 @@ class PageScheduler {
             if ((req.index - mImagePreload <= i) && (i <= req.index + mImagePreload)) {
                 mPages[i].get(nreq)
             } else {
-                mPages[i].preload(nreq)
                 mPages[i].clear()
             }
         }

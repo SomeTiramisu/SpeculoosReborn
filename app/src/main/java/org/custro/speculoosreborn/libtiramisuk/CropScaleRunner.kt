@@ -1,49 +1,42 @@
 package org.custro.speculoosreborn.libtiramisuk
 
 import android.util.Log
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import org.custro.speculoosreborn.libtiramisuk.parser.Parser
 import org.custro.speculoosreborn.libtiramisuk.utils.*
 import org.opencv.core.Rect
+import java.util.concurrent.Executors
 
-class CropScaleRunner(private val parser: Parser, private val scaleCoScope: CoroutineScope, private val detectCoScope: CoroutineScope) {
-    private var mReq: PageRequest? = null
+class CropScaleRunner(private val index: Int, private val parser: Parser) {
     private var mPageRes: PagePair? = null
+    private var mPageResJob: Job? = null
     private var mPngRes: PngPair? = null
+    private var mPngResJob: Job? = null
+    private var mReq: PageRequest? = null
     private var mSlot: (PagePair) -> Unit = {}
 
-    private fun runScale() {
-        if (mPngRes == null) { //maybe need a .join after launch
-            mPngRes = cropDetect(parser.at(mReq!!.index), mReq!!.index)
+    init {
+        mPngResJob = detectCoScope.launch {
+            if (mPngRes == null) {
+                mPngRes = cropDetect(parser.at(index), index)
+            }
         }
-        mPageRes = cropScale(mPngRes!!, mReq!!)
-        mSlot(mPageRes!!)
     }
-
-    private fun runDetect() { //what if we runscale before completion ?
-        mPngRes = cropDetect(parser.at(mReq!!.index), mReq!!.index)
-    }
-
 
     fun get(req: PageRequest) = scaleCoScope.launch {
+        if (mPngResJob == null) {
+            TODO()
+        } else {
+            mPngResJob!!.join()
+        }
+
         if (mReq != req || mPageRes == null) {
             //Log.d("Runner", "Request it ${req.index}")
             mReq = req
-            runScale()
-        } else {
-            //Log.d("Runner", "Have it ${req.index}")
-            mSlot(mPageRes!!)
+            mPageRes = cropScale(mPngRes!!, req)
         }
-    }
-
-
-    fun preload(req: PageRequest) = detectCoScope.launch {
-        if (mPngRes == null) {
-            mReq = req
-            runDetect()
-        }
+        //Log.d("Runner", "Have it ${req.index}")
+        mSlot(mPageRes!!)
     }
 
     fun clear() {
@@ -79,5 +72,10 @@ class CropScaleRunner(private val parser: Parser, private val scaleCoScope: Coro
         }
         //Log.d("CropDetect", "running: $index");
         return PngPair(png, roi, isBlack)
+    }
+
+    companion object {
+        private val scaleCoScope = CoroutineScope(Executors.newFixedThreadPool(4).asCoroutineDispatcher())
+        private val detectCoScope = CoroutineScope(Executors.newFixedThreadPool(2).asCoroutineDispatcher())
     }
 }
