@@ -102,6 +102,6 @@ class CropScaleRunner(private val index: Int, private val parser: Parser) {
     companion object {
         private val getScaleCoScope = CoroutineScope(Executors.newFixedThreadPool(2).asCoroutineDispatcher())
         private val preScaleCoScope = CoroutineScope(Executors.newFixedThreadPool(4).asCoroutineDispatcher())
-        private val detectCoScope = CoroutineScope(Executors.newFixedThreadPool(2).asCoroutineDispatcher())
+        private val detectCoScope = CoroutineScope(Executors.newSingleThreadExecutor().asCoroutineDispatcher())
     }
 }
