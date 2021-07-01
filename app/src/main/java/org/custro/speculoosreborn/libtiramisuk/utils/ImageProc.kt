@@ -1,5 +1,6 @@
 package org.custro.speculoosreborn.libtiramisuk.utils
 
+import android.util.Log
 import org.opencv.core.*
 import org.opencv.core.Core.merge
 import org.opencv.core.Core.split
@@ -7,6 +8,7 @@ import org.opencv.imgcodecs.Imgcodecs
 import org.opencv.imgproc.Imgproc
 import org.opencv.imgproc.Imgproc.boundingRect
 import java.nio.ByteBuffer
+import kotlin.math.abs
 import kotlin.math.min
 
 // A line will be considered as having content if 0.25% of it is filled.
@@ -91,7 +93,7 @@ fun cropDetect(src: Mat): Pair<Rect, Boolean> {
 fun blackDetect(src: Mat): Boolean {
     val mask = Mat()
     createMask(src, mask)
-    val total = (src.width()+src.height())*2
+    val total = (src.cols()+src.rows())*2
     var blacks = 0
     for (i in 0 until mask.cols()) {
         //Log.d("ImageProc", "coucou: ${mask.get(0, i).contentToString()}")
@@ -111,7 +113,7 @@ fun blackDetect(src: Mat): Boolean {
         }
     }
     //Log.d("ImageProc", "blacks: $blacks")
-    return blacks.toDouble() > 0.75*total.toDouble()
+    return blacks.toDouble() > 0.5*total.toDouble()
 }
 
 fun cropScaleProcess(src: Mat, dst: Mat, roi: Rect, width: Int, height: Int) {
@@ -127,11 +129,15 @@ fun cropScaleProcess(src: Mat, dst: Mat, roi: Rect, width: Int, height: Int) {
 }
 
 fun addBlackBorders(src: Mat, dst: Mat, width: Int, height: Int) {
-    Mat(height, width, src.type(), Scalar(0.0, 0.0, 0.0, 255.0)).copyTo(dst)
+    val tmp = Mat(height, width, src.type(), Scalar(0.0, 0.0, 0.0, 255.0))
     val xOffset = (width-src.cols())/2
     val yOffset = (height-src.rows())/2
-    val subRec = Rect(xOffset, yOffset,  src.width()+xOffset, src.height()+yOffset)
-    val subMat = Mat(dst, subRec)
+    Log.d("ImageProc", "$xOffset, $yOffset")
+    val subRec = Rect(xOffset, yOffset,src.cols(), src.rows())
+    //val subMat = Mat(tmp, Rect(0, 0, src.cols(), src.rows()))
+    val subMat = Mat(tmp, subRec)
+    src.copyTo(subMat)
+    tmp.copyTo(dst)
     //src.copyTo(dst)
 }
 

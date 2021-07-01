@@ -78,7 +78,7 @@ class CropScaleRunner(private val index: Int, private val parser: Parser) {
             cropScaleProcess(img, img, p.rec, req.width, req.height)
             if (p.isBlack) {
                 //Log.d("Runner", "is black")
-                //addBlackBorders(img, img, req.width, req.height)
+                addBlackBorders(img, img, req.width, req.height)
             }
         }
         //Log.d("CropScale", "running: ${req.index}");
