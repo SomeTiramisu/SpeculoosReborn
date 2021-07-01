@@ -5,6 +5,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.asCoroutineDispatcher
 import org.custro.speculoosreborn.libtiramisuk.parser.Parser
+import org.custro.speculoosreborn.libtiramisuk.parser.ParserFactory
 import org.custro.speculoosreborn.libtiramisuk.utils.PagePair
 import org.custro.speculoosreborn.libtiramisuk.utils.PageRequest
 import java.io.File
@@ -36,7 +37,7 @@ class PageScheduler {
     fun at(req: PageRequest) {
         if (req.file != mFile) {
             mFile = req.file
-            mParser = Parser(mFile!!)
+            mParser = ParserFactory.create(mFile!!)
             mSizeSlot(mParser!!.size)
             mPages = List(mParser!!.size) { index ->
                 val r = CropScaleRunner(index, mParser!!)
