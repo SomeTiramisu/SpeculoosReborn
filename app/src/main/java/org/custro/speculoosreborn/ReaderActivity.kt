@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory
 import android.graphics.Shader
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
+import android.os.PersistableBundle
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.MotionEvent
@@ -54,11 +55,23 @@ class ReaderActivity : AppCompatActivity() {
         bgStream.close()
 
         mTiramisu.init({ img: Mat -> setImage(img) }, { value: Int -> bookSize = value })
+
+        val previousIndex = savedInstanceState?.getInt("index")
+        if (previousIndex != null) {
+            index = previousIndex
+        } else {
+            index = 0
+        }
     }
 
     override fun onResume() {
         super.onResume()
         hideSystemUi()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt("index", index)
     }
 
     private fun hideSystemUi() {

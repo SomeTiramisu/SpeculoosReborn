@@ -59,7 +59,7 @@ class CropScaleRunner(private val parser: Parser, private val scaleCoScope: Coro
         if (!img.empty()) {
             cropScaleProcess(img, img, p.rec, req.width, req.height)
             if (p.isBlack) {
-                Log.d("Runner", "is black")
+                //Log.d("Runner", "is black")
                 //addBlackBorders(img, img, req.width, req.height)
             }
         }

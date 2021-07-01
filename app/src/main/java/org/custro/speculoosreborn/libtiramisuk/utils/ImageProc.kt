@@ -118,7 +118,7 @@ fun blackDetect(src: Mat): Boolean {
             blacks += 1
         }
     }
-    Log.d("ImageProc", "blacks: $blacks")
+    //Log.d("ImageProc", "blacks: $blacks")
     return blacks.toDouble() > 0.75*total.toDouble()
 }
 
