@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
     fun pickFile(view: View?) {
         //resultLauncher.launch(arrayOf("*/*"))
         MaterialDialog(this).show {
-            fileChooser(context, initialDirectory = getExternalStorageDirectory(), filter =  { file -> file.isDirectory || file.extension == "cbz" }) { dialog, file ->
+            fileChooser(context, initialDirectory = getExternalStorageDirectory(), filter =  { file -> file.isDirectory || file.extension == "cbz" || file.extension == "cbr" }) { dialog, file ->
                 archiveFile = file
             }
         }
