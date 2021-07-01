@@ -1,5 +1,6 @@
 package org.custro.speculoosreborn.libtiramisuk
 
+import android.graphics.pdf.PdfDocument
 import android.util.Log
 import kotlinx.coroutines.*
 import org.custro.speculoosreborn.libtiramisuk.parser.Parser
@@ -23,7 +24,7 @@ class CropScaleRunner(private val index: Int, private val parser: Parser) {
         }
     }
 
-    fun get(req: PageRequest) = scaleCoScope.launch {
+    private suspend fun work(req: PageRequest) {
         if (mPngResJob == null) {
             TODO()
         } else {
@@ -35,11 +36,33 @@ class CropScaleRunner(private val index: Int, private val parser: Parser) {
             mReq = req
             mPageRes = cropScale(mPngRes!!, req)
         }
-        //Log.d("Runner", "Have it ${req.index}")
-        mSlot(mPageRes!!)
+    }
+
+    fun get(req: PageRequest) {
+        if (mPageResJob == null) {
+             getScaleCoScope.launch {
+                 Log.d("Runner", "request it ${req.index}")
+                 work(req)
+                 mSlot(mPageRes!!)
+            }
+        } else {
+            getScaleCoScope.launch {
+                Log.d("Runner", "Have it or already requested ${req.index}")
+                mPageResJob!!.join()
+                mSlot(mPageRes!!)
+            }
+        }
+    }
+
+    fun preload(req: PageRequest) {
+        mPageResJob = preScaleCoScope.launch {
+            work(req)
+        }
     }
 
     fun clear() {
+        mPageResJob?.cancel()
+        mPageResJob = null
         mPageRes = null
     }
 
@@ -75,7 +98,8 @@ class CropScaleRunner(private val index: Int, private val parser: Parser) {
     }
 
     companion object {
-        private val scaleCoScope = CoroutineScope(Executors.newFixedThreadPool(4).asCoroutineDispatcher())
+        private val getScaleCoScope = CoroutineScope(Executors.newFixedThreadPool(2).asCoroutineDispatcher())
+        private val preScaleCoScope = CoroutineScope(Executors.newFixedThreadPool(4).asCoroutineDispatcher())
         private val detectCoScope = CoroutineScope(Executors.newFixedThreadPool(2).asCoroutineDispatcher())
     }
 }

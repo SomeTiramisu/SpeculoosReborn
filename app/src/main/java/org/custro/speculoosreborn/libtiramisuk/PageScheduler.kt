@@ -11,7 +11,7 @@ import java.io.File
 import java.util.concurrent.Executors
 
 class PageScheduler {
-    private val mImagePreload: Int = 5
+    private val mImagePreload: Int = 20
     private var mPages: List<CropScaleRunner> = listOf()
     private var mPageSlot: (PagePair) -> Unit = {}
     private var mSizeSlot: (Int) -> Unit = {}
@@ -58,7 +58,7 @@ class PageScheduler {
         for (i in mPages.indices) {
             val nreq = PageRequest(i, req.width, req.height, req.file)
             if ((req.index - mImagePreload <= i) && (i <= req.index + mImagePreload)) {
-                mPages[i].get(nreq)
+                mPages[i].preload(nreq)
             } else {
                 mPages[i].clear()
             }
