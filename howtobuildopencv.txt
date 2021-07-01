@@ -1,0 +1,1 @@
+opencv 4.5.2 ndk 21.4 cmake .10 
