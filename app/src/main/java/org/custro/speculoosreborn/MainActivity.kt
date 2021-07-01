@@ -3,11 +3,16 @@ package org.custro.speculoosreborn
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.os.Environment.getExternalStorageDirectory
 import android.util.Log
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.contract.ActivityResultContracts.OpenDocument
 import androidx.appcompat.app.AppCompatActivity
+import com.afollestad.materialdialogs.MaterialDialog
+import com.afollestad.materialdialogs.files.fileChooser
+import com.afollestad.materialdialogs.files.FileFilter
+import java.io.File
 
 class MainActivity : AppCompatActivity() {
     private val resultLauncher = registerForActivityResult(OpenDocument()) { uri: Uri ->
@@ -32,6 +37,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun pickFile(view: View?) {
-        resultLauncher.launch(arrayOf("*/*"))
+        //resultLauncher.launch(arrayOf("*/*"))
+        MaterialDialog(this).show {
+            fileChooser(context, initialDirectory = getExternalStorageDirectory(), filter =  { file -> file.isDirectory || file.extension == "cbz" }) { dialog, file ->
+                path = file.absolutePath
+            }
+        }
+        //resultLauncher.launch(arrayOf("application/cbz"))
     }
 }
