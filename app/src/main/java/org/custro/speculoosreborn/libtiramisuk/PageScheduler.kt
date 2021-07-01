@@ -56,12 +56,16 @@ class PageScheduler {
 
     private fun seekPages(req: PageRequest) {
         for (i in mPages.indices) {
-            val nreq = PageRequest(i, req.width, req.height, req.file)
-            if ((req.index - mImagePreload <= i) && (i <= req.index + mImagePreload)) {
-                mPages[i].preload(nreq)
-            } else {
+            if ((req.index - mImagePreload > i) || (i > req.index + mImagePreload)) {
+                val nreq = PageRequest(i, req.width, req.height, req.file)
                 mPages[i].clear()
             }
+        }
+        for (i in 1..mImagePreload) {
+            val preq = PageRequest(req.index + i, req.width, req.height, req.file)
+            val mreq = PageRequest(req.index - i, req.width, req.height, req.file)
+            if (preq.index < mPages.size) mPages[preq.index].preload(preq)
+            if (mreq.index >= 0) mPages[mreq.index].preload(mreq)
         }
     }
 }
