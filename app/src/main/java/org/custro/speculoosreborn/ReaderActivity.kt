@@ -6,9 +6,7 @@ import android.graphics.BitmapFactory
 import android.graphics.Shader
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.util.DisplayMetrics
-import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.widget.ImageView
@@ -36,14 +34,15 @@ class ReaderActivity : AppCompatActivity() {
         indexView = findViewById(R.id.indexView)
         indexView?.text = index.toString()
         pageImageView = findViewById(R.id.pageImageView)
-        file =  File(intent.extras!!.getString("file")!!)
-        pageImageView?.setOnTouchListener { v, event ->  onPageTouchEvent(v, event)}
+        file = File(intent.extras!!.getString("file")!!)
+        pageImageView?.setOnTouchListener { v, event -> onPageTouchEvent(v, event) }
 
         seekBar = findViewById(R.id.seekBar)
-        seekBar?.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener {
+        seekBar?.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
                 indexView?.text = progress.toString()
             }
+
             override fun onStartTrackingTouch(seekBar: SeekBar) {}
             override fun onStopTrackingTouch(seekBar: SeekBar) {
                 index = seekBar.progress
@@ -56,12 +55,7 @@ class ReaderActivity : AppCompatActivity() {
 
         mTiramisu.init({ img: Mat -> setImage(img) }, { value: Int -> bookSize = value })
 
-        val previousIndex = savedInstanceState?.getInt("index")
-        if (previousIndex != null) {
-            index = previousIndex
-        } else {
-            index = 0
-        }
+        index = savedInstanceState?.getInt("index") ?: 0
     }
 
     override fun onResume() {
@@ -138,7 +132,7 @@ class ReaderActivity : AppCompatActivity() {
         }
     private var preloaderProgress: Int = 0
     private var index: Int = 0
-        set (value: Int) {
+        set (value) {
             field = value
             seekBar?.progress = value
             indexView?.text = value.toString()

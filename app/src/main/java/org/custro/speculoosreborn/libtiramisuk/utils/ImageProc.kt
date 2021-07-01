@@ -1,6 +1,5 @@
 package org.custro.speculoosreborn.libtiramisuk.utils
 
-import android.util.Log
 import org.opencv.core.*
 import org.opencv.core.Core.merge
 import org.opencv.core.Core.split
@@ -11,7 +10,7 @@ import java.nio.ByteBuffer
 import kotlin.math.min
 
 // A line will be considered as having content if 0.25% of it is filled.
-const val FILLEDRATIOLIMIT = 0.0025;
+const val FILLEDRATIOLIMIT = 0.0025
 
 // When the threshold is closer to 1, less content will be cropped.
 const val THRESHOLD = 0.75
@@ -20,16 +19,9 @@ fun fromByteArray(src: ByteArray): Mat {
     if (src.isEmpty()) {
         return Mat()
     }
-    val buf = ByteBuffer.wrap(src)
-    //val img = Imgcodecs.imdecode(Mat(1, src.size, CvType.CV_8UC1, buf), Imgcodecs.IMREAD_COLOR)
     val img = Imgcodecs.imdecode(MatOfByte(*src), Imgcodecs.IMREAD_COLOR)
-    //val img = Imgcodecs.imread("/storage/emulated/0/000.jpg")
     Imgproc.cvtColor(img, img, Imgproc.COLOR_BGR2RGBA)
     return img
-}
-
-fun toPng(src: Mat): ByteArray {
-    TODO()
 }
 
 fun createMask(src: Mat, dst: Mat, notInv: Boolean = false) {
@@ -146,6 +138,6 @@ fun addBlackBorders(src: Mat, dst: Mat, width: Int, height: Int) {
 fun RGBA2ARGB(src: Mat, dst: Mat) {
     val srcChannels = mutableListOf<Mat>()
     split(src, srcChannels)
-    val dstChannels = listOf<Mat>(srcChannels[3], srcChannels[0], srcChannels[1], srcChannels[2])
+    val dstChannels = listOf(srcChannels[3], srcChannels[0], srcChannels[1], srcChannels[2])
     merge(dstChannels, dst)
 }

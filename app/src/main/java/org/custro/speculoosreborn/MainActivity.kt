@@ -6,13 +6,10 @@ import android.os.Bundle
 import android.os.Environment.getExternalStorageDirectory
 import android.util.Log
 import android.view.View
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.contract.ActivityResultContracts.OpenDocument
 import androidx.appcompat.app.AppCompatActivity
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.files.fileChooser
-import com.afollestad.materialdialogs.files.FileFilter
-import java.io.File
 
 class MainActivity : AppCompatActivity() {
     private val resultLauncher = registerForActivityResult(OpenDocument()) { uri: Uri ->

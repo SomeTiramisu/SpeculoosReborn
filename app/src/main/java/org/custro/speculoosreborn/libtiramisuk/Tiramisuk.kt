@@ -9,16 +9,13 @@ class Tiramisuk {
     private var mReq = PageRequest()
     private var mPreloaderProgressSlot: (Int) -> Unit = {}
 
-    fun init(imageCallback: (Mat) -> Unit, sizeCallback: (Int) -> Unit, restore: Boolean = false) {
+    fun init(imageCallback: (Mat) -> Unit, sizeCallback: (Int) -> Unit) {
         val pageCallback = {res: PagePair ->
             if (mReq == res.req) {
                 imageCallback(res.img)
             }
         }
         mScheduler.init(pageCallback, sizeCallback)
-        if (restore) {
-            get(mReq)
-        }
     }
 
     fun get(req: PageRequest) {
@@ -27,7 +24,6 @@ class Tiramisuk {
             mScheduler.at(req)
         }
     }
-
 
     fun connectPreloaderProgress(slot: (Int) -> Unit) {
         mPreloaderProgressSlot = slot

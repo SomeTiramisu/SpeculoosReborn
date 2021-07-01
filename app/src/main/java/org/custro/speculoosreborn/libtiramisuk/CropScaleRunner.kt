@@ -1,8 +1,10 @@
 package org.custro.speculoosreborn.libtiramisuk
 
-import android.graphics.pdf.PdfDocument
 import android.util.Log
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.launch
 import org.custro.speculoosreborn.libtiramisuk.parser.Parser
 import org.custro.speculoosreborn.libtiramisuk.utils.*
 import org.opencv.core.Rect
@@ -88,7 +90,7 @@ class CropScaleRunner(private val index: Int, private val parser: Parser) {
         var roi = Rect()
         var isBlack = false
         if (!img.empty() && index != 0) {
-            var (r, b) = cropDetect(img)
+            val (r, b) = cropDetect(img)
             roi = r
             isBlack = b
 
