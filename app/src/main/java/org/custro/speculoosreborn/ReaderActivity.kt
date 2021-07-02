@@ -3,12 +3,15 @@ package org.custro.speculoosreborn
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Rect
 import android.graphics.Shader
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.util.DisplayMetrics
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
+import android.view.WindowManager
 import android.widget.ImageView
 import android.widget.SeekBar
 import android.widget.TextView
@@ -136,9 +139,12 @@ class ReaderActivity : AppCompatActivity() {
             field = value
             seekBar?.progress = value
             indexView?.text = value.toString()
-            val metrics: DisplayMetrics = resources.displayMetrics
+            val metrics: DisplayMetrics = DisplayMetrics()
+            windowManager.defaultDisplay.getRealMetrics(metrics)
             val width = metrics.widthPixels
             val height = metrics.heightPixels
+            //val bounds = windowManager.currentWindowMetrics.bounds //api 30
+            Log.d("ReaderActivity", "$width, $height}")
             val req = PageRequest(index, width, height, file)
             mTiramisu.get(req)
         }
