@@ -4,6 +4,7 @@ import org.custro.speculoosreborn.libtiramisuk.utils.AlphanumComparator
 import java.io.File
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
+import java.util.zip.ZipFile.OPEN_READ
 
 
 class ZipParser(private val file: File): Parser {
@@ -13,7 +14,7 @@ class ZipParser(private val file: File): Parser {
             return headers.size
         }
     init {
-        val zip = ZipFile(file)
+        val zip = ZipFile(file, OPEN_READ)
         var count = 0
         for (e in zip.entries()) {
             val name = e.name
@@ -29,7 +30,7 @@ class ZipParser(private val file: File): Parser {
     }
 
     override fun at(index: Int): ByteArray {
-        val zip = ZipFile(file)
+        val zip = ZipFile(file, OPEN_READ)
         val iStream = zip.getInputStream(zip.getEntry(headers[index].filename))
         val r = iStream.readBytes()
         iStream.close()

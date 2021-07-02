@@ -40,19 +40,15 @@ class CropScaleRunner(private val index: Int, private val parser: Parser) {
         }
     }
 
-    fun get(req: PageRequest) {
+    fun get(req: PageRequest)  = getScaleCoScope.launch{
         if (mPageResJob == null) {
-             getScaleCoScope.launch {
-                 Log.d("Runner", "request it ${req.index}")
-                 work(req)
-                 mSlot(mPageRes!!)
-            }
+            Log.d("Runner", "request it ${req.index}")
+            work(req)
+            mSlot(mPageRes!!)
         } else {
-            getScaleCoScope.launch {
-                Log.d("Runner", "Have it or already requested ${req.index}")
-                mPageResJob!!.join()
-                mSlot(mPageRes!!)
-            }
+            Log.d("Runner", "Have it or already requested ${req.index}")
+            mPageResJob!!.join()
+            mSlot(mPageRes!!)
         }
     }
 
