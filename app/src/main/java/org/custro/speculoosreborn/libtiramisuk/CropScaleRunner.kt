@@ -53,8 +53,10 @@ class CropScaleRunner(private val index: Int, private val parser: Parser) {
     }
 
     fun preload(req: PageRequest) {
-        mPageResJob = preScaleCoScope.launch {
-            work(req)
+        if (mPageResJob == null) {
+            mPageResJob = preScaleCoScope.launch {
+                work(req)
+            }
         }
     }
 
