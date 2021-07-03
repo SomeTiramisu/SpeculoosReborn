@@ -51,7 +51,6 @@ class MainActivity : ComponentActivity() {
             TextButton(onClick = {startReader()} ) {
                 Text(text = "Start")
             }
-
         }
     }
 
