@@ -9,21 +9,28 @@ import android.os.Bundle
 import android.os.Environment.getExternalStorageDirectory
 import android.util.Log
 import android.view.View
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.contract.ActivityResultContracts.OpenDocument
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.layout.Column
+import androidx.compose.material.Text
+import androidx.compose.material.TextButton
+import androidx.compose.runtime.Composable
 import androidx.core.content.ContextCompat
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.files.fileChooser
 import java.io.File
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : ComponentActivity() {
     private var archiveFile: File? = File("/storage/emulated/0/aoe.cbz")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
         System.loadLibrary("opencv_java4")
-
+        setContent {
+            Buttons()
+        }
     }
 
     override fun onStart() {
@@ -35,15 +42,28 @@ class MainActivity : AppCompatActivity() {
         //startReader(null)
     }
 
-    fun startReader(view: View?) {
+    @Composable
+    fun Buttons() {
+        Column() {
+            TextButton(onClick = { pickFile() }) {
+                Text(text = "Pick")
+            }
+            TextButton(onClick = {startReader()} ) {
+                Text(text = "Start")
+            }
+
+        }
+    }
+
+    fun startReader() {
         val b = Bundle()
         b.putString("file", archiveFile?.absolutePath)
-        val intent = Intent(this, ReaderActivity::class.java)
+        val intent = Intent(this, ReaderActivityCompose::class.java)
         intent.putExtras(b)
         startActivity(intent)
     }
 
-    fun pickFile(view: View?) {
+    fun pickFile() {
         //resultLauncher.launch(arrayOf("*/*"))
         MaterialDialog(this).show {
             fileChooser(context, initialDirectory = getExternalStorageDirectory(), filter =  { file -> file.isDirectory || file.extension == "cbz" || file.extension == "cbr" }) { dialog, file ->
