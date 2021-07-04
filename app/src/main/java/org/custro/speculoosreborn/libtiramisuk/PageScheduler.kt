@@ -26,6 +26,7 @@ class PageScheduler {
     fun at(req: PageRequest) {
         if (req.file != mFile) {
             mFile = req.file
+            Log.d("Scheduler", "file: ${req.file!!.path}")
             mParser = ParserFactory.create(mFile!!)
             mSizeSlot(mParser!!.size)
             mPages = List(mParser!!.size) { index ->

@@ -8,14 +8,19 @@ import android.util.Log
 import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.input.pointer.pointerInput
 import org.custro.speculoosreborn.libtiramisuk.Tiramisuk
@@ -28,71 +33,61 @@ class ReaderActivityCompose : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         hideSystemUi()
-        setContent {
-            ReaderView(file = File("/storage/emulated/0/aoe.cbz"))
-            TapBox()
-        }
-        //val (w, h) = getMetrics()
-        //val req = PageRequest(0, w, h, File("/storage/emulated/0/aoe.cbz"))
-        //mTiramisu.get(req)
-    }
 
-    private fun hideSystemUi() {
-        window.decorView.systemUiVisibility =
-            View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or
-                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
-                    View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
-                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
-                    View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
-                    View.SYSTEM_UI_FLAG_FULLSCREEN
+        val pageModel: PageModel by viewModels()
+
+        pageModel.onSizeChange(getMetrics())
+        pageModel.onFileChange(File("/storage/emulated/0/aoe.cbz"))
+
+        setContent {
+            ReaderScreen(pageModel)
+        }
     }
 
     @Composable
-    fun ReaderView(/*index: Int = 0, */file: File) {
-        val (w, h) = remember { getMetrics() }
+    fun ReaderScreen(pageModel: PageModel = PageModel()) {
+        val index by pageModel.index.observeAsState(0)
+        val maxIndex by pageModel.maxIndex.observeAsState(0)
+        val image by pageModel.image.observeAsState(pageModel.emptyBitmap)
         val background = remember {
             val bitmap = BitmapFactory.decodeStream(assets.open("background.png"))
             bitmap.asImageBitmap()
         }
-        val image = remember {
-            mutableStateOf(Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888))
-        }
-        val imageCallback = remember {
-            { res: Mat ->
-                Log.d("ReaderActivityCompose", "${res.cols()}, ${res.rows()}")
-                val bitmap = Bitmap.createBitmap(res.cols(), res.rows(), Bitmap.Config.ARGB_8888)
-                Utils.matToBitmap(res, bitmap)
-                image.value = bitmap
-            }
-        }
-        TiledImage(
-            bitmap = background, width = w, height = h, contentDescription = "background"
-        )
-        Image(
-            bitmap = image.value.asImageBitmap(),
-            contentDescription = "page",
-            modifier = Modifier.fillMaxSize()
-        )
-        val firstImage = remember { //need to be at the end, i don't know why
-            mTiramisu.connectImageCallback(imageCallback)
-            val req = PageRequest(index.value, w, h, file)
-            mTiramisu.get(req)
-            true
-        }
+        Background(bitmap = background)
+        Page(bitmap = image.asImageBitmap())
+        TapBox(index = index, maxIndex = maxIndex, onIndexChange = { pageModel.onIndexChange(it) })
+        Text(text = index.toString())
     }
 
     @Composable
-    fun TapBox() {
+    fun Background(bitmap: ImageBitmap) {
+        val (w, h) = remember { getMetrics() }
+        TiledImage(
+            bitmap = bitmap, width = w, height = h, contentDescription = "background"
+        )
+    }
+
+    @Composable
+    fun Page(bitmap: ImageBitmap) {
+        Image(
+            bitmap = bitmap,
+            contentDescription = "page",
+            modifier = Modifier.fillMaxSize()
+        )
+    }
+
+    @Composable
+    fun TapBox(index: Int, maxIndex: Int, onIndexChange: (Int) -> Unit) {
         val (w, h) = remember { getMetrics() }
         Box(modifier = Modifier
             .fillMaxSize()
             .pointerInput(Unit) {
                 detectTapGestures { offset ->  //onTap
-                    Log.d("TapBox", "Touched")
-                    if (offset.x > 2 * w / 3 /*&& index < bookSize - 1*/) {
-                        index.value += 1
-                    } else if (offset.x < w / 3 /*&& index > 0*/) {
-                        index.value -= 1
+                    Log.d("TapBox", "Touched, $index")
+                    if (offset.x > 2 * w / 3 /*&& index < maxIndex - 1*/) {
+                        onIndexChange(index + 1)
+                    } else if (offset.x < w / 3 && maxIndex > 0) {
+                        onIndexChange(index - 1)
                     }
                 }
             })
@@ -108,8 +103,14 @@ class ReaderActivityCompose : ComponentActivity() {
         return Pair(width, height)
     }
 
-    private val index = mutableStateOf(0)
-    companion object {
-        private val mTiramisu = Tiramisuk()
+
+    private fun hideSystemUi() {
+        window.decorView.systemUiVisibility =
+            View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or
+                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
+                    View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
+                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
+                    View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
+                    View.SYSTEM_UI_FLAG_FULLSCREEN
     }
 }

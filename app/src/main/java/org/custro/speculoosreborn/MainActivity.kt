@@ -43,7 +43,6 @@ class MainActivity : ComponentActivity() {
             || applicationContext.checkSelfPermission(MANAGE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
             requestPermissions(arrayOf(READ_EXTERNAL_STORAGE, MANAGE_EXTERNAL_STORAGE), 0)
         }
-        //startReader(null)
     }
 
     @Composable
@@ -60,7 +59,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    fun startReader() {
+    private fun startReader() {
         val b = Bundle()
         b.putString("file", archiveFile?.absolutePath)
         val intent = Intent(this, ReaderActivityCompose::class.java)
@@ -68,8 +67,7 @@ class MainActivity : ComponentActivity() {
         startActivity(intent)
     }
 
-    fun pickFile() {
-        //resultLauncher.launch(arrayOf("*/*"))
+    private fun pickFile() {
         MaterialDialog(this).show {
             fileChooser(context, initialDirectory = getExternalStorageDirectory(), filter =  { file -> file.isDirectory || file.extension == "cbz" || file.extension == "cbr" }) { dialog, file ->
                 archiveFile = file
