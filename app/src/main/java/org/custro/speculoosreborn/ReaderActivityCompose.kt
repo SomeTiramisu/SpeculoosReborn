@@ -16,11 +16,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Text
 import androidx.compose.material.Slider
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
@@ -50,7 +47,7 @@ class ReaderActivityCompose : ComponentActivity() {
     @Composable
     fun ReaderScreen(pageModel: PageModel) {
         val index: Int by pageModel.index.observeAsState(0)
-        val maxIndex: Int by pageModel.maxIndex.observeAsState(0)
+        val maxIndex = pageModel.maxIndex.observeAsState(0)
         val image: Bitmap by pageModel.image.observeAsState(pageModel.emptyBitmap)
         val background = remember {
             val bitmap = BitmapFactory.decodeStream(assets.open("background.png"))
@@ -58,12 +55,12 @@ class ReaderActivityCompose : ComponentActivity() {
         }
         Background(bitmap = background)
         Page(bitmap = image.asImageBitmap())
-        TapBox(index = index, maxIndex = maxIndex, onIndexChange = { pageModel.onIndexChange(it) })
+        TapBox(index = index, maxIndex = maxIndex.value, onIndexChange = { pageModel.onIndexChange(it) })
         Column() {
             Text(text = index.toString())
-            Text(text = maxIndex.toString())
+            Text(text = maxIndex.value.toString())
         }
-        IndexSlider(index = index, maxIndex = maxIndex, onIndexChange = {pageModel.onIndexChange(it)} )
+        IndexSlider(index = index, maxIndex = maxIndex.value, onIndexChange = {pageModel.onIndexChange(it)} )
 
     }
 
@@ -103,14 +100,14 @@ class ReaderActivityCompose : ComponentActivity() {
 
     @Composable
     fun IndexSlider(index: Int, maxIndex: Int, onIndexChange: (Int) -> Unit) {
-        val sliderPosition = remember {
-            mutableStateOf(index)
-        }
-        Slider(value = sliderPosition.value.toFloat(),
-            steps = maxIndex, //-1
-            onValueChange = { sliderPosition.value = it.toInt() },
-            valueRange = 0.0F..(maxIndex).toFloat(),
-            onValueChangeFinished = { onIndexChange(sliderPosition.value) }
+        var sliderPosition by remember { mutableStateOf(index.toFloat()) }
+        Slider(value = sliderPosition,
+            steps = 0,
+            onValueChange = { sliderPosition = it },
+            valueRange = if (maxIndex>0) 0.0F..(maxIndex-1).toFloat() else 0.0f..0.0f,
+            onValueChangeFinished = { onIndexChange(sliderPosition.toInt())
+                Log.d("IndexSlider", "changed: $index, $maxIndex")
+            }
         )
     }
 
