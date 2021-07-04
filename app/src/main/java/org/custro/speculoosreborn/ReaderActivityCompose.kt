@@ -30,9 +30,9 @@ class ReaderActivityCompose : ComponentActivity() {
         setContent {
             ReaderView()
         }
-        val (w, h) = getMetrics()
-        val req = PageRequest(0, w, h, File("/storage/emulated/0/aoe.cbz"))
-        mTiramisu.get(req)
+        //val (w, h) = getMetrics()
+        //val req = PageRequest(0, w, h, File("/storage/emulated/0/aoe.cbz"))
+        //mTiramisu.get(req)
     }
 
     private fun hideSystemUi() {
@@ -65,6 +65,8 @@ class ReaderActivityCompose : ComponentActivity() {
         }
         val firstImage = remember {
             mTiramisu.connectImageCallback(imageCallback)
+            val req = PageRequest(0, w, h, File("/storage/emulated/0/aoe.cbz"))
+            mTiramisu.get(req)
             true
         }
         TiledImage(
