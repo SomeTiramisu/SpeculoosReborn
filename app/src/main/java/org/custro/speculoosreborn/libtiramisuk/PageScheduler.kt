@@ -14,8 +14,8 @@ import java.util.concurrent.Executors
 class PageScheduler {
     private val mImagePreload: Int = 20
     private var mPages: List<CropScaleRunner> = listOf()
-    private var mPageSlot: (PagePair) -> Unit = {}
-    private var mSizeSlot: (Int) -> Unit = {}
+    private var mPageSlot: (PagePair) -> Unit = {Log.d("Scheduler", "empty PageSlot")}
+    private var mSizeSlot: (Int) -> Unit = {Log.d("Scheduler", "empty SizeSlot")}
     private var mFile: File? = null
     private var mParser: Parser? = null
 

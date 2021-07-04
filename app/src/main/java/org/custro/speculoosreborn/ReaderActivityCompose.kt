@@ -12,8 +12,10 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Text
+import androidx.compose.material.Slider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -56,7 +58,12 @@ class ReaderActivityCompose : ComponentActivity() {
         Background(bitmap = background)
         Page(bitmap = image.asImageBitmap())
         TapBox(index = index, maxIndex = maxIndex, onIndexChange = { pageModel.onIndexChange(it) })
-        Text(text = index.toString())
+        Column() {
+            Text(text = index.toString())
+            Text(text = maxIndex.toString())
+        }
+        IndexSlider(index = index, maxIndex = maxIndex, onIndexChange = {pageModel.onIndexChange(it)} )
+
     }
 
     @Composable
@@ -81,16 +88,29 @@ class ReaderActivityCompose : ComponentActivity() {
         val (w, h) = remember { getMetrics() }
         Box(modifier = Modifier
             .fillMaxSize()
-            .pointerInput(index) {
+            .pointerInput(index + maxIndex) {
                 detectTapGestures { offset ->  //onTap
-                    Log.d("TapBox", "Touched, $index")
-                    if (offset.x > 2 * w / 3 /*&& index < maxIndex - 1*/) {
+                    Log.d("TapBox", "Touched, $index, $maxIndex")
+                    if (offset.x > 2 * w / 3 && index < maxIndex - 1) {
                         onIndexChange(index + 1)
-                    } else if (offset.x < w / 3 && maxIndex > 0) {
+                    } else if (offset.x < w / 3 && index > 0) {
                         onIndexChange(index - 1)
                     }
                 }
             })
+    }
+
+    @Composable
+    fun IndexSlider(index: Int, maxIndex: Int, onIndexChange: (Int) -> Unit) {
+        val sliderPosition = remember {
+            mutableStateOf(index)
+        }
+        Slider(value = sliderPosition.value.toFloat(),
+            steps = maxIndex, //-1
+            onValueChange = { sliderPosition.value = it.toInt() },
+            valueRange = 0.0F..(maxIndex-1).toFloat(),
+            onValueChangeFinished = { onIndexChange(sliderPosition.value) }
+        )
     }
 
     private fun getMetrics(): Pair<Int, Int> {

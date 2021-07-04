@@ -38,11 +38,11 @@ class PageModel : ViewModel() {
             Log.d("ImageCallback", "imaged")
             val bitmap = Bitmap.createBitmap(it.cols(), it.rows(), Bitmap.Config.ARGB_8888)
             Utils.matToBitmap(it, bitmap)
-            _image.postValue(bitmap)
+            _image.postValue(bitmap) //called from another thread
         }
-        tiramisuk.connectSizeCallback {
-            Log.d("SizeCallback", "sized")
-            _maxIndex.value = it
+        tiramisuk.connectMaxIndexCallback {
+            Log.d("SizeCallback", "sized: $it")
+            _maxIndex.postValue(it) //same here maybe ?
         }
     }
 
