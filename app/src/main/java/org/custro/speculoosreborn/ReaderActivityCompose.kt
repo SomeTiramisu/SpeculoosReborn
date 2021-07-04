@@ -63,12 +63,6 @@ class ReaderActivityCompose : ComponentActivity() {
                 image.value = bitmap
             }
         }
-        val firstImage = remember {
-            mTiramisu.connectImageCallback(imageCallback)
-            val req = PageRequest(0, w, h, File("/storage/emulated/0/aoe.cbz"))
-            mTiramisu.get(req)
-            true
-        }
         TiledImage(
             bitmap = background, width = w, height = h, contentDescription = "background"
         )
@@ -76,6 +70,12 @@ class ReaderActivityCompose : ComponentActivity() {
             bitmap = image.value.asImageBitmap(),
             contentDescription = "page"
         )
+        val firstImage = remember {
+            mTiramisu.connectImageCallback(imageCallback)
+            val req = PageRequest(0, w, h, File("/storage/emulated/0/aoe.cbz"))
+            mTiramisu.get(req)
+            true
+        }
     }
 
     private fun getMetrics(): Pair<Int, Int> {
