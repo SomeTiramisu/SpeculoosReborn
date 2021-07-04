@@ -2,21 +2,19 @@ package org.custro.speculoosreborn
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.hardware.display.DisplayManager
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.View
-import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
-import androidx.compose.runtime.*
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.ImageBitmapConfig
-import androidx.compose.ui.graphics.asAndroidBitmap
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.core.graphics.createBitmap
 import org.custro.speculoosreborn.libtiramisuk.Tiramisuk
 import org.custro.speculoosreborn.libtiramisuk.utils.PageRequest
 import org.opencv.android.Utils
@@ -28,7 +26,7 @@ class ReaderActivityCompose : ComponentActivity() {
         super.onCreate(savedInstanceState)
         hideSystemUi()
         setContent {
-            ReaderView()
+            ReaderView(file = File("/storage/emulated/0/aoe.cbz"))
         }
         //val (w, h) = getMetrics()
         //val req = PageRequest(0, w, h, File("/storage/emulated/0/aoe.cbz"))
@@ -46,7 +44,7 @@ class ReaderActivityCompose : ComponentActivity() {
     }
 
     @Composable
-    fun ReaderView() {
+    fun ReaderView(index: Int = 0, file: File) {
         val (w, h) = remember { getMetrics() }
         val background = remember {
             val bitmap = BitmapFactory.decodeStream(assets.open("background.png"))
@@ -68,11 +66,12 @@ class ReaderActivityCompose : ComponentActivity() {
         )
         Image(
             bitmap = image.value.asImageBitmap(),
-            contentDescription = "page"
+            contentDescription = "page",
+            modifier = Modifier.fillMaxSize()
         )
-        val firstImage = remember {
+        val firstImage = remember { //need to be at the end, i don't know why
             mTiramisu.connectImageCallback(imageCallback)
-            val req = PageRequest(0, w, h, File("/storage/emulated/0/aoe.cbz"))
+            val req = PageRequest(index, w, h, file)
             mTiramisu.get(req)
             true
         }
