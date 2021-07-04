@@ -45,7 +45,7 @@ class ReaderActivityCompose : ComponentActivity() {
     }
 
     @Composable
-    fun ReaderScreen(pageModel: PageModel = PageModel()) {
+    fun ReaderScreen(pageModel: PageModel) {
         val index by pageModel.index.observeAsState(0)
         val maxIndex by pageModel.maxIndex.observeAsState(0)
         val image by pageModel.image.observeAsState(pageModel.emptyBitmap)
@@ -81,7 +81,7 @@ class ReaderActivityCompose : ComponentActivity() {
         val (w, h) = remember { getMetrics() }
         Box(modifier = Modifier
             .fillMaxSize()
-            .pointerInput(Unit) {
+            .pointerInput(index) {
                 detectTapGestures { offset ->  //onTap
                     Log.d("TapBox", "Touched, $index")
                     if (offset.x > 2 * w / 3 /*&& index < maxIndex - 1*/) {
