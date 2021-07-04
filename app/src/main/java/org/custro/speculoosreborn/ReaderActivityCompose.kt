@@ -11,11 +11,13 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.currentRecomposeScope
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.ImageBitmapConfig
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.core.graphics.createBitmap
 import org.custro.speculoosreborn.libtiramisuk.Tiramisuk
 import org.custro.speculoosreborn.libtiramisuk.utils.PageRequest
 import org.opencv.android.Utils
@@ -29,9 +31,6 @@ class ReaderActivityCompose : ComponentActivity() {
         setContent {
             ReaderView()
         }
-        mTiramisu.init(imageCallback, sizeCallback)
-        val req = PageRequest(0, 100, 100, File("/storage/emulated/0/aoe.cbz"))
-        mTiramisu.get(req)
     }
 
     private fun hideSystemUi() {
@@ -51,8 +50,25 @@ class ReaderActivityCompose : ComponentActivity() {
             val bitmap = BitmapFactory.decodeStream(assets.open("background.png"))
             bitmap.asImageBitmap()
         }
+        val image = remember {
+            mutableStateOf(Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888))
+        }
+        val imageCallback = remember {
+            { res: Mat ->
+                val bitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888)
+                Utils.matToBitmap(res, bitmap)
+                image.value = bitmap
+            }
+        }
+        val firstImage = remember {
+            mTiramisu.connectImageCallback(imageCallback)
+            val req = PageRequest(0, 100, 100, File("/storage/emulated/0/aoe.cbz"))
+            mTiramisu.get(req)
+            true
+        }
+
         Image(
-            bitmap = image.asImageBitmap(),
+            bitmap = image.value.asImageBitmap(),
             contentDescription = "page"
         )
         TiledImage(
@@ -67,18 +83,6 @@ class ReaderActivityCompose : ComponentActivity() {
         val width = metrics.widthPixels
         val height = metrics.heightPixels
         return Pair(100, 100)
-    }
-
-    private var image = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)
-    private val imageCallback = { res: Mat ->
-        val bitmap = Bitmap.createBitmap(res.cols(), res.rows(), Bitmap.Config.ARGB_8888)
-        Utils.matToBitmap(res, bitmap)
-        image = bitmap
-        rememb
-    }
-    private var size: Int = 0
-    private val sizeCallback = { res: Int ->
-        size = res
     }
 
     companion object {

@@ -23,17 +23,6 @@ class PageScheduler {
         Log.d("Scheduler", "created")
     }
 
-    fun init(pageCallback: (PagePair) -> Unit, sizeCallback: (Int) -> Unit) {
-        mPageSlot = pageCallback
-        for (x in mPages) {
-            x.connectSlot(mPageSlot)
-        }
-        mSizeSlot = sizeCallback
-        if (mParser != null) {
-            mSizeSlot(mParser!!.size)
-        }
-    }
-
     fun at(req: PageRequest) {
         if (req.file != mFile) {
             mFile = req.file
@@ -58,7 +47,6 @@ class PageScheduler {
     private fun seekPages(req: PageRequest) {
         for (i in mPages.indices) {
             if ((req.index - mImagePreload > i) || (i > req.index + mImagePreload)) {
-                val nreq = PageRequest(i, req.width, req.height, req.file)
                 mPages[i].clear()
             }
         }
@@ -67,6 +55,19 @@ class PageScheduler {
             val mreq = PageRequest(req.index - i, req.width, req.height, req.file)
             if (preq.index < mPages.size) mPages[preq.index].preload(preq)
             if (mreq.index >= 0) mPages[mreq.index].preload(mreq)
+        }
+    }
+
+    fun connectPageCallback(pageCallback: (PagePair) -> Unit) {
+        mPageSlot = pageCallback
+        for (x in mPages) {
+            x.connectSlot(mPageSlot)
+        }
+    }
+    fun connectSizeCallback(sizeCallback: (Int) -> Unit) {
+        mSizeSlot = sizeCallback
+        if (mParser != null) {
+            mSizeSlot(mParser!!.size)
         }
     }
 }

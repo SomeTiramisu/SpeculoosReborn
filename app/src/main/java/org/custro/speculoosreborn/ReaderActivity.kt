@@ -27,6 +27,7 @@ import java.io.InputStream
 
 
 class ReaderActivity : AppCompatActivity() {
+    /*
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -151,4 +152,5 @@ class ReaderActivity : AppCompatActivity() {
     companion object {
         private val mTiramisu = Tiramisuk()
     }
+    */
 }
