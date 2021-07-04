@@ -28,7 +28,6 @@ class PageModel : ViewModel() {
     val maxIndex: LiveData<Int> = _maxIndex
 
     private val _size = MutableLiveData(Pair(0, 0))
-    val size: LiveData<Pair<Int, Int>> = _size
 
     private val _image = MutableLiveData(emptyBitmap)
     val image: LiveData<Bitmap> = _image
@@ -64,7 +63,7 @@ class PageModel : ViewModel() {
     }
 
     private fun genRequest() {
-        val req = PageRequest(index.value!!, size.value!!.first, size.value!!.second, file.value!!)
+        val req = PageRequest(index.value!!, _size.value!!.first, _size.value!!.second, file.value!!)
         tiramisuk.get(req)
     }
 }

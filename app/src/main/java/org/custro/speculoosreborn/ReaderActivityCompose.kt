@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.tooling.preview.Preview
 import org.custro.speculoosreborn.libtiramisuk.Tiramisuk
 import org.custro.speculoosreborn.libtiramisuk.utils.PageRequest
 import org.opencv.android.Utils
@@ -48,9 +49,9 @@ class ReaderActivityCompose : ComponentActivity() {
 
     @Composable
     fun ReaderScreen(pageModel: PageModel) {
-        val index by pageModel.index.observeAsState(0)
-        val maxIndex by pageModel.maxIndex.observeAsState(0)
-        val image by pageModel.image.observeAsState(pageModel.emptyBitmap)
+        val index: Int by pageModel.index.observeAsState(0)
+        val maxIndex: Int by pageModel.maxIndex.observeAsState(0)
+        val image: Bitmap by pageModel.image.observeAsState(pageModel.emptyBitmap)
         val background = remember {
             val bitmap = BitmapFactory.decodeStream(assets.open("background.png"))
             bitmap.asImageBitmap()
@@ -108,7 +109,7 @@ class ReaderActivityCompose : ComponentActivity() {
         Slider(value = sliderPosition.value.toFloat(),
             steps = maxIndex, //-1
             onValueChange = { sliderPosition.value = it.toInt() },
-            valueRange = 0.0F..(maxIndex-1).toFloat(),
+            valueRange = 0.0F..(maxIndex).toFloat(),
             onValueChangeFinished = { onIndexChange(sliderPosition.value) }
         )
     }
