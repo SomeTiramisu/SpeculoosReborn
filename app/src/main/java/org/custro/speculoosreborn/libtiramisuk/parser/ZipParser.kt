@@ -17,14 +17,14 @@ class ZipParser(private val resolver: ContentResolver, override val uri: Uri) : 
 
     init {
         val zipStream = ZipInputStream(getInputStream())
+        var e: ZipEntry? = zipStream.nextEntry
         var count = 0
-        while (zipStream.available() == 1) {
-            val e = zipStream.nextEntry
+        while (e != null) {
             val name = e.name
             if (!e.isDirectory and ((".jpg" in name) or (".png" in name))) {
                 headers.add(Header(count, e.name))
             }
-            zipStream.closeEntry()
+            e = zipStream.nextEntry
             count += 1
         }
         zipStream.close()
@@ -35,15 +35,12 @@ class ZipParser(private val resolver: ContentResolver, override val uri: Uri) : 
 
     override fun at(index: Int): ByteArray {
         val zipStream = ZipInputStream(getInputStream())
-        for (i in 0 until (headers[index].index)) {
+        for (i in 0..(headers[index].index)) {
             zipStream.nextEntry
-            zipStream.closeEntry()
+            //zipStream.closeEntry()
         }
-        val e = zipStream.nextEntry
         val r = zipStream.readBytes()
-        Log.d("ZipParser", "Entry size: ${e.size}")
-
-        zipStream.closeEntry()
+        //Log.d("ZipParser", "Entry size: ${e.size}")
         zipStream.close()
         return r
     }
