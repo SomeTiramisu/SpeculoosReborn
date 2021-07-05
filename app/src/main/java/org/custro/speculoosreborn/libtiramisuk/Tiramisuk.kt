@@ -18,9 +18,6 @@ class Tiramisuk {
                 imageCallback(res.img)
             }
         }
-        mScheduler.connectSizeCallback { size ->
-            maxIndexCallback(size)
-        }
     }
 
     fun get(req: PageRequest) {
@@ -35,6 +32,7 @@ class Tiramisuk {
     }
     fun connectMaxIndexCallback(slot: (Int) -> Unit) {
         maxIndexCallback = slot
+        mScheduler.connectSizeCallback(maxIndexCallback) //we send current book size here
     }
     fun connectPreloaderProgress(slot: (Int) -> Unit) {
         mPreloaderProgressSlot = slot

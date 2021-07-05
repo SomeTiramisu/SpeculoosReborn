@@ -16,7 +16,6 @@ import java.io.File
 
 class PageModel : ViewModel() {
     val emptyBitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)
-    val tiramisuk = Tiramisuk()
 
     private val _file: MutableLiveData<File?> = MutableLiveData(null)
     val file: LiveData<File?> = _file
@@ -65,5 +64,9 @@ class PageModel : ViewModel() {
     private fun genRequest() {
         val req = PageRequest(index.value!!, _size.value!!.first, _size.value!!.second, file.value!!)
         tiramisuk.get(req)
+    }
+
+    companion object {
+        val tiramisuk = Tiramisuk()
     }
 }

@@ -11,9 +11,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
 import androidx.compose.material.Slider
 import androidx.compose.runtime.*
@@ -56,12 +54,12 @@ class ReaderActivityCompose : ComponentActivity() {
         Background(bitmap = background)
         Page(bitmap = image.asImageBitmap())
         TapBox(index = index, maxIndex = maxIndex.value, onIndexChange = { pageModel.onIndexChange(it) })
-        Column() {
+        Column(modifier = Modifier.fillMaxHeight(),
+        verticalArrangement = Arrangement.Bottom) {
             Text(text = index.toString())
             Text(text = maxIndex.value.toString())
+            IndexSlider(index = index, maxIndex = maxIndex.value, onIndexChange = {pageModel.onIndexChange(it)} )
         }
-        IndexSlider(index = index, maxIndex = maxIndex.value, onIndexChange = {pageModel.onIndexChange(it)} )
-
     }
 
     @Composable
@@ -100,12 +98,13 @@ class ReaderActivityCompose : ComponentActivity() {
 
     @Composable
     fun IndexSlider(index: Int, maxIndex: Int, onIndexChange: (Int) -> Unit) {
-        var sliderPosition by remember { mutableStateOf(index.toFloat()) }
-        Slider(value = sliderPosition,
-            steps = 0,
-            onValueChange = { sliderPosition = it },
-            valueRange = if (maxIndex>0) 0.0F..(maxIndex-1).toFloat() else 0.0f..0.0f,
-            onValueChangeFinished = { onIndexChange(sliderPosition.toInt())
+        var sliderPosition by remember { mutableStateOf(0.0f) }
+        var sliding by remember { mutableStateOf(false) }
+        Slider(value = if (sliding) sliderPosition else index.toFloat(),
+            steps = maxIndex,
+            onValueChange = { sliding=true; sliderPosition = it },
+            valueRange = if (maxIndex>0) 0.0f..(maxIndex-1).toFloat() else 0.0f..1.0f,
+            onValueChangeFinished = { sliding=false; onIndexChange(sliderPosition.toInt())
                 Log.d("IndexSlider", "changed: $index, $maxIndex")
             }
         )
@@ -120,7 +119,6 @@ class ReaderActivityCompose : ComponentActivity() {
         val height = metrics.heightPixels
         return Pair(width, height)
     }
-
 
     private fun hideSystemUi() {
         window.decorView.systemUiVisibility =
