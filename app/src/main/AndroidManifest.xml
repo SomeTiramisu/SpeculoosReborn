@@ -10,7 +10,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.SpeculoosReborn">
-        <activity android:name=".ReaderActivityCompose"
+        <activity android:name=".ReaderActivity"
             android:parentActivityName=".MainActivity">
         </activity>
         <activity android:name=".MainActivity">

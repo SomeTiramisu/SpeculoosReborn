@@ -55,7 +55,7 @@ class MainActivity : ComponentActivity() {
     private fun startReader() {
         val b = Bundle()
         b.putString("file", archiveFile?.absolutePath)
-        val intent = Intent(this, ReaderActivityCompose::class.java)
+        val intent = Intent(this, ReaderActivity::class.java)
         intent.putExtras(b)
         startActivity(intent)
     }
