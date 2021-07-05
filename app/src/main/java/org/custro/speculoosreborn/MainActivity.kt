@@ -2,12 +2,16 @@ package org.custro.speculoosreborn
 
 import android.Manifest.permission.MANAGE_EXTERNAL_STORAGE
 import android.Manifest.permission.READ_EXTERNAL_STORAGE
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
 import android.os.Environment.getExternalStorageDirectory
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,6 +26,18 @@ import java.io.File
 
 class MainActivity : ComponentActivity() {
     private var archiveFile: File? = File("/storage/emulated/0/aoe.cbz")
+    private var archiveUri: Uri? = null
+    val getArchive = registerForActivityResult(object : ActivityResultContracts.OpenDocument() {
+        override fun createIntent(context: Context, input: Array<out String>): Intent {
+            val intent = super.createIntent(context, input)
+            intent.addCategory(Intent.CATEGORY_OPENABLE)
+            return intent
+        }
+    }) { uri: Uri? ->
+        archiveUri = uri
+        Log.d("MainActivity", "$uri")
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         System.loadLibrary("opencv_java4")
@@ -32,21 +48,23 @@ class MainActivity : ComponentActivity() {
 
     override fun onStart() {
         super.onStart()
-        if (applicationContext.checkSelfPermission(READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED
+        /*if (applicationContext.checkSelfPermission(READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED
             || applicationContext.checkSelfPermission(MANAGE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
             requestPermissions(arrayOf(READ_EXTERNAL_STORAGE, MANAGE_EXTERNAL_STORAGE), 0)
-        }
+        }*/
     }
 
     @Composable
     fun Buttons() {
-        Column(verticalArrangement = Arrangement.Center,
+        Column(
+            verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxSize()) {
+            modifier = Modifier.fillMaxSize()
+        ) {
             TextButton(onClick = { pickFile() }) {
                 Text(text = "Pick")
             }
-            TextButton(onClick = {startReader()} ) {
+            TextButton(onClick = { startReader() }) {
                 Text(text = "Start")
             }
         }
@@ -60,12 +78,7 @@ class MainActivity : ComponentActivity() {
         startActivity(intent)
     }
 
-    @Suppress("DEPRECATION")
     private fun pickFile() {
-        MaterialDialog(this).show {
-            fileChooser(context, initialDirectory = getExternalStorageDirectory(), filter =  { file -> file.isDirectory || file.extension == "cbz" || file.extension == "cbr" }) { _, file ->
-                archiveFile = file
-            }
-        }
+        getArchive.launch(arrayOf("*/*"))
     }
 }
