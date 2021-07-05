@@ -34,6 +34,7 @@ class ReaderActivityCompose : ComponentActivity() {
         hideSystemUi()
 
         val pageModel: PageModel by viewModels()
+        //val pageModel = ViewModelProvider(this).get(PageModel::class.java)
 
         pageModel.onSizeChange(getMetrics())
         pageModel.onFileChange(File("/storage/emulated/0/aoe.cbz"))

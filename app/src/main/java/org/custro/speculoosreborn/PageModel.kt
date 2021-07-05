@@ -61,8 +61,10 @@ class PageModel : ViewModel() {
     }
 
     fun onFileChange(value: File) {
-        _file.value = value
-        _index.value = 0
+        if (value != _file.value) {
+            _file.value = value
+            _index.value = 0
+        }
         genRequest()
     }
 

@@ -16,7 +16,7 @@ class CropScaleRunner(private val index: Int, private val parser: Parser) {
     private var mPngRes: PngPair? = null
     private var mPngResJob: Job? = null
     private var mReq: PageRequest? = null
-    private var mSlot: (PagePair) -> Unit = {}
+    private var mSlot: (PagePair) -> Unit = {Log.d("Runner", "empty PageSlot")}
 
     init {
         mPngResJob = detectCoScope.launch {
