@@ -7,7 +7,7 @@ import com.github.junrar.rarfile.FileHeader
 import org.custro.speculoosreborn.libtiramisuk.utils.AlphanumComparator
 
 
-class RarParser(private val resolver: ContentResolver, private val uri: Uri) : Parser {
+class RarParser(private val resolver: ContentResolver, override val uri: Uri) : Parser {
     private val headers: MutableList<Header> = mutableListOf()
     override val size: Int
         get() {

@@ -1,6 +1,7 @@
 package org.custro.speculoosreborn
 
 import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.util.Log
@@ -8,7 +9,6 @@ import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
@@ -18,15 +18,10 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.compose.viewModel
-import java.io.File
 
 class ReaderActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,8 +32,9 @@ class ReaderActivity : ComponentActivity() {
         //val pageModel = ViewModelProvider(this).get(PageModel::class.java)
 
         pageModel.onSizeChange(getMetrics())
-        pageModel.onFileChange(File("/storage/emulated/0/aoe.cbz"))
-
+        pageModel.onUriChange(
+            Uri.parse("content://com.android.externalstorage.documents/document/primary%3Aaoe.cbz")
+        )
         setContent {
             ReaderScreen(pageModel)
         }
@@ -102,7 +98,7 @@ class ReaderActivity : ComponentActivity() {
         onHiddenSliderChange: (Boolean) -> Unit
     ) {
         val (w, _) = remember { getMetrics() }
-        val key = index+maxIndex* (if (hiddenSlider) 0 else 1)
+        val key = index + maxIndex * (if (hiddenSlider) 0 else 1)
         Box(modifier = Modifier
             .fillMaxSize()
             .pointerInput(key) {
@@ -151,7 +147,8 @@ class ReaderActivity : ComponentActivity() {
             verticalArrangement = Arrangement.Bottom,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = index.toString()
+            Text(
+                text = index.toString()
             )
             IndexSlider(
                 index = index,

@@ -22,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.files.fileChooser
+import org.custro.speculoosreborn.libtiramisuk.parser.ParserFactory
 import java.io.File
 
 class MainActivity : ComponentActivity() {
@@ -40,6 +41,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        ParserFactory.resolver = contentResolver
         System.loadLibrary("opencv_java4")
         setContent {
             Buttons()

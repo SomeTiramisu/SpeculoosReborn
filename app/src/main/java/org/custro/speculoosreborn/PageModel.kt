@@ -1,25 +1,24 @@
 package org.custro.speculoosreborn
 
 import android.graphics.Bitmap
+import android.net.Uri
 import android.util.Log
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.runBlocking
 import org.custro.speculoosreborn.libtiramisuk.Tiramisuk
+import org.custro.speculoosreborn.libtiramisuk.parser.Parser
+import org.custro.speculoosreborn.libtiramisuk.parser.ParserFactory
 import org.custro.speculoosreborn.libtiramisuk.utils.PageRequest
 import org.opencv.android.Utils
-import java.io.File
 
 class PageModel : ViewModel() {
+    private var parser: Parser? = null
 
-    private val _file: MutableLiveData<File?> = MutableLiveData(null)
-    val file: LiveData<File?> = _file
+    private val _uri: MutableLiveData<Uri?> = MutableLiveData(null)
+    val uri: LiveData<Uri?> = _uri
 
     private val _index = MutableLiveData(0)
     val index: LiveData<Int> = _index
@@ -43,10 +42,6 @@ class PageModel : ViewModel() {
             Utils.matToBitmap(it, bitmap)
             _image.postValue(bitmap.asImageBitmap()) //called from another thread
         }
-        tiramisuk.connectMaxIndexCallback {
-            Log.d("SizeCallback", "sized: $it")
-            _maxIndex.postValue(it) //same here maybe ?
-        }
     }
 
     fun onIndexChange(value: Int) {
@@ -60,9 +55,12 @@ class PageModel : ViewModel() {
         //genRequest()
     }
 
-    fun onFileChange(value: File) {
-        if (value != _file.value) {
-            _file.value = value
+    fun onUriChange(value: Uri) {
+        if (value != _uri.value) {
+            _uri.value = value
+            parser = ParserFactory.create(value)
+            Log.d("PageModel", "parser: ${parser?.uri}, ${parser?.size}")
+            _maxIndex.value = parser!!.size
             _index.value = 0
         }
         genRequest()
@@ -73,7 +71,7 @@ class PageModel : ViewModel() {
     }
 
     private fun genRequest() {
-        val req = PageRequest(index.value!!, _size.value!!.first, _size.value!!.second, file.value!!)
+        val req = PageRequest(index.value!!, _size.value!!.first, _size.value!!.second, parser)
         tiramisuk.get(req)
     }
 
