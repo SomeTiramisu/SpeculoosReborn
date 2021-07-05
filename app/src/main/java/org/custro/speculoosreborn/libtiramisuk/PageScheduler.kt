@@ -12,27 +12,32 @@ class PageScheduler {
     private val mImagePreload: Int = 20
     private var mPages: List<CropScaleRunner> = listOf()
     private var mPageSlot: (PagePair) -> Unit = {Log.d("Scheduler", "empty PageSlot")}
+    private var mSizeSlot: (Int) -> Unit = {Log.d("Scheduler", "empty SizeSlot")}
     private var mUri: Uri? = null
+    private var mParser: Parser? = null
 
     init {
         Log.d("Scheduler", "created")
     }
 
     fun at(req: PageRequest) {
-        if (req.parser!!.uri != mUri) {
-            mUri = req.parser.uri
-            Log.d("Scheduler", "file: $mUri")
+        if (req.uri != mUri) {
+            mUri = req.uri
+            Log.d("Scheduler", "file: ${req.uri!!}")
+            mParser = ParserFactory.create(mUri!!)
+            mSizeSlot(mParser!!.size)
             for (x in mPages) {
                 x.finalClear()
             }
-            mPages = List(req.parser.size) { index ->
-                val r = CropScaleRunner(index)
+            mPages = List(mParser!!.size) { index ->
+                val r = CropScaleRunner(index, mParser!!)
                 r.connectSlot(mPageSlot)
                 r
             }
         }
         val index = req.index
-        if (index<0 || index >= req.parser.size) {
+        val bookSize = mParser!!.size
+        if (index<0 || index >= bookSize) {
             return
         }
         //Log.d("Scheduler", "get ${req.index}")
@@ -47,8 +52,8 @@ class PageScheduler {
             }
         }
         for (i in 1..mImagePreload) {
-            val preq = PageRequest(req.index + i, req.width, req.height, req.parser)
-            val mreq = PageRequest(req.index - i, req.width, req.height, req.parser)
+            val preq = PageRequest(req.index + i, req.width, req.height, req.uri)
+            val mreq = PageRequest(req.index - i, req.width, req.height, req.uri)
             if (preq.index < mPages.size) mPages[preq.index].preload(preq)
             if (mreq.index >= 0) mPages[mreq.index].preload(mreq)
         }
@@ -58,6 +63,12 @@ class PageScheduler {
         mPageSlot = pageCallback
         for (x in mPages) {
             x.connectSlot(mPageSlot)
+        }
+    }
+    fun connectSizeCallback(sizeCallback: (Int) -> Unit) {
+        mSizeSlot = sizeCallback
+        if (mParser != null) {
+            mSizeSlot(mParser!!.size)
         }
     }
 }

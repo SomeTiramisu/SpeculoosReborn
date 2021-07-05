@@ -10,17 +10,29 @@ import org.custro.speculoosreborn.libtiramisuk.utils.*
 import org.opencv.core.Rect
 import java.util.concurrent.Executors
 
-class CropScaleRunner(private val index: Int) {
+class CropScaleRunner(private val index: Int, private val parser: Parser) {
     private var mPageRes: PagePair? = null
     private var mPageResJob: Job? = null
     private var mPngRes: PngPair? = null
+    private var mPngResJob: Job? = null
     private var mReq: PageRequest? = null
     private var mSlot: (PagePair) -> Unit = {Log.d("Runner", "empty PageSlot")}
 
-    private suspend fun work(req: PageRequest) {
-        if (mPngRes == null) {
-            mPngRes = cropDetect(req)
+    init {
+        mPngResJob = detectCoScope.launch {
+            if (mPngRes == null) {
+                mPngRes = cropDetect(parser.at(index), index)
+            }
         }
+    }
+
+    private suspend fun work(req: PageRequest) {
+        if (mPngResJob == null) {
+            TODO()
+        } else {
+            mPngResJob!!.join()
+        }
+
         if (mReq != req || mPageRes == null) {
             //Log.d("Runner", "Request it ${req.index}")
             mReq = req
@@ -56,6 +68,7 @@ class CropScaleRunner(private val index: Int) {
 
     fun finalClear() {
         mPageResJob?.cancel()
+        mPngResJob?.cancel()
     }
 
     fun connectSlot(slot: (PagePair) -> Unit) {
@@ -75,8 +88,7 @@ class CropScaleRunner(private val index: Int) {
         return PagePair(img, req)
     }
 
-    private fun cropDetect(req: PageRequest): PngPair{
-        val png = req.parser!!.at(req.index)
+    private fun cropDetect(png: ByteArray, index: Int): PngPair{
         val img = fromByteArray(png)
         var roi = Rect()
         var isBlack = false
@@ -93,5 +105,6 @@ class CropScaleRunner(private val index: Int) {
     companion object {
         private val getScaleCoScope = CoroutineScope(Executors.newFixedThreadPool(2).asCoroutineDispatcher())
         private val preScaleCoScope = CoroutineScope(Executors.newFixedThreadPool(4).asCoroutineDispatcher())
+        private val detectCoScope = CoroutineScope(Executors.newSingleThreadExecutor().asCoroutineDispatcher())
     }
 }

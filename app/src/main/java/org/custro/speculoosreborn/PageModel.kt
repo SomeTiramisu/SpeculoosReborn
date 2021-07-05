@@ -15,8 +15,6 @@ import org.custro.speculoosreborn.libtiramisuk.utils.PageRequest
 import org.opencv.android.Utils
 
 class PageModel : ViewModel() {
-    private var parser: Parser? = null
-
     private val _uri: MutableLiveData<Uri?> = MutableLiveData(null)
     val uri: LiveData<Uri?> = _uri
 
@@ -42,6 +40,10 @@ class PageModel : ViewModel() {
             Utils.matToBitmap(it, bitmap)
             _image.postValue(bitmap.asImageBitmap()) //called from another thread
         }
+        tiramisuk.connectMaxIndexCallback {
+            Log.d("SizeCallback", "sized: $it")
+            _maxIndex.postValue(it) //same here maybe ?
+        }
     }
 
     fun onIndexChange(value: Int) {
@@ -58,9 +60,6 @@ class PageModel : ViewModel() {
     fun onUriChange(value: Uri) {
         if (value != _uri.value) {
             _uri.value = value
-            parser = ParserFactory.create(value)
-            Log.d("PageModel", "parser: ${parser?.uri}, ${parser?.size}")
-            _maxIndex.value = parser!!.size
             _index.value = 0
         }
         genRequest()
@@ -71,7 +70,7 @@ class PageModel : ViewModel() {
     }
 
     private fun genRequest() {
-        val req = PageRequest(index.value!!, _size.value!!.first, _size.value!!.second, parser)
+        val req = PageRequest(index.value!!, _size.value!!.first, _size.value!!.second, uri!!.value)
         tiramisuk.get(req)
     }
 

@@ -10,9 +10,10 @@ class Tiramisuk {
     private var mReq = PageRequest()
     private var mPreloaderProgressSlot: (Int) -> Unit = {Log.d("Tiramisu", "empty ProgressSlot")}
     private var imageCallback: (Mat) -> Unit = {Log.d("Tiramisu", "empty ImageSlot")}
+    private var maxIndexCallback: (Int) -> Unit = {Log.d("Tiramisu", "empty maxIndexSlot")}
 
     fun get(req: PageRequest) {
-        if (req.parser != null) {
+        if (req.uri != null) {
             mReq = req
             mScheduler.at(req)
         }
@@ -28,7 +29,10 @@ class Tiramisuk {
             }
         }
     }
-
+    fun connectMaxIndexCallback(slot: (Int) -> Unit) {
+        maxIndexCallback = slot
+        mScheduler.connectSizeCallback(maxIndexCallback) //we send current book size here
+    }
     fun connectPreloaderProgress(slot: (Int) -> Unit) {
         mPreloaderProgressSlot = slot
     }
