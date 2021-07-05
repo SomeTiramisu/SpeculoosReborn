@@ -1,6 +1,5 @@
 package org.custro.speculoosreborn
 
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.util.DisplayMetrics
@@ -12,19 +11,14 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Text
 import androidx.compose.material.Slider
+import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.tooling.preview.Preview
-import org.custro.speculoosreborn.libtiramisuk.Tiramisuk
-import org.custro.speculoosreborn.libtiramisuk.utils.PageRequest
-import org.opencv.android.Utils
-import org.opencv.core.Mat
 import java.io.File
 
 class ReaderActivityCompose : ComponentActivity() {
@@ -45,7 +39,7 @@ class ReaderActivityCompose : ComponentActivity() {
     @Composable
     fun ReaderScreen(pageModel: PageModel) {
         val index: Int by pageModel.index.observeAsState(0)
-        val maxIndex = pageModel.maxIndex.observeAsState(0)
+        val maxIndex: Int by pageModel.maxIndex.observeAsState(0)
         val image: ImageBitmap by pageModel.image.observeAsState(ImageBitmap(1, 1))
         val background = remember {
             val bitmap = BitmapFactory.decodeStream(assets.open("background.png"))
@@ -53,13 +47,11 @@ class ReaderActivityCompose : ComponentActivity() {
         }
         Background(bitmap = background)
         Page(bitmap = image)
-        TapBox(index = index, maxIndex = maxIndex.value, onIndexChange = { pageModel.onIndexChange(it) })
-        Column(modifier = Modifier.fillMaxHeight(),
-        verticalArrangement = Arrangement.Bottom) {
-            Text(text = index.toString())
-            Text(text = maxIndex.value.toString())
-            IndexSlider(index = index, maxIndex = maxIndex.value, onIndexChange = {pageModel.onIndexChange(it)} )
-        }
+        TapBox(
+            index = index,
+            maxIndex = maxIndex,
+            onIndexChange = { pageModel.onIndexChange(it) })
+        SliderView(index = index, maxIndex = maxIndex, onIndexChange = { pageModel.onIndexChange(it) })
     }
 
     @Composable
@@ -102,12 +94,28 @@ class ReaderActivityCompose : ComponentActivity() {
         var sliding by remember { mutableStateOf(false) }
         Slider(value = if (sliding) sliderPosition else index.toFloat(),
             steps = 0,
-            onValueChange = { sliding=true; sliderPosition = it },
-            valueRange = if (maxIndex>0) 0.0f..(maxIndex-1).toFloat() else 0.0f..1.0f,
-            onValueChangeFinished = { sliding=false; onIndexChange(sliderPosition.toInt())
+            onValueChange = { sliding = true; sliderPosition = it },
+            valueRange = if (maxIndex > 0) 0.0f..(maxIndex - 1).toFloat() else 0.0f..1.0f,
+            onValueChangeFinished = {
+                sliding = false; onIndexChange(sliderPosition.toInt())
                 Log.d("IndexSlider", "changed: $index, $maxIndex")
             }
         )
+    }
+
+    @Composable
+    fun SliderView(index: Int, maxIndex: Int, onIndexChange: (Int) -> Unit, hidden: Boolean = false) {
+        if (hidden) return
+        Column(
+            modifier = Modifier.fillMaxHeight(),
+            verticalArrangement = Arrangement.Bottom
+        ) {
+            Text(text = index.toString())
+            IndexSlider(
+                index = index,
+                maxIndex = maxIndex,
+                onIndexChange = onIndexChange)
+        }
     }
 
     private fun getMetrics(): Pair<Int, Int> {
