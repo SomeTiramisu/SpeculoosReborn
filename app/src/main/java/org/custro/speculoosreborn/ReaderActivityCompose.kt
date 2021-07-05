@@ -46,13 +46,13 @@ class ReaderActivityCompose : ComponentActivity() {
     fun ReaderScreen(pageModel: PageModel) {
         val index: Int by pageModel.index.observeAsState(0)
         val maxIndex = pageModel.maxIndex.observeAsState(0)
-        val image: Bitmap by pageModel.image.observeAsState(pageModel.emptyBitmap)
+        val image: ImageBitmap by pageModel.image.observeAsState(ImageBitmap(1, 1))
         val background = remember {
             val bitmap = BitmapFactory.decodeStream(assets.open("background.png"))
             bitmap.asImageBitmap()
         }
         Background(bitmap = background)
-        Page(bitmap = image.asImageBitmap())
+        Page(bitmap = image)
         TapBox(index = index, maxIndex = maxIndex.value, onIndexChange = { pageModel.onIndexChange(it) })
         Column(modifier = Modifier.fillMaxHeight(),
         verticalArrangement = Arrangement.Bottom) {
@@ -101,7 +101,7 @@ class ReaderActivityCompose : ComponentActivity() {
         var sliderPosition by remember { mutableStateOf(0.0f) }
         var sliding by remember { mutableStateOf(false) }
         Slider(value = if (sliding) sliderPosition else index.toFloat(),
-            steps = maxIndex,
+            steps = 0,
             onValueChange = { sliding=true; sliderPosition = it },
             valueRange = if (maxIndex>0) 0.0f..(maxIndex-1).toFloat() else 0.0f..1.0f,
             onValueChangeFinished = { sliding=false; onIndexChange(sliderPosition.toInt())

@@ -3,6 +3,7 @@ package org.custro.speculoosreborn
 import android.graphics.Bitmap
 import android.util.Log
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -15,8 +16,6 @@ import org.opencv.android.Utils
 import java.io.File
 
 class PageModel : ViewModel() {
-    val emptyBitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)
-
     private val _file: MutableLiveData<File?> = MutableLiveData(null)
     val file: LiveData<File?> = _file
 
@@ -28,15 +27,15 @@ class PageModel : ViewModel() {
 
     private val _size = MutableLiveData(Pair(0, 0))
 
-    private val _image = MutableLiveData(emptyBitmap)
-    val image: LiveData<Bitmap> = _image
+    private val _image = MutableLiveData(ImageBitmap(1,1))
+    val image: LiveData<ImageBitmap> = _image
 
     init {
         tiramisuk.connectImageCallback {
             Log.d("ImageCallback", "imaged")
             val bitmap = Bitmap.createBitmap(it.cols(), it.rows(), Bitmap.Config.ARGB_8888)
             Utils.matToBitmap(it, bitmap)
-            _image.postValue(bitmap) //called from another thread
+            _image.postValue(bitmap.asImageBitmap()) //called from another thread
         }
         tiramisuk.connectMaxIndexCallback {
             Log.d("SizeCallback", "sized: $it")
