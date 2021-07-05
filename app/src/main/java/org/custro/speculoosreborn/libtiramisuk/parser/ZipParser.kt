@@ -2,7 +2,6 @@ package org.custro.speculoosreborn.libtiramisuk.parser
 
 import org.custro.speculoosreborn.libtiramisuk.utils.AlphanumComparator
 import java.io.File
-import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
 import java.util.zip.ZipFile.OPEN_READ
 

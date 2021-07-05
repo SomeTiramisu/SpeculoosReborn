@@ -41,6 +41,7 @@ class ReaderActivityCompose : ComponentActivity() {
         val index: Int by pageModel.index.observeAsState(0)
         val maxIndex: Int by pageModel.maxIndex.observeAsState(0)
         val image: ImageBitmap by pageModel.image.observeAsState(ImageBitmap(1, 1))
+        val hiddenSlider: Boolean by pageModel.hiddenSlider.observeAsState(false)
         val background = remember {
             val bitmap = BitmapFactory.decodeStream(assets.open("background.png"))
             bitmap.asImageBitmap()
@@ -73,7 +74,7 @@ class ReaderActivityCompose : ComponentActivity() {
 
     @Composable
     fun TapBox(index: Int, maxIndex: Int, onIndexChange: (Int) -> Unit) {
-        val (w, h) = remember { getMetrics() }
+        val (w, _) = remember { getMetrics() }
         Box(modifier = Modifier
             .fillMaxSize()
             .pointerInput(index + maxIndex) {
@@ -118,8 +119,9 @@ class ReaderActivityCompose : ComponentActivity() {
         }
     }
 
+    @Suppress("DEPRECATION")
     private fun getMetrics(): Pair<Int, Int> {
-        val metrics: DisplayMetrics = DisplayMetrics()
+        val metrics = DisplayMetrics()
         //windowManager.defaultDisplay.getRealMetrics(metrics)
         //peekAvailableContext()!!.display!!.getRealMetrics(metrics)
         windowManager.defaultDisplay.getRealMetrics(metrics)
@@ -128,6 +130,7 @@ class ReaderActivityCompose : ComponentActivity() {
         return Pair(width, height)
     }
 
+    @Suppress("DEPRECATION")
     private fun hideSystemUi() {
         window.decorView.systemUiVisibility =
             View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or

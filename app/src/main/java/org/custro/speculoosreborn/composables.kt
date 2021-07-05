@@ -23,7 +23,7 @@ fun TiledImage(bitmap: ImageBitmap,
     val nwidth = width/bitmap.width+1
     val nheight = height/bitmap.height+1
     repeat (nwidth) {
-        Column() {
+        Column {
             repeat (nheight) {
                 Image(bitmap = bitmap,
                     contentDescription = contentDescription,

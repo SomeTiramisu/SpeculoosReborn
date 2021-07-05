@@ -1,15 +1,11 @@
 package org.custro.speculoosreborn.libtiramisuk
 
 import android.util.Log
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.asCoroutineDispatcher
 import org.custro.speculoosreborn.libtiramisuk.parser.Parser
 import org.custro.speculoosreborn.libtiramisuk.parser.ParserFactory
 import org.custro.speculoosreborn.libtiramisuk.utils.PagePair
 import org.custro.speculoosreborn.libtiramisuk.utils.PageRequest
 import java.io.File
-import java.util.concurrent.Executors
 
 class PageScheduler {
     private val mImagePreload: Int = 20

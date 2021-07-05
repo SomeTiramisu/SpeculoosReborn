@@ -30,6 +30,9 @@ class PageModel : ViewModel() {
     private val _image = MutableLiveData(ImageBitmap(1,1))
     val image: LiveData<ImageBitmap> = _image
 
+    private val _hiddenSlider = MutableLiveData(false)
+    val hiddenSlider: LiveData<Boolean> = _hiddenSlider
+
     init {
         tiramisuk.connectImageCallback {
             Log.d("ImageCallback", "imaged")
@@ -58,6 +61,10 @@ class PageModel : ViewModel() {
         _file.value = value
         _index.value = 0
         genRequest()
+    }
+
+    fun onHiddenSliderChange(value: Boolean) {
+        _hiddenSlider.value = value
     }
 
     private fun genRequest() {
