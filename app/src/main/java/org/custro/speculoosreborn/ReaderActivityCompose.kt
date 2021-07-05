@@ -8,6 +8,7 @@ import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
@@ -15,10 +16,16 @@ import androidx.compose.material.Slider
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
 import java.io.File
 
 class ReaderActivityCompose : ComponentActivity() {
@@ -36,6 +43,11 @@ class ReaderActivityCompose : ComponentActivity() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        hideSystemUi()
+    }
+
     @Composable
     fun ReaderScreen(pageModel: PageModel) {
         val index: Int by pageModel.index.observeAsState(0)
@@ -51,8 +63,16 @@ class ReaderActivityCompose : ComponentActivity() {
         TapBox(
             index = index,
             maxIndex = maxIndex,
-            onIndexChange = { pageModel.onIndexChange(it) })
-        SliderView(index = index, maxIndex = maxIndex, onIndexChange = { pageModel.onIndexChange(it) })
+            onIndexChange = { pageModel.onIndexChange(it) },
+            hiddenSlider = hiddenSlider,
+            onHiddenSliderChange = { pageModel.onHiddenSliderChange(it) }
+        )
+        SliderView(
+            index = index,
+            maxIndex = maxIndex,
+            onIndexChange = { pageModel.onIndexChange(it) },
+            hidden = hiddenSlider
+        )
     }
 
     @Composable
@@ -73,17 +93,29 @@ class ReaderActivityCompose : ComponentActivity() {
     }
 
     @Composable
-    fun TapBox(index: Int, maxIndex: Int, onIndexChange: (Int) -> Unit) {
+    fun TapBox(
+        index: Int,
+        maxIndex: Int,
+        onIndexChange: (Int) -> Unit,
+        hiddenSlider: Boolean,
+        onHiddenSliderChange: (Boolean) -> Unit
+    ) {
         val (w, _) = remember { getMetrics() }
+        val key = index+maxIndex* (if (hiddenSlider) 0 else 1)
         Box(modifier = Modifier
             .fillMaxSize()
-            .pointerInput(index + maxIndex) {
+            .pointerInput(key) {
                 detectTapGestures { offset ->  //onTap
                     Log.d("TapBox", "Touched, $index, $maxIndex")
                     if (offset.x > 2 * w / 3 && index < maxIndex - 1) {
                         onIndexChange(index + 1)
                     } else if (offset.x < w / 3 && index > 0) {
                         onIndexChange(index - 1)
+                    }
+                    if (!hiddenSlider && index >= 0 && index <= maxIndex - 1) {
+                        onHiddenSliderChange(true)
+                    } else if (offset.x > w / 3 && offset.x < 2 * w / 3) {
+                        onHiddenSliderChange(false)
                     }
                 }
             })
@@ -95,6 +127,7 @@ class ReaderActivityCompose : ComponentActivity() {
         var sliding by remember { mutableStateOf(false) }
         Slider(value = if (sliding) sliderPosition else index.toFloat(),
             steps = 0,
+            modifier = Modifier.padding(start = 16.dp, end = 16.dp),
             onValueChange = { sliding = true; sliderPosition = it },
             valueRange = if (maxIndex > 0) 0.0f..(maxIndex - 1).toFloat() else 0.0f..1.0f,
             onValueChangeFinished = {
@@ -105,17 +138,25 @@ class ReaderActivityCompose : ComponentActivity() {
     }
 
     @Composable
-    fun SliderView(index: Int, maxIndex: Int, onIndexChange: (Int) -> Unit, hidden: Boolean = false) {
+    fun SliderView(
+        index: Int,
+        maxIndex: Int,
+        onIndexChange: (Int) -> Unit,
+        hidden: Boolean = false
+    ) {
         if (hidden) return
         Column(
             modifier = Modifier.fillMaxHeight(),
-            verticalArrangement = Arrangement.Bottom
+            verticalArrangement = Arrangement.Bottom,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = index.toString())
+            Text(text = index.toString()
+            )
             IndexSlider(
                 index = index,
                 maxIndex = maxIndex,
-                onIndexChange = onIndexChange)
+                onIndexChange = onIndexChange
+            )
         }
     }
 

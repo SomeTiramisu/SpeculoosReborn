@@ -7,6 +7,7 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.runBlocking
@@ -16,6 +17,7 @@ import org.opencv.android.Utils
 import java.io.File
 
 class PageModel : ViewModel() {
+
     private val _file: MutableLiveData<File?> = MutableLiveData(null)
     val file: LiveData<File?> = _file
 
@@ -34,6 +36,7 @@ class PageModel : ViewModel() {
     val hiddenSlider: LiveData<Boolean> = _hiddenSlider
 
     init {
+        Log.d("PageModel", "created")
         tiramisuk.connectImageCallback {
             Log.d("ImageCallback", "imaged")
             val bitmap = Bitmap.createBitmap(it.cols(), it.rows(), Bitmap.Config.ARGB_8888)
@@ -73,6 +76,6 @@ class PageModel : ViewModel() {
     }
 
     companion object {
-        val tiramisuk = Tiramisuk()
+        val tiramisuk = Tiramisuk() //because ViewModel is cleared when back button pressed
     }
 }

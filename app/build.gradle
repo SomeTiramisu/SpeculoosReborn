@@ -47,6 +47,7 @@ android {
         useIR = true
     }
     buildFeatures {
+        dataBinding true
         viewBinding true
         compose true
     }

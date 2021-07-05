@@ -66,6 +66,11 @@ class CropScaleRunner(private val index: Int, private val parser: Parser) {
         mPageRes = null
     }
 
+    fun finalClear() {
+        mPageResJob?.cancel()
+        mPngResJob?.cancel()
+    }
+
     fun connectSlot(slot: (PagePair) -> Unit) {
         mSlot = slot
     }

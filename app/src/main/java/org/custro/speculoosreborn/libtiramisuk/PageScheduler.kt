@@ -25,6 +25,9 @@ class PageScheduler {
             Log.d("Scheduler", "file: ${req.file!!.path}")
             mParser = ParserFactory.create(mFile!!)
             mSizeSlot(mParser!!.size)
+            for (x in mPages) {
+                x.finalClear()
+            }
             mPages = List(mParser!!.size) { index ->
                 val r = CropScaleRunner(index, mParser!!)
                 r.connectSlot(mPageSlot)
