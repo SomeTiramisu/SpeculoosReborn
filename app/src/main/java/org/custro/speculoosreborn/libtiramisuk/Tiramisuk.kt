@@ -24,6 +24,7 @@ class Tiramisuk {
         mScheduler.connectPageCallback {res: PagePair ->
             Log.d("Scheduler", "PageCallback")
             if (mReq == res.req) {
+                Log.d("Scheduler", "req hceck passed")
                 imageCallback(res.img)
             }
         }
