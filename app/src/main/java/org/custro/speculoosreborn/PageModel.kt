@@ -8,6 +8,10 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.custro.speculoosreborn.libtiramisuk.Tiramisuk
 import org.custro.speculoosreborn.libtiramisuk.parser.Parser
 import org.custro.speculoosreborn.libtiramisuk.parser.ParserFactory
@@ -69,7 +73,7 @@ class PageModel : ViewModel() {
         _hiddenSlider.value = value
     }
 
-    private fun genRequest() {
+    private fun genRequest() = CoroutineScope(Dispatchers.Default).launch {
         val req = PageRequest(index.value!!, _size.value!!.first, _size.value!!.second, uri!!.value)
         tiramisuk.get(req)
     }
