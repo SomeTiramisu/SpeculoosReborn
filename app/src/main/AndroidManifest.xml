@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.custro.speculoosreborn">
     <application
+        android:name=".App"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name_mini"
         android:roundIcon="@mipmap/ic_launcher_round"

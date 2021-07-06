@@ -1,5 +1,6 @@
 package org.custro.speculoosreborn.libtiramisuk
 
+import android.net.Uri
 import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -76,7 +77,7 @@ class CropScaleRunner(private val index: Int, private val parser: Parser) {
     }
 
     private fun cropScale(p: PngPair, req: PageRequest): PagePair {
-        val img = fromByteArray(p.png)
+        val img = fromByteArray(PageCache.loadData(p.uri))
         if (!img.empty()) {
             cropScaleProcess(img, img, p.rec, req.width, req.height)
             if (p.isBlack) {
@@ -88,8 +89,8 @@ class CropScaleRunner(private val index: Int, private val parser: Parser) {
         return PagePair(img, req)
     }
 
-    private fun cropDetect(png: ByteArray, index: Int): PngPair{
-        val img = fromByteArray(png)
+    private fun cropDetect(uri: Uri, index: Int): PngPair{
+        val img = fromByteArray(PageCache.loadData(uri))
         var roi = Rect()
         var isBlack = false
         if (!img.empty() && index != 0) {
@@ -99,7 +100,7 @@ class CropScaleRunner(private val index: Int, private val parser: Parser) {
 
         }
         //Log.d("CropDetect", "running: $index");
-        return PngPair(png, roi, isBlack)
+        return PngPair(uri, roi, isBlack)
     }
 
     companion object {

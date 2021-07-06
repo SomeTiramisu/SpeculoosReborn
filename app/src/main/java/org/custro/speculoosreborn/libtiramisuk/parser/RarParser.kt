@@ -1,13 +1,18 @@
 package org.custro.speculoosreborn.libtiramisuk.parser
 
 import android.content.ContentResolver
+import android.content.Context
+import android.net.ConnectivityDiagnosticsManager
 import android.net.Uri
 import com.github.junrar.Archive
 import com.github.junrar.rarfile.FileHeader
+import org.custro.speculoosreborn.App
 import org.custro.speculoosreborn.libtiramisuk.utils.AlphanumComparator
+import org.custro.speculoosreborn.libtiramisuk.utils.PageCache
 
 
-class RarParser(private val resolver: ContentResolver, override val uri: Uri) : Parser {
+class RarParser(override val uri: Uri) : Parser {
+    private val resolver = App.instance!!.contentResolver
     private val headers: MutableList<Header> = mutableListOf()
     override val size: Int
         get() {
@@ -32,14 +37,14 @@ class RarParser(private val resolver: ContentResolver, override val uri: Uri) : 
         headers.sortWith(entryNaturalOrder)
     }
 
-    override fun at(index: Int): ByteArray {
+    override fun at(index: Int): Uri {
         val rar = Archive(getInputStream())
         var e: FileHeader? = null
         for (i in 0..headers[index].index) {
             e = rar.nextFileHeader()
         }
         val iStream = rar.getInputStream(e)
-        val r = iStream.readBytes()
+        val r = PageCache.saveData(iStream.readBytes())
         iStream.close()
         rar.close()
         return r

@@ -4,6 +4,7 @@ import android.net.Uri
 import android.util.Log
 import org.custro.speculoosreborn.libtiramisuk.parser.Parser
 import org.custro.speculoosreborn.libtiramisuk.parser.ParserFactory
+import org.custro.speculoosreborn.libtiramisuk.utils.PageCache
 import org.custro.speculoosreborn.libtiramisuk.utils.PagePair
 import org.custro.speculoosreborn.libtiramisuk.utils.PageRequest
 
@@ -23,6 +24,9 @@ class PageScheduler {
         if (req.uri != mUri) {
             mUri = req.uri
             Log.d("Scheduler", "file: ${req.uri!!}")
+
+            //PageCache.saveData()
+
             mParser = ParserFactory.create(mUri!!)
             mSizeSlot(mParser!!.size)
             for (x in mPages) {

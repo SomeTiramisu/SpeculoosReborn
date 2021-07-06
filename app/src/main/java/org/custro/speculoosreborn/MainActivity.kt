@@ -40,7 +40,6 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        ParserFactory.resolver = contentResolver
         System.loadLibrary("opencv_java4")
         setContent {
             Buttons()

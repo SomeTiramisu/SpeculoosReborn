@@ -1,14 +1,18 @@
 package org.custro.speculoosreborn.libtiramisuk.parser
 
 import android.content.ContentResolver
+import android.content.Context
 import android.net.Uri
 import android.util.Log
+import org.custro.speculoosreborn.App
 import org.custro.speculoosreborn.libtiramisuk.utils.AlphanumComparator
+import org.custro.speculoosreborn.libtiramisuk.utils.PageCache
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 
 
-class ZipParser(private val resolver: ContentResolver, override val uri: Uri) : Parser {
+class ZipParser(override val uri: Uri) : Parser {
+    private val resolver = App.instance!!.contentResolver
     private val headers: MutableList<Header> = mutableListOf()
     override val size: Int
         get() {
@@ -33,13 +37,13 @@ class ZipParser(private val resolver: ContentResolver, override val uri: Uri) : 
         Log.d("ZipParser", "size: ${headers.size}")
     }
 
-    override fun at(index: Int): ByteArray {
+    override fun at(index: Int): Uri {
         val zipStream = ZipInputStream(getInputStream())
         for (i in 0..(headers[index].index)) {
             zipStream.nextEntry
             //zipStream.closeEntry()
         }
-        val r = zipStream.readBytes()
+        val r = PageCache.saveData(zipStream.readBytes())
         //Log.d("ZipParser", "Entry size: ${e.size}")
         zipStream.close()
         return r

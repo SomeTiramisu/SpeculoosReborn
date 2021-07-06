@@ -1,15 +1,14 @@
 package org.custro.speculoosreborn.libtiramisuk.parser
 
 import android.content.ContentResolver
+import android.content.Context
 import android.net.Uri
 
-class ParserFactory {
+class ParserFactory(private var context: Context) {
     companion object {
-        var resolver: ContentResolver? = null
         fun create(uri: Uri): Parser? {
-            if (resolver == null) return null
-            if (ZipParser.isSupported(uri)) return ZipParser(resolver!!, uri)
-            if (RarParser.isSupported(uri)) return RarParser(resolver!!, uri)
+            if (ZipParser.isSupported(uri)) return ZipParser(uri)
+            if (RarParser.isSupported(uri)) return RarParser(uri)
             return null
         }
     }
