@@ -35,7 +35,13 @@ class MainActivity : ComponentActivity() {
             return intent
         }
     }) { uri: Uri? ->
-        archiveUri = uri
+        if (uri != null) {
+            archiveUri = uri
+            contentResolver.takePersistableUriPermission(
+                uri, Intent.FLAG_GRANT_READ_URI_PERMISSION or
+                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+            )
+        }
         Log.d("MainActivity", "$uri")
     }
 
