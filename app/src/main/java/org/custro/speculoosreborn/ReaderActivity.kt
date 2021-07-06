@@ -8,6 +8,10 @@ import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
@@ -23,6 +27,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 
 class ReaderActivity : ComponentActivity() {
+    @ExperimentalAnimationApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         hideSystemUi()
@@ -42,6 +47,7 @@ class ReaderActivity : ComponentActivity() {
         hideSystemUi()
     }
 
+    @ExperimentalAnimationApi
     @Composable
     fun ReaderScreen(pageModel: PageModel) {
         val index: Int by pageModel.index.observeAsState(0)
@@ -131,6 +137,7 @@ class ReaderActivity : ComponentActivity() {
         )
     }
 
+    @ExperimentalAnimationApi
     @Composable
     fun SliderView(
         index: Int,
@@ -138,20 +145,25 @@ class ReaderActivity : ComponentActivity() {
         onIndexChange: (Int) -> Unit,
         hidden: Boolean = false
     ) {
-        if (hidden) return
-        Column(
-            modifier = Modifier.fillMaxHeight(),
-            verticalArrangement = Arrangement.Bottom,
-            horizontalAlignment = Alignment.CenterHorizontally
+        AnimatedVisibility(
+            visible = !hidden,
+            enter = fadeIn(),
+            exit = fadeOut()
         ) {
-            Text(
-                text = index.toString()
-            )
-            IndexSlider(
-                index = index,
-                maxIndex = maxIndex,
-                onIndexChange = onIndexChange
-            )
+            Column(
+                modifier = Modifier.fillMaxHeight(),
+                verticalArrangement = Arrangement.Bottom,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = index.toString()
+                )
+                IndexSlider(
+                    index = index,
+                    maxIndex = maxIndex,
+                    onIndexChange = onIndexChange
+                )
+            }
         }
     }
 
