@@ -8,13 +8,10 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.custro.speculoosreborn.libtiramisuk.Tiramisuk
-import org.custro.speculoosreborn.libtiramisuk.parser.Parser
-import org.custro.speculoosreborn.libtiramisuk.parser.ParserFactory
 import org.custro.speculoosreborn.libtiramisuk.utils.PageRequest
 import org.opencv.android.Utils
 
@@ -30,7 +27,7 @@ class PageModel : ViewModel() {
 
     private val _size = MutableLiveData(Pair(0, 0))
 
-    private val _image = MutableLiveData(ImageBitmap(1,1))
+    private val _image = MutableLiveData(ImageBitmap(1, 1))
     val image: LiveData<ImageBitmap> = _image
 
     private val _hiddenSlider = MutableLiveData(false)
@@ -74,7 +71,7 @@ class PageModel : ViewModel() {
     }
 
     private fun genRequest() = CoroutineScope(Dispatchers.Default).launch {
-        val req = PageRequest(index.value!!, _size.value!!.first, _size.value!!.second, uri!!.value)
+        val req = PageRequest(index.value!!, _size.value!!.first, _size.value!!.second, uri.value)
         tiramisuk.get(req)
     }
 

@@ -6,13 +6,12 @@ import org.custro.speculoosreborn.libtiramisuk.parser.Parser
 import org.custro.speculoosreborn.libtiramisuk.parser.ParserFactory
 import org.custro.speculoosreborn.libtiramisuk.utils.PagePair
 import org.custro.speculoosreborn.libtiramisuk.utils.PageRequest
-import java.io.File
 
 class PageScheduler {
     private val mImagePreload: Int = 20
     private var mPages: List<CropScaleRunner> = listOf()
-    private var mPageSlot: (PagePair) -> Unit = {Log.d("Scheduler", "empty PageSlot")}
-    private var mSizeSlot: (Int) -> Unit = {Log.d("Scheduler", "empty SizeSlot")}
+    private var mPageSlot: (PagePair) -> Unit = { Log.d("Scheduler", "empty PageSlot") }
+    private var mSizeSlot: (Int) -> Unit = { Log.d("Scheduler", "empty SizeSlot") }
     private var mUri: Uri? = null
     private var mParser: Parser? = null
 
@@ -37,7 +36,7 @@ class PageScheduler {
         }
         val index = req.index
         val bookSize = mParser!!.size
-        if (index<0 || index >= bookSize) {
+        if (index < 0 || index >= bookSize) {
             return
         }
         //Log.d("Scheduler", "get ${req.index}")
@@ -65,6 +64,7 @@ class PageScheduler {
             x.connectSlot(mPageSlot)
         }
     }
+
     fun connectSizeCallback(sizeCallback: (Int) -> Unit) {
         mSizeSlot = sizeCallback
         if (mParser != null) {

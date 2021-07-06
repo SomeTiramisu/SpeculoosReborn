@@ -8,9 +8,9 @@ import org.opencv.core.Mat
 class Tiramisuk {
     private var mScheduler = PageScheduler()
     private var mReq = PageRequest()
-    private var mPreloaderProgressSlot: (Int) -> Unit = {Log.d("Tiramisu", "empty ProgressSlot")}
-    private var imageCallback: (Mat) -> Unit = {Log.d("Tiramisu", "empty ImageSlot")}
-    private var maxIndexCallback: (Int) -> Unit = {Log.d("Tiramisu", "empty maxIndexSlot")}
+    private var mPreloaderProgressSlot: (Int) -> Unit = { Log.d("Tiramisu", "empty ProgressSlot") }
+    private var imageCallback: (Mat) -> Unit = { Log.d("Tiramisu", "empty ImageSlot") }
+    private var maxIndexCallback: (Int) -> Unit = { Log.d("Tiramisu", "empty maxIndexSlot") }
 
     fun get(req: PageRequest) {
         if (req.uri != null) {
@@ -21,7 +21,7 @@ class Tiramisuk {
 
     fun connectImageCallback(slot: (Mat) -> Unit) {
         imageCallback = slot
-        mScheduler.connectPageCallback {res: PagePair ->
+        mScheduler.connectPageCallback { res: PagePair ->
             Log.d("Scheduler", "PageCallback")
             if (mReq == res.req) {
                 Log.d("Scheduler", "req hceck passed")
@@ -29,10 +29,12 @@ class Tiramisuk {
             }
         }
     }
+
     fun connectMaxIndexCallback(slot: (Int) -> Unit) {
         maxIndexCallback = slot
         mScheduler.connectSizeCallback(maxIndexCallback) //we send current book size here
     }
+
     fun connectPreloaderProgress(slot: (Int) -> Unit) {
         mPreloaderProgressSlot = slot
     }

@@ -1,7 +1,6 @@
 package org.custro.speculoosreborn
 
 import android.graphics.BitmapFactory
-import android.net.Uri
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.util.Log
@@ -32,9 +31,7 @@ class ReaderActivity : ComponentActivity() {
         //val pageModel = ViewModelProvider(this).get(PageModel::class.java)
 
         pageModel.onSizeChange(getMetrics())
-        pageModel.onUriChange(
-            Uri.parse("content://com.android.externalstorage.documents/document/primary%3Aaoe.cbz")
-        )
+        intent.data?.let { pageModel.onUriChange(it) }
         setContent {
             ReaderScreen(pageModel)
         }
