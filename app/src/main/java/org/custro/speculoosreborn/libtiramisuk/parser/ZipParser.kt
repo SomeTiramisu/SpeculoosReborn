@@ -48,7 +48,6 @@ class ZipParser(private val resolver: ContentResolver, override val uri: Uri) : 
     private fun getInputStream() = resolver.openInputStream(uri)
 
     companion object {
-        fun isSupported(uri: Uri) = true
-            //uri.lastPathSegment?.lowercase()?.contains(".*\\.(zip|cbz)$") ?: false
+        fun isSupported(uri: Uri) = uri.lastPathSegment?.lowercase()?.matches(Regex(".*\\.(zip|cbz)$")) ?: false
     }
 }

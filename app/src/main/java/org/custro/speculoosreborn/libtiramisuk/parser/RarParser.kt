@@ -49,6 +49,6 @@ class RarParser(private val resolver: ContentResolver, override val uri: Uri) : 
 
     companion object {
         fun isSupported(uri: Uri) =
-            uri.lastPathSegment?.lowercase()?.contains(".*\\.(rar|cbr)$") ?: false
+            uri.lastPathSegment?.lowercase()?.matches(Regex(".*\\.(rar|cbr)$")) ?: false
     }
 }
