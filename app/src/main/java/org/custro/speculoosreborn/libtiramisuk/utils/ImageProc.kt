@@ -132,7 +132,7 @@ fun addBlackBorders(src: Mat, dst: Mat, width: Int, height: Int) {
     val tmp = Mat(height, width, src.type(), Scalar(0.0, 0.0, 0.0, 255.0))
     val xOffset = (width-src.cols())/2
     val yOffset = (height-src.rows())/2
-    Log.d("ImageProc", "$xOffset, $yOffset")
+    //Log.d("ImageProc", "$xOffset, $yOffset")
     val subRec = Rect(xOffset, yOffset,src.cols(), src.rows())
     //val subMat = Mat(tmp, Rect(0, 0, src.cols(), src.rows()))
     val subMat = Mat(tmp, subRec)

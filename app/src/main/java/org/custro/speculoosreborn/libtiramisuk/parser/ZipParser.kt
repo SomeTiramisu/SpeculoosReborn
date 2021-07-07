@@ -4,6 +4,7 @@ import android.content.ContentResolver
 import android.content.Context
 import android.net.Uri
 import android.util.Log
+import androidx.core.net.toFile
 import org.custro.speculoosreborn.App
 import org.custro.speculoosreborn.libtiramisuk.utils.AlphanumComparator
 import org.custro.speculoosreborn.libtiramisuk.utils.PageCache
@@ -34,24 +35,28 @@ class ZipParser(override val uri: Uri) : Parser {
         zipStream.close()
         val entryNaturalOrder = compareBy<Header, String>(AlphanumComparator(), { it.filename })
         headers.sortWith(entryNaturalOrder)
-        Log.d("ZipParser", "size: ${headers.size}")
+        //Log.d("ZipParser", "size: ${headers.size}")
     }
 
     override fun at(index: Int): Uri {
         val zipStream = ZipInputStream(getInputStream())
-        for (i in 0..(headers[index].index)) {
-            zipStream.nextEntry
+        var entry: ZipEntry = zipStream.nextEntry
+        for (i in 0 until headers[index].index) {
+            entry = zipStream.nextEntry
             //zipStream.closeEntry()
         }
-        val r = PageCache.saveData(zipStream.readBytes())
-        //Log.d("ZipParser", "Entry size: ${e.size}")
+        //Log.d("ZipParser", entry.size.toString())
+        val buffer = zipStream.readBytes()
+        val r = PageCache.saveData(buffer)
         zipStream.close()
         return r
     }
 
-    private fun getInputStream() = resolver.openInputStream(uri)
+    private fun getInputStream() =
+        if (uri.scheme == "file") uri.toFile().inputStream() else resolver.openInputStream(uri)
 
     companion object {
-        fun isSupported(uri: Uri) = uri.lastPathSegment?.lowercase()?.matches(Regex(".*\\.(zip|cbz)$")) ?: false
+        fun isSupported(uri: Uri) = true
+            //uri.lastPathSegment?.lowercase()?.matches(Regex(".*\\.(zip|cbz)$")) ?: false
     }
 }

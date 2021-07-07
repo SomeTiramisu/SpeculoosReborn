@@ -4,6 +4,7 @@ import android.content.ContentResolver
 import android.content.Context
 import android.net.ConnectivityDiagnosticsManager
 import android.net.Uri
+import androidx.core.net.toFile
 import com.github.junrar.Archive
 import com.github.junrar.rarfile.FileHeader
 import org.custro.speculoosreborn.App
@@ -50,7 +51,8 @@ class RarParser(override val uri: Uri) : Parser {
         return r
     }
 
-    private fun getInputStream() = resolver.openInputStream(uri)
+    private fun getInputStream() =
+        if (uri.scheme == "file") uri.toFile().inputStream() else resolver.openInputStream(uri)
 
     companion object {
         fun isSupported(uri: Uri) =
