@@ -4,11 +4,13 @@ import android.content.ContentResolver
 import android.content.Context
 import android.net.Uri
 
-class ParserFactory(private var context: Context) {
+class ParserFactory() {
     companion object {
         fun create(uri: Uri): Parser? {
-            if (ZipParser.isSupported(uri)) return ZipParser(uri)
-            if (RarParser.isSupported(uri)) return RarParser(uri)
+            if (ZipFileParser.isSupported(uri)) return ZipFileParser(uri)
+            if (ZipStreamParser.isSupported(uri)) return ZipStreamParser(uri)
+            if (RarFileParser.isSupported(uri)) return RarFileParser(uri)
+            if (RarStreamParser.isSupported(uri)) return RarStreamParser(uri)
             return null
         }
     }

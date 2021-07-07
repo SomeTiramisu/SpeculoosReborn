@@ -29,7 +29,11 @@ class CropScaleRunner(private val index: Int, private val parser: Parser) {
 
     private suspend fun work(req: PageRequest) {
         if (mPngResJob == null) {
-            TODO()
+            mPngResJob = detectCoScope.launch {
+                if (mPngRes == null) {
+                    mPngRes = cropDetect(parser.at(index), index)
+                }
+            }
         } else {
             mPngResJob!!.join()
         }

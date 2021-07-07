@@ -12,7 +12,7 @@ import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 
 
-class ZipParser(override val uri: Uri) : Parser {
+class ZipStreamParser(override val uri: Uri) : Parser {
     private val resolver = App.instance!!.contentResolver
     private val headers: MutableList<Header> = mutableListOf()
     override val size: Int
@@ -21,6 +21,7 @@ class ZipParser(override val uri: Uri) : Parser {
         }
 
     init {
+        Log.d("ZipParser", "scheme: ${uri.scheme}")
         val zipStream = ZipInputStream(getInputStream())
         var e: ZipEntry? = zipStream.nextEntry
         var count = 0
@@ -40,9 +41,8 @@ class ZipParser(override val uri: Uri) : Parser {
 
     override fun at(index: Int): Uri {
         val zipStream = ZipInputStream(getInputStream())
-        var entry: ZipEntry = zipStream.nextEntry
-        for (i in 0 until headers[index].index) {
-            entry = zipStream.nextEntry
+        for (i in 0..headers[index].index) {
+            zipStream.nextEntry
             //zipStream.closeEntry()
         }
         //Log.d("ZipParser", entry.size.toString())

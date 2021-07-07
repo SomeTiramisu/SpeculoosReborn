@@ -12,8 +12,7 @@ import org.custro.speculoosreborn.libtiramisuk.utils.AlphanumComparator
 import org.custro.speculoosreborn.libtiramisuk.utils.PageCache
 
 
-class RarStreamParser(override val uri: Uri) : Parser {
-    private val resolver = App.instance!!.contentResolver
+class RarFileParser(override val uri: Uri) : Parser {
     private val headers: MutableList<Header> = mutableListOf()
     override val size: Int
         get() {
@@ -21,7 +20,7 @@ class RarStreamParser(override val uri: Uri) : Parser {
         }
 
     init {
-        val rarStream = Archive(getInputStream())
+        val rarStream = Archive(uri.toFile())
         var e: FileHeader? = rarStream.nextFileHeader()
         var count = 0
         while (e != null) {
@@ -39,7 +38,7 @@ class RarStreamParser(override val uri: Uri) : Parser {
     }
 
     override fun at(index: Int): Uri {
-        val rar = Archive(getInputStream())
+        val rar = Archive(uri.toFile())
         var e: FileHeader? = null
         for (i in 0..headers[index].index) {
             e = rar.nextFileHeader()
@@ -51,11 +50,8 @@ class RarStreamParser(override val uri: Uri) : Parser {
         return r
     }
 
-    private fun getInputStream() =
-        if (uri.scheme == "file") uri.toFile().inputStream() else resolver.openInputStream(uri)
-
     companion object {
-        fun isSupported(uri: Uri) =
-            uri.lastPathSegment?.lowercase()?.matches(Regex(".*\\.(rar|cbr)$")) ?: false
+        fun isSupported(uri: Uri) = uri.scheme == "file"
+                && uri.lastPathSegment?.lowercase()?.matches(Regex(".*\\.(rar|cbr)$")) ?: false
     }
 }
