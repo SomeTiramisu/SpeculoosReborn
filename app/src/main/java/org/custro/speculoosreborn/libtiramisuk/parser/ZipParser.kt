@@ -46,8 +46,9 @@ class ZipParser(override val uri: Uri) : Parser {
             //zipStream.closeEntry()
         }
         //Log.d("ZipParser", entry.size.toString())
-        val buffer = zipStream.readBytes()
-        val r = PageCache.saveData(buffer)
+        //val buffer = zipStream.readBytes()
+        //val r = PageCache.saveData(buffer)
+        val r = PageCache.saveData(zipStream)
         zipStream.close()
         return r
     }
@@ -56,7 +57,7 @@ class ZipParser(override val uri: Uri) : Parser {
         if (uri.scheme == "file") uri.toFile().inputStream() else resolver.openInputStream(uri)
 
     companion object {
-        fun isSupported(uri: Uri) = true
-            //uri.lastPathSegment?.lowercase()?.matches(Regex(".*\\.(zip|cbz)$")) ?: false
+        fun isSupported(uri: Uri) =
+            uri.lastPathSegment?.lowercase()?.matches(Regex(".*\\.(zip|cbz)$")) ?: false
     }
 }

@@ -2,6 +2,7 @@ package org.custro.speculoosreborn.libtiramisuk.utils
 
 import android.net.Uri
 import android.os.Environment
+import android.util.Log
 import androidx.core.net.toFile
 import androidx.core.net.toUri
 import org.custro.speculoosreborn.App
@@ -21,12 +22,13 @@ class PageCache() {
         }
 
         fun saveData(uri: Uri): Uri { // return a file: scheme uri
-            val output = File(cacheDir, uri.hashCode().toString())
+            val output = File(cacheDir, uri.hashCode().toString()+"."+findExt(uri))
             val inputStream = App.instance!!.contentResolver.openInputStream(uri)
             val outputStream = FileOutputStream(output)
             inputStream!!.copyTo(outputStream)
             inputStream.close()
             outputStream.close()
+            //Log.d("ZipParser", output.toUri().toString())
             return output.toUri()
         }
 
@@ -34,6 +36,7 @@ class PageCache() {
             val output = File(cacheDir, stream.hashCode().toString())
             val outputStream = FileOutputStream(output)
             stream.copyTo(outputStream)
+            Log.d("Cache", "$DEFAULT_BUFFER_SIZE")
             outputStream.close()
             return output.toUri()
         }
@@ -43,7 +46,7 @@ class PageCache() {
             return input.readBytes()
         }
 
-        fun findExt(uri: Uri): String {
+        private fun findExt(uri: Uri): String {
             return uri.lastPathSegment?.substringAfterLast('.', "") ?: ""
         }
     }

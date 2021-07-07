@@ -24,7 +24,9 @@ class PageScheduler {
         if (req.uri != mUri) {
             mUri = req.uri
             Log.d("Scheduler", "file: ${req.uri!!}")
-            mParser = ParserFactory.create(PageCache.saveData(mUri!!))
+            val cachedUri = PageCache.saveData(mUri!!)
+            mParser = ParserFactory.create(cachedUri)
+            //mParser = ParserFactory.create(mUri!!)
             mSizeSlot(mParser!!.size)
             for (x in mPages) {
                 x.finalClear()
