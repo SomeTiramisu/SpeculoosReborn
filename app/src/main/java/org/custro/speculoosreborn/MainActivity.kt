@@ -8,15 +8,16 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.activity.viewModels
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.AlertDialog
+import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import org.custro.speculoosreborn.libtiramisuk.parser.ParserFactory
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 class MainActivity : ComponentActivity() {
     private var archiveUri: Uri? = null
@@ -41,6 +42,8 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         System.loadLibrary("opencv_java4")
+
+        val mainModel: MainModel by viewModels()
         setContent {
             Buttons()
         }
@@ -60,6 +63,29 @@ class MainActivity : ComponentActivity() {
                 Text(text = "Start")
             }
         }
+    }
+
+    @Composable
+    fun ReadNow(open: Boolean) {
+        AlertDialog(onDismissRequest = {},
+            title = {
+                Text(text = "Read now ?")
+            },
+            buttons = {
+                Row {
+                    TextButton(modifier = Modifier.fillMaxWidth(),
+                        onClick = {}) {
+                        Text("Later")
+                    }
+                    Button(modifier = Modifier.fillMaxWidth(),
+                        onClick = {
+                            startReader()
+                        }) {
+                        Text(text = "Now")
+                    }
+                }
+            }
+        )
     }
 
     private fun startReader() {
