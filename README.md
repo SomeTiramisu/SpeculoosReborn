@@ -3,7 +3,7 @@ An alpha stage manga reader
 
 ## Features
 * Custom background textures
-* Cropping
+* Auto crop
 * Dark borders detection and recreation
 * Good look resizing (bicubic)
 
