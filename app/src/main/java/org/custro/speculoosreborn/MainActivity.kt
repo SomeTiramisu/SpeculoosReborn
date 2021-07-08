@@ -18,6 +18,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.room.Room
+import kotlinx.coroutines.coroutineScope
+import org.custro.speculoosreborn.room.AppDatabase
+import org.custro.speculoosreborn.room.Manga
 
 class MainActivity : ComponentActivity() {
     private var archiveUri: Uri? = null
@@ -35,8 +39,10 @@ class MainActivity : ComponentActivity() {
                     uri, Intent.FLAG_GRANT_READ_URI_PERMISSION or
                             Intent.FLAG_GRANT_WRITE_URI_PERMISSION
                 )
+                //val mainModel: MainModel by viewModels()
+                //mainModel.insertManga(Manga(uri.toString(), null))
+                //Log.d("MainActivity", mainModel.getMangas().value.toString())
             }
-            Log.d("MainActivity", "$uri")
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
