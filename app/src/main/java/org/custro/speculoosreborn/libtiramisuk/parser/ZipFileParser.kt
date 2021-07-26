@@ -42,6 +42,7 @@ class ZipFileParser(override val uri: Uri) : Parser {
         val entryInputStream = zipFile.getInputStream(zipFile.getEntry(headers[index].filename))
         val r = PageCache.saveData(entryInputStream)
         entryInputStream.close()
+        zipFile.close()
         return r
     }
 
