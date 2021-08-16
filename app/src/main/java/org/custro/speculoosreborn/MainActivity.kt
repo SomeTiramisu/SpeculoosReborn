@@ -24,7 +24,6 @@ import org.custro.speculoosreborn.room.AppDatabase
 import org.custro.speculoosreborn.room.Manga
 
 class MainActivity : ComponentActivity() {
-    private var archiveUri: Uri? = null
     private val getArchive =
         registerForActivityResult(object : ActivityResultContracts.OpenDocument() {
             override fun createIntent(context: Context, input: Array<out String>): Intent {
@@ -34,14 +33,13 @@ class MainActivity : ComponentActivity() {
             }
         }) { uri: Uri? ->
             if (uri != null) {
-                archiveUri = uri
+                val mainModel: MainModel by viewModels()
+                mainModel.onArchiveUriChange(uri)
                 contentResolver.takePersistableUriPermission(
                     uri, Intent.FLAG_GRANT_READ_URI_PERMISSION or
                             Intent.FLAG_GRANT_WRITE_URI_PERMISSION
                 )
-                //val mainModel: MainModel by viewModels()
-                //mainModel.insertManga(Manga(uri.toString(), null))
-                //Log.d("MainActivity", mainModel.getMangas().value.toString())
+
             }
         }
 
@@ -51,26 +49,26 @@ class MainActivity : ComponentActivity() {
 
         val mainModel: MainModel by viewModels()
         setContent {
-            Buttons()
+            Buttons(mainModel)
         }
     }
 
     @Composable
-    fun Buttons() {
+    fun Buttons(mainModel: MainModel) {
         Column(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxSize()
         ) {
-            TextButton(onClick = { pickFile() }) {
+            TextButton(onClick = { pickFile(mainModel) }) {
                 Text(text = "Pick")
             }
-            TextButton(onClick = { startReader() }) {
+            TextButton(onClick = { startReader(mainModel) }) {
                 Text(text = "Start")
             }
         }
     }
-
+/*
     @Composable
     fun ReadNow(open: Boolean) {
         AlertDialog(onDismissRequest = {},
@@ -93,14 +91,14 @@ class MainActivity : ComponentActivity() {
             }
         )
     }
-
-    private fun startReader() {
+*/
+    private fun startReader(mainModel: MainModel) {
         val intent = Intent(this, ReaderActivity::class.java)
-        intent.data = archiveUri
+        intent.data = mainModel.archiveUri.value
         startActivity(intent)
     }
 
-    private fun pickFile() {
+    private fun pickFile(mainModel: MainModel) {
         getArchive.launch(arrayOf("*/*"))
     }
 }

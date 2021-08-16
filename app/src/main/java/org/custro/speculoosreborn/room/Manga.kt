@@ -6,6 +6,6 @@ import androidx.room.PrimaryKey
 @Entity
 data class Manga(
     @PrimaryKey val uri: String,
-    val cover: ByteArray?,
-    val maxIndex: Int
+    //val cover: ByteArray?,
+    //val maxIndex: Int
 )
