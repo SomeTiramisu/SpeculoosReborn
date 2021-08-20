@@ -35,6 +35,6 @@ class MainModel: ViewModel() {
 
     fun onArchiveUriChange(value: Uri) {
         _archiveUri.value = value
-        insertManga(Manga(value.toString()))
+        //insertManga(Manga(value.toString()))
     }
 }

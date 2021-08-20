@@ -13,6 +13,7 @@ class Tiramisuk {
     private var maxIndexCallback: (Int) -> Unit = { Log.d("Tiramisu", "empty maxIndexSlot") }
 
     fun get(req: PageRequest) {
+        Log.d("Tiramisuk", "req: $req")
         if (req.uri != null) {
             mReq = req
             mScheduler.at(req)

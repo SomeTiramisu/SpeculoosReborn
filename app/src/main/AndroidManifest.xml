@@ -9,9 +9,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SpeculoosReborn"
         android:allowBackup="false">
-        <activity android:name=".ReaderActivity"
-            android:parentActivityName=".MainActivity">
-        </activity>
         <activity android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
