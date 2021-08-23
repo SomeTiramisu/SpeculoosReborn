@@ -97,7 +97,7 @@ class MainActivity : ComponentActivity() {
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxSize()
         ) {
-            TextButton(onClick = { pickFile(mainModel) }) {
+            TextButton(onClick = { getArchive.launch(arrayOf("*/*")) }) {
                 Text(text = "Pick")
             }
             TextButton(onClick = {
@@ -280,9 +280,5 @@ class MainActivity : ComponentActivity() {
                     View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
                     View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
                     View.SYSTEM_UI_FLAG_FULLSCREEN
-    }
-
-    private fun pickFile(mainModel: MainModel) {
-        getArchive.launch(arrayOf("*/*"))
     }
 }

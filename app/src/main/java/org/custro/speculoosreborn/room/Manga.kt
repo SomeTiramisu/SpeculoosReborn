@@ -7,5 +7,6 @@ import androidx.room.PrimaryKey
 data class Manga(
     @PrimaryKey val uri: String,
     //val cover: ByteArray?,
-    //val maxIndex: Int
+    //val maxIndex: Int,
+    //val order: List<Int>
 )

@@ -55,7 +55,6 @@ class PageModel : ViewModel() {
 
     fun onSizeChange(value: Pair<Int, Int>) {
         _size.value = value
-        //genRequest()
     }
 
     fun onUriChange(value: Uri) {
