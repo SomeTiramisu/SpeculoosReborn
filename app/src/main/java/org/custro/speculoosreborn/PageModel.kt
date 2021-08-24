@@ -8,10 +8,12 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.custro.speculoosreborn.libtiramisuk.Tiramisuk
+import org.custro.speculoosreborn.libtiramisuk.utils.PageCache
 import org.custro.speculoosreborn.libtiramisuk.utils.PageRequest
 import org.opencv.android.Utils
 
@@ -32,20 +34,6 @@ class PageModel : ViewModel() {
 
     private val _hiddenSlider = MutableLiveData(false)
     val hiddenSlider: LiveData<Boolean> = _hiddenSlider
-
-    init {
-        Log.d("PageModel", "created")
-        tiramisuk.connectImageCallback {
-            Log.d("ImageCallback", "imaged")
-            val bitmap = Bitmap.createBitmap(it.cols(), it.rows(), Bitmap.Config.ARGB_8888)
-            Utils.matToBitmap(it, bitmap)
-            _image.postValue(bitmap.asImageBitmap()) //called from another thread
-        }
-        tiramisuk.connectMaxIndexCallback {
-            Log.d("SizeCallback", "sized: $it")
-            _maxIndex.postValue(it) //same here maybe ?
-        }
-    }
 
     fun onIndexChange(value: Int) {
         Log.d("PageModel", "new index: $value")
@@ -69,9 +57,15 @@ class PageModel : ViewModel() {
         _hiddenSlider.value = value
     }
 
-    private fun genRequest() = CoroutineScope(Dispatchers.Default).launch {
-        val req = PageRequest(index.value!!, _size.value!!.first, _size.value!!.second, uri.value)
-        tiramisuk.get(req)
+    private fun genRequest() = viewModelScope.launch {
+        val localUri = PageCache.saveData(uri.value!!)
+        val req = PageRequest(index.value!!, _size.value!!.first, _size.value!!.second, localUri)
+        val it = tiramisuk.get(req)
+        Log.d("ImageCallback", "imaged")
+        val bitmap = Bitmap.createBitmap(it.cols(), it.rows(), Bitmap.Config.ARGB_8888)
+        Utils.matToBitmap(it, bitmap)
+        _image.postValue(bitmap.asImageBitmap()) //called from another thread
+
     }
 
     companion object {

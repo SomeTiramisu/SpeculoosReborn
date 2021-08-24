@@ -70,6 +70,7 @@ class MainActivity : ComponentActivity() {
 
         val mainModel: MainModel by viewModels()
         val pageModel: PageModel by viewModels()
+        pageModel.onSizeChange(getMetrics())
         setContent {
             MainNavigation(mainModel, pageModel)
         }
@@ -193,7 +194,8 @@ class MainActivity : ComponentActivity() {
             onValueChange = { sliding = true; sliderPosition = it },
             valueRange = if (maxIndex > 0) 0.0f..(maxIndex - 1).toFloat() else 0.0f..1.0f,
             onValueChangeFinished = {
-                sliding = false; onIndexChange(sliderPosition.toInt())
+                sliding = false
+                onIndexChange(sliderPosition.toInt())
                 Log.d("IndexSlider", "changed: $index, $maxIndex")
             }
         )

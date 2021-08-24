@@ -49,5 +49,9 @@ class PageCache() {
         private fun findExt(uri: Uri): String {
             return uri.lastPathSegment?.substringAfterLast('.', "") ?: ""
         }
+
+        fun delete() {
+            cacheDir?.deleteRecursively()
+        }
     }
 }
