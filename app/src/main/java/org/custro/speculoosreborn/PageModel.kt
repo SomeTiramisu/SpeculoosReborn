@@ -9,15 +9,18 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import org.custro.speculoosreborn.libtiramisuk.Tiramisuk
+import org.custro.speculoosreborn.libtiramisuk.PageScheduler
 import org.custro.speculoosreborn.libtiramisuk.utils.PageCache
 import org.custro.speculoosreborn.libtiramisuk.utils.PageRequest
 import org.opencv.android.Utils
 
 class PageModel : ViewModel() {
+    private val mScheduler = PageScheduler()
+    private var mUriOpenJob: Job? = null
+
     private val _uri: MutableLiveData<Uri?> = MutableLiveData(null)
     val uri: LiveData<Uri?> = _uri
 
@@ -46,29 +49,31 @@ class PageModel : ViewModel() {
     }
 
     fun onUriChange(value: Uri) {
-        if (value != _uri.value) {
-            _uri.value = value
-            _index.value = 0
+        Log.d("PageModel", "onUriChange called")
+            if (value != _uri.value) {
+                _uri.value = value
+                _index.value = 0
+                mUriOpenJob = viewModelScope.launch(Dispatchers.Default) {
+                val maxIndex = mScheduler.open(value)
+                _maxIndex.postValue(maxIndex)
+                    genRequest()
+            }
         }
-        genRequest()
     }
 
     fun onHiddenSliderChange(value: Boolean) {
         _hiddenSlider.value = value
     }
 
-    private fun genRequest() = viewModelScope.launch {
+    private fun genRequest() = viewModelScope.launch(Dispatchers.Default) {
         val localUri = PageCache.saveData(uri.value!!)
         val req = PageRequest(index.value!!, _size.value!!.first, _size.value!!.second, localUri)
-        val it = tiramisuk.get(req)
+        mUriOpenJob?.join()
+        val it = mScheduler.at(req)
         Log.d("ImageCallback", "imaged")
         val bitmap = Bitmap.createBitmap(it.cols(), it.rows(), Bitmap.Config.ARGB_8888)
         Utils.matToBitmap(it, bitmap)
         _image.postValue(bitmap.asImageBitmap()) //called from another thread
-
-    }
-
-    companion object {
-        val tiramisuk = Tiramisuk() //because ViewModel is cleared when back button pressed
+        mScheduler.seekPages(req)
     }
 }

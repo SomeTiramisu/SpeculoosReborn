@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 31
     buildToolsVersion "30.0.3"
 
     defaultConfig {
@@ -53,7 +53,7 @@ android {
         compose true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion '1.0.0-rc01'
+        kotlinCompilerExtensionVersion '1.0.0'
     }
 }
 
@@ -71,8 +71,6 @@ dependencies {
     // LiveData
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.3.1"
 
-    implementation project(':opencv')
-
     implementation 'androidx.compose.ui:ui:1.0.1'
     // Tooling support (Previews, etc.)
     implementation "androidx.compose.ui:ui-tooling:1.0.1"
@@ -89,8 +87,9 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-alpha07'
     // Integration with observables
     implementation 'androidx.compose.runtime:runtime-livedata:1.0.1'
+    implementation project(path: ':opencv')
     def room_version = "2.3.0"
     implementation "androidx.room:room-runtime:$room_version"
     kapt "androidx.room:room-compiler:$room_version"
-    implementation "androidx.navigation:navigation-compose:2.4.0-alpha06"
+    implementation "androidx.navigation:navigation-compose:2.4.0-alpha07"
 }

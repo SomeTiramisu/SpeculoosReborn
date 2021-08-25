@@ -2,10 +2,7 @@ package org.custro.speculoosreborn.libtiramisuk
 
 import android.net.Uri
 import android.util.Log
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.asCoroutineDispatcher
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import org.custro.speculoosreborn.libtiramisuk.parser.Parser
 import org.custro.speculoosreborn.libtiramisuk.utils.*
 import org.opencv.core.Rect
@@ -22,7 +19,7 @@ class CropScaleRunner(private val index: Int, private val parser: Parser) {
     suspend fun preload(req: PageRequest) {
         if (mPngRes == null || mPngResJob == null) {
             mPngResJob = coroutineScope {
-                launch {
+                launch(Dispatchers.IO) {
                     mPngRes = cropDetect()
                 }
             }

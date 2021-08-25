@@ -19,7 +19,9 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.material.Slider
+import androidx.compose.material.Text
+import androidx.compose.material.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -31,17 +33,10 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.navArgument
 import androidx.navigation.compose.rememberNavController
-import androidx.room.Room
-import kotlinx.coroutines.coroutineScope
-import org.custro.speculoosreborn.room.AppDatabase
-import org.custro.speculoosreborn.room.Manga
 
 class MainActivity : ComponentActivity() {
     private val getArchive =
@@ -82,9 +77,11 @@ class MainActivity : ComponentActivity() {
         val navController = rememberNavController()
         NavHost(navController = navController, startDestination = "initScreen") {
             composable("initScreen") {
+                showSystemUi()
                 InitScreen(mainModel, navController)
             }
             composable("readerScreen") {
+                //hideSystemUi()
                 mainModel.archiveUri.value?.let { uri -> pageModel.onUriChange(uri) }
                 ReaderScreen(pageModel)
             }
@@ -102,8 +99,6 @@ class MainActivity : ComponentActivity() {
                 Text(text = "Pick")
             }
             TextButton(onClick = {
-                //startReader(mainModel)
-                //hideSystemUi()
                 navController.navigate("readerScreen")
                 }) {
                 Text(text = "Start")
@@ -282,5 +277,10 @@ class MainActivity : ComponentActivity() {
                     View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
                     View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
                     View.SYSTEM_UI_FLAG_FULLSCREEN
+    }
+
+    @Suppress("DEPRECATION")
+    private fun showSystemUi() {
+        window.decorView.systemUiVisibility = View.VISIBLE
     }
 }

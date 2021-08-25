@@ -38,6 +38,7 @@ class ZipFileParser(override val uri: Uri) : Parser {
     }
 
     override fun at(index: Int): Uri {
+        Log.d("ZipFileParser", "Reading $index")
         val zipFile = ZipFile(uri.toFile(), OPEN_READ)
         val entryInputStream = zipFile.getInputStream(zipFile.getEntry(headers[index].filename))
         val r = PageCache.saveData(entryInputStream)
