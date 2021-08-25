@@ -37,6 +37,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import org.custro.speculoosreborn.libtiramisuk.utils.PageCache
 
 class MainActivity : ComponentActivity() {
     private val getArchive =
@@ -71,6 +72,11 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        PageCache.delete()
+    }
+
     @ExperimentalAnimationApi
     @Composable
     fun MainNavigation(mainModel: MainModel, pageModel: PageModel) {
@@ -81,7 +87,7 @@ class MainActivity : ComponentActivity() {
                 InitScreen(mainModel, navController)
             }
             composable("readerScreen") {
-                //hideSystemUi()
+                hideSystemUi()
                 mainModel.archiveUri.value?.let { uri -> pageModel.onUriChange(uri) }
                 ReaderScreen(pageModel)
             }
@@ -260,8 +266,6 @@ class MainActivity : ComponentActivity() {
     @Suppress("DEPRECATION")
     private fun getMetrics(): Pair<Int, Int> {
         val metrics = DisplayMetrics()
-        //windowManager.defaultDisplay.getRealMetrics(metrics)
-        //peekAvailableContext()!!.display!!.getRealMetrics(metrics)
         windowManager.defaultDisplay.getRealMetrics(metrics)
         val width = metrics.widthPixels
         val height = metrics.heightPixels
@@ -279,8 +283,17 @@ class MainActivity : ComponentActivity() {
                     View.SYSTEM_UI_FLAG_FULLSCREEN
     }
 
-    @Suppress("DEPRECATION")
-    private fun showSystemUi() {
+    private fun hideSystemUiNew() {
+        window.decorView.systemUiVisibility =
+            View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or
+                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
+                    View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
+                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
+                    View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
+                    View.SYSTEM_UI_FLAG_FULLSCREEN
+    }
+
+    private fun showSystemUiNew() {
         window.decorView.systemUiVisibility = View.VISIBLE
     }
 }

@@ -16,6 +16,7 @@ import org.custro.speculoosreborn.libtiramisuk.PageScheduler
 import org.custro.speculoosreborn.libtiramisuk.utils.PageCache
 import org.custro.speculoosreborn.libtiramisuk.utils.PageRequest
 import org.opencv.android.Utils
+import org.opencv.core.Mat
 
 class PageModel : ViewModel() {
     private val mScheduler = PageScheduler()
@@ -66,14 +67,17 @@ class PageModel : ViewModel() {
     }
 
     private fun genRequest() = viewModelScope.launch(Dispatchers.Default) {
-        val localUri = PageCache.saveData(uri.value!!)
-        val req = PageRequest(index.value!!, _size.value!!.first, _size.value!!.second, localUri)
+        val req = PageRequest(index.value!!, _size.value!!.first, _size.value!!.second, _uri.value!!)
         mUriOpenJob?.join()
         val it = mScheduler.at(req)
         Log.d("ImageCallback", "imaged")
-        val bitmap = Bitmap.createBitmap(it.cols(), it.rows(), Bitmap.Config.ARGB_8888)
-        Utils.matToBitmap(it, bitmap)
-        _image.postValue(bitmap.asImageBitmap()) //called from another thread
+        _image.postValue(matToBitmap(it).asImageBitmap()) //called from another thread
         mScheduler.seekPages(req)
+    }
+
+    private fun matToBitmap(src: Mat): Bitmap {
+        val bitmap = Bitmap.createBitmap(src.cols(), src.rows(), Bitmap.Config.ARGB_8888)
+        Utils.matToBitmap(src, bitmap)
+        return bitmap
     }
 }

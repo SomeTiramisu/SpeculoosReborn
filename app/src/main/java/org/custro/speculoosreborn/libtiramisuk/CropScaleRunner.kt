@@ -9,47 +9,30 @@ import org.opencv.core.Rect
 import java.util.concurrent.Executors
 
 class CropScaleRunner(private val index: Int, private val parser: Parser) {
-    private var mPageRes: PagePair? = null
-    private var mPageResJob: Job? = null
-    private var mPngRes: PngPair? = null
-    private var mPngResJob: Job? = null
-    private var mReq: PageRequest? = null
+    private val scope = CoroutineScope(Dispatchers.Default)
+    private var mPageResJob: Deferred<PagePair>? = null
 
-
-    suspend fun preload(req: PageRequest) {
-        if (mPngRes == null || mPngResJob == null) {
-            mPngResJob = coroutineScope {
-                launch(Dispatchers.IO) {
-                    mPngRes = cropDetect()
-                }
+    fun preload(req: PageRequest) {
+        if (mPageResJob == null) {
+            mPageResJob = scope.async(start = CoroutineStart.LAZY) {
+                val pngRes: PngPair
+                withContext(Dispatchers.IO) {pngRes = cropDetect()}
+                cropScale(pngRes, req)
             }
-        }
-        mPngResJob!!.join()
-        if (mReq != req || mPageRes == null || mPageResJob == null) {
-            mReq = req
-            mPageResJob = coroutineScope {
-                launch {
-                    mPageRes = cropScale(mPngRes!!, req)
-                }
-            }
+            mPageResJob!!.start()
         }
     }
 
     suspend fun get(req: PageRequest): PagePair {
-        preload(req)
-        mPageResJob!!.join()
-        return mPageRes!!
+        if (mPageResJob == null) {
+            preload(req)
+        }
+        return mPageResJob!!.await()
     }
 
     fun clear() {
         mPageResJob?.cancel()
         mPageResJob = null
-        mPageRes = null
-    }
-
-    fun finalClear() {
-        mPageResJob?.cancel()
-        mPngResJob?.cancel()
     }
 
     private fun cropScale(p: PngPair, req: PageRequest): PagePair {

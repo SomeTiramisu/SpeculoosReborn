@@ -23,7 +23,7 @@ class PageScheduler {
         val localUri = PageCache.saveData(uri)
         val parser = ParserFactory.create(localUri)
         for (x in mPages) {
-            x.finalClear()
+            x.clear()
         }
         mPages = List(parser!!.size) { index ->
             CropScaleRunner(index, parser)
