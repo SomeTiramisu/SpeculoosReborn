@@ -57,6 +57,7 @@ class PageModel : ViewModel() {
             if (value != _uri.value) {
                 _uri.value = value
                 _index.value = 0
+                _image.value = ImageBitmap(1, 1)
                 mUriOpenJob = viewModelScope.launch(Dispatchers.Default) {
                 val maxIndex = mScheduler.open(value)
                 _maxIndex.postValue(maxIndex)
