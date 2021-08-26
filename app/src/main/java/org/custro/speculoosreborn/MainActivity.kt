@@ -283,6 +283,7 @@ class MainActivity : ComponentActivity() {
                     View.SYSTEM_UI_FLAG_FULLSCREEN
     }
 
+    @Suppress("DEPRECATION")
     private fun hideSystemUiNew() {
         window.decorView.systemUiVisibility =
             View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or
@@ -293,6 +294,12 @@ class MainActivity : ComponentActivity() {
                     View.SYSTEM_UI_FLAG_FULLSCREEN
     }
 
+    @Suppress("DEPRECATION")
+    private fun showSystemUi() {
+        window.decorView.systemUiVisibility = View.VISIBLE
+    }
+
+    @Suppress("DEPRECATION")
     private fun showSystemUiNew() {
         window.decorView.systemUiVisibility = View.VISIBLE
     }
