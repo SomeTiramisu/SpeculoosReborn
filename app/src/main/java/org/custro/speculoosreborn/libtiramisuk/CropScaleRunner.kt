@@ -36,7 +36,7 @@ class CropScaleRunner(private val index: Int, private val parser: Parser) {
     }
 
     private fun cropScale(p: PngPair, req: PageRequest): PagePair {
-        val img = fromByteArray(PageCache.loadData(p.uri))
+        val img = fromByteArray(p.img)
         if (!img.empty()) {
             cropScaleProcess(img, img, p.rec, req.width, req.height)
             if (p.isBlack) {
@@ -49,8 +49,8 @@ class CropScaleRunner(private val index: Int, private val parser: Parser) {
     }
 
     private fun cropDetect(): PngPair {
-        val uri = parser.at(index)
-        val img = fromByteArray(PageCache.loadData(uri))
+        val png = parser.at(index)
+        val img = fromByteArray(png)
         var roi = Rect()
         var isBlack = false
         if (!img.empty() && index != 0) {
@@ -60,6 +60,6 @@ class CropScaleRunner(private val index: Int, private val parser: Parser) {
 
         }
         Log.d("CropDetect", "running: $index");
-        return PngPair(uri, roi, isBlack)
+        return PngPair(png, roi, isBlack)
     }
 }

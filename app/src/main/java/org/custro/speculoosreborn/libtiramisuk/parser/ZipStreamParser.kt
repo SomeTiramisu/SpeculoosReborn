@@ -39,7 +39,7 @@ class ZipStreamParser(override val uri: Uri) : Parser {
         //Log.d("ZipParser", "size: ${headers.size}")
     }
 
-    override fun at(index: Int): Uri {
+    override fun at(index: Int): ByteArray {
         val zipStream = ZipInputStream(getInputStream())
         for (i in 0..headers[index].index) {
             zipStream.nextEntry
@@ -48,7 +48,7 @@ class ZipStreamParser(override val uri: Uri) : Parser {
         //Log.d("ZipParser", entry.size.toString())
         //val buffer = zipStream.readBytes()
         //val r = PageCache.saveData(buffer)
-        val r = PageCache.saveData(zipStream)
+        val r = zipStream.readBytes()
         zipStream.close()
         return r
     }

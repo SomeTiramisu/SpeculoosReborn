@@ -11,7 +11,7 @@ import org.custro.speculoosreborn.libtiramisuk.utils.PageRequest
 import org.opencv.core.Mat
 
 class PageScheduler {
-    private val mImagePreload: Int = 20
+    private val mImagePreload: Int = 5
     private var mPages: List<CropScaleRunner> = listOf()
 
     init {

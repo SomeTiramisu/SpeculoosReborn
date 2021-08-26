@@ -38,14 +38,14 @@ class RarStreamParser(override val uri: Uri) : Parser {
         headers.sortWith(entryNaturalOrder)
     }
 
-    override fun at(index: Int): Uri {
+    override fun at(index: Int): ByteArray {
         val rar = Archive(getInputStream())
         var e: FileHeader? = null
         for (i in 0..headers[index].index) {
             e = rar.nextFileHeader()
         }
         val iStream = rar.getInputStream(e)
-        val r = PageCache.saveData(iStream)
+        val r = iStream.readBytes()
         iStream.close()
         rar.close()
         return r

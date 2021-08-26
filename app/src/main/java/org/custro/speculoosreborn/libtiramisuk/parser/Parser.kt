@@ -5,7 +5,7 @@ import android.net.Uri
 interface Parser {
     val uri: Uri
     val size: Int
-    fun at(index: Int): Uri
+    fun at(index: Int): ByteArray
 }
 
 data class Header(val index: Int, val filename: String)

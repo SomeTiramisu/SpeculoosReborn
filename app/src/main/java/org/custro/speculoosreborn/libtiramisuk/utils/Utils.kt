@@ -9,4 +9,4 @@ data class PageRequest(val index: Int = -1, val width: Int = -1, val height: Int
 
 data class PagePair(val img: Mat = Mat(), val req: PageRequest = PageRequest())
 
-data class PngPair(val uri: Uri, val rec: Rect, val isBlack: Boolean = false)
+data class PngPair(val img: ByteArray, val rec: Rect, val isBlack: Boolean = false)
