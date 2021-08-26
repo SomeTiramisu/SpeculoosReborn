@@ -72,11 +72,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        PageCache.delete()
-    }
-
     @ExperimentalAnimationApi
     @Composable
     fun MainNavigation(mainModel: MainModel, pageModel: PageModel) {
