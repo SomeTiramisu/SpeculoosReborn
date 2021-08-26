@@ -32,6 +32,7 @@ class PageModel : ViewModel() {
     val maxIndex: LiveData<Int> = _maxIndex
 
     private val _size = MutableLiveData(Pair(0, 0))
+    val size: LiveData<Pair<Int, Int>> = _size
 
     private val _image = MutableLiveData(ImageBitmap(1, 1))
     val image: LiveData<ImageBitmap> = _image
@@ -46,7 +47,9 @@ class PageModel : ViewModel() {
     }
 
     fun onSizeChange(value: Pair<Int, Int>) {
+        Log.d("PageModel", "OnSizeChange called, new size: ${value.first}:${value.second}")
         _size.value = value
+        genRequest()
     }
 
     fun onUriChange(value: Uri) {
@@ -67,6 +70,9 @@ class PageModel : ViewModel() {
     }
 
     private fun genRequest() = viewModelScope.launch(Dispatchers.Default) {
+        if (_uri.value == null) {
+            return@launch
+        }
         val req = PageRequest(index.value!!, _size.value!!.first, _size.value!!.second, _uri.value!!)
         mUriOpenJob?.join()
         val it = mScheduler.at(req)

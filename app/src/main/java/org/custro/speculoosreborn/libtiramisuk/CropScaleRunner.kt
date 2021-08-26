@@ -11,6 +11,7 @@ import java.util.concurrent.Executors
 class CropScaleRunner(private val index: Int, private val parser: Parser) {
     private val scope = CoroutineScope(Dispatchers.Default)
     private var mPageResJob: Deferred<PagePair>? = null
+    private var mReq: PageRequest? = null
 
     fun preload(req: PageRequest) {
         if (mPageResJob == null) {
@@ -24,7 +25,9 @@ class CropScaleRunner(private val index: Int, private val parser: Parser) {
     }
 
     suspend fun get(req: PageRequest): PagePair {
-        if (mPageResJob == null) {
+        if (mPageResJob == null || req != mReq) {
+            mReq = req
+            clear()
             preload(req)
         }
         return mPageResJob!!.await()

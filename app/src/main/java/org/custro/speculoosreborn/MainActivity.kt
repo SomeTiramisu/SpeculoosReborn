@@ -49,8 +49,7 @@ class MainActivity : ComponentActivity() {
             }
         }) { uri: Uri? ->
             if (uri != null) {
-                val mainModel: MainModel by viewModels()
-                mainModel.onArchiveUriChange(uri)
+                pageModel.onUriChange(uri)
                 contentResolver.takePersistableUriPermission(
                     uri, Intent.FLAG_GRANT_READ_URI_PERMISSION or
                             Intent.FLAG_GRANT_WRITE_URI_PERMISSION
@@ -59,38 +58,42 @@ class MainActivity : ComponentActivity() {
             }
         }
 
+    private val mainModel: MainModel by viewModels()
+    private val pageModel: PageModel by viewModels()
+
     @ExperimentalAnimationApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         System.loadLibrary("opencv_java4")
 
-        val mainModel: MainModel by viewModels()
-        val pageModel: PageModel by viewModels()
-        pageModel.onSizeChange(getMetrics())
         setContent {
-            MainNavigation(mainModel, pageModel)
+            MainNavigation()
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        pageModel.onSizeChange(getMetrics())
     }
 
     @ExperimentalAnimationApi
     @Composable
-    fun MainNavigation(mainModel: MainModel, pageModel: PageModel) {
+    fun MainNavigation() {
         val navController = rememberNavController()
         NavHost(navController = navController, startDestination = "initScreen") {
             composable("initScreen") {
                 showSystemUi()
-                InitScreen(mainModel, navController)
+                InitScreen(navController)
             }
             composable("readerScreen") {
                 hideSystemUi()
-                mainModel.archiveUri.value?.let { uri -> pageModel.onUriChange(uri) }
-                ReaderScreen(pageModel)
+                ReaderScreen()
             }
         }
     }
 
     @Composable
-    fun InitScreen(mainModel: MainModel, navController: NavController) {
+    fun InitScreen(navController: NavController) {
         Column(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -109,7 +112,7 @@ class MainActivity : ComponentActivity() {
 
     @ExperimentalAnimationApi
     @Composable
-    fun ReaderScreen(pageModel: PageModel) {
+    fun ReaderScreen() {
         val index: Int by pageModel.index.observeAsState(0)
         val maxIndex: Int by pageModel.maxIndex.observeAsState(0)
         val image: ImageBitmap by pageModel.image.observeAsState(ImageBitmap(1, 1))
