@@ -30,10 +30,7 @@ package org.custro.speculoosreborn.libtiramisuk.utils;
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import java.util.Arrays;
 import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * This is an updated version with enhancements made by Daniel Migowski,

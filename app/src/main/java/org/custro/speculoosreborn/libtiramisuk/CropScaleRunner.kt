@@ -1,12 +1,10 @@
 package org.custro.speculoosreborn.libtiramisuk
 
-import android.net.Uri
 import android.util.Log
 import kotlinx.coroutines.*
 import org.custro.speculoosreborn.libtiramisuk.parser.Parser
 import org.custro.speculoosreborn.libtiramisuk.utils.*
 import org.opencv.core.Rect
-import java.util.concurrent.Executors
 
 class CropScaleRunner(private val index: Int, private val parser: Parser) {
     private val scope = CoroutineScope(Dispatchers.Default)

@@ -13,7 +13,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.custro.speculoosreborn.libtiramisuk.PageScheduler
-import org.custro.speculoosreborn.libtiramisuk.utils.PageCache
 import org.custro.speculoosreborn.libtiramisuk.utils.PageRequest
 import org.opencv.android.Utils
 import org.opencv.core.Mat
@@ -49,6 +48,7 @@ class PageModel : ViewModel() {
     fun onSizeChange(value: Pair<Int, Int>) {
         Log.d("PageModel", "OnSizeChange called, new size: ${value.first}:${value.second}")
         _size.value = value
+        //_image.value = ImageBitmap(1, 1) //to avoid flicker
         genRequest()
     }
 

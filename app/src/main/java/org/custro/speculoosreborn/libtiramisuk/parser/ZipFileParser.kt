@@ -1,17 +1,11 @@
 package org.custro.speculoosreborn.libtiramisuk.parser
 
-import android.content.ContentResolver
-import android.content.Context
 import android.net.Uri
 import android.util.Log
 import androidx.core.net.toFile
-import org.custro.speculoosreborn.App
 import org.custro.speculoosreborn.libtiramisuk.utils.AlphanumComparator
-import org.custro.speculoosreborn.libtiramisuk.utils.PageCache
-import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
 import java.util.zip.ZipFile.OPEN_READ
-import java.util.zip.ZipInputStream
 
 
 class ZipFileParser(override val uri: Uri) : Parser {

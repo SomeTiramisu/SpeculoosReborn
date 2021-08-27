@@ -1,14 +1,11 @@
 package org.custro.speculoosreborn.libtiramisuk.utils
 
-import android.util.Log
 import org.opencv.core.*
 import org.opencv.core.Core.merge
 import org.opencv.core.Core.split
 import org.opencv.imgcodecs.Imgcodecs
 import org.opencv.imgproc.Imgproc
 import org.opencv.imgproc.Imgproc.boundingRect
-import java.nio.ByteBuffer
-import kotlin.math.abs
 import kotlin.math.min
 
 // A line will be considered as having content if 0.25% of it is filled.

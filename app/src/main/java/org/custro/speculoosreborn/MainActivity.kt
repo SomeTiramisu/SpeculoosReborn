@@ -4,10 +4,12 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.View
+import android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
@@ -37,7 +39,6 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import org.custro.speculoosreborn.libtiramisuk.utils.PageCache
 
 class MainActivity : ComponentActivity() {
     private val getArchive =
@@ -66,6 +67,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         System.loadLibrary("opencv_java4")
 
+        showOnCutout()
         setContent {
             MainNavigation()
         }
@@ -295,6 +297,12 @@ class MainActivity : ComponentActivity() {
     @Suppress("DEPRECATION")
     private fun showSystemUi() {
         window.decorView.systemUiVisibility = View.VISIBLE
+    }
+
+    private fun showOnCutout() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            window.attributes.layoutInDisplayCutoutMode = LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
+        }
     }
 
     @Suppress("DEPRECATION")

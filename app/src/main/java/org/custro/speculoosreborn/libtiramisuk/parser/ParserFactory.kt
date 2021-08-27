@@ -1,7 +1,5 @@
 package org.custro.speculoosreborn.libtiramisuk.parser
 
-import android.content.ContentResolver
-import android.content.Context
 import android.net.Uri
 
 class ParserFactory() {

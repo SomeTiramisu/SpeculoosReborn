@@ -2,9 +2,6 @@ package org.custro.speculoosreborn.libtiramisuk
 
 import android.net.Uri
 import android.util.Log
-import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
 import org.custro.speculoosreborn.libtiramisuk.parser.ParserFactory
 import org.custro.speculoosreborn.libtiramisuk.utils.PageCache
 import org.custro.speculoosreborn.libtiramisuk.utils.PageRequest
