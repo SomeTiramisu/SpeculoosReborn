@@ -10,7 +10,7 @@ import java.util.zip.ZipInputStream
 
 
 class ZipStreamParser(override val uri: Uri) : Parser {
-    private val resolver = App.instance!!.contentResolver
+    private val resolver = App.instance.contentResolver
     private val headers: MutableList<Header> = mutableListOf()
     override val size: Int
         get() {
