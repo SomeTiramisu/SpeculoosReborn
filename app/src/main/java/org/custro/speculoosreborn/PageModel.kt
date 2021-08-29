@@ -36,6 +36,9 @@ class PageModel : ViewModel() {
     private val _image = MutableLiveData(ImageBitmap(1, 1))
     val image: LiveData<ImageBitmap> = _image
 
+    private val _background = MutableLiveData(ImageBitmap(1, 1))
+    val background: LiveData<ImageBitmap> = _background
+
     private val _hiddenSlider = MutableLiveData(false)
     val hiddenSlider: LiveData<Boolean> = _hiddenSlider
 
@@ -54,16 +57,20 @@ class PageModel : ViewModel() {
 
     fun onUriChange(value: Uri) {
         Log.d("PageModel", "onUriChange called")
-            if (value != _uri.value) {
-                _uri.value = value
-                _index.value = 0
-                _image.value = ImageBitmap(1, 1)
-                mUriOpenJob = viewModelScope.launch(Dispatchers.Default) {
+        if (value != _uri.value) {
+            _uri.value = value
+            _index.value = 0
+            _image.value = ImageBitmap(1, 1)
+            mUriOpenJob = viewModelScope.launch(Dispatchers.Default) {
                 val maxIndex = mScheduler.open(value)
                 _maxIndex.postValue(maxIndex)
-                    genRequest()
+                genRequest()
             }
         }
+    }
+
+    fun onBackgroundChange(value: ImageBitmap) {
+        _background.value = value
     }
 
     fun onHiddenSliderChange(value: Boolean) {
@@ -74,7 +81,8 @@ class PageModel : ViewModel() {
         if (_uri.value == null) {
             return@launch
         }
-        val req = PageRequest(index.value!!, _size.value!!.first, _size.value!!.second, _uri.value!!)
+        val req =
+            PageRequest(index.value!!, _size.value!!.first, _size.value!!.second, _uri.value!!)
         mUriOpenJob?.join()
         val it = mScheduler.at(req)
         Log.d("ImageCallback", "imaged")
