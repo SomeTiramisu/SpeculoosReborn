@@ -24,7 +24,6 @@ fun InitScreen(findManga: () -> Unit, navigateToReaderScreen: () -> Unit) {
         ) {
             TextButton(onClick = {
                 navigateToReaderScreen()
-                //navController.navigate("readerScreen")
             }) {
                 Text(text = "Start")
             }

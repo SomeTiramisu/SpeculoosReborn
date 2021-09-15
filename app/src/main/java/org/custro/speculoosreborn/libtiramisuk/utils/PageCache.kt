@@ -13,7 +13,7 @@ import java.io.InputStream
 class PageCache() {
     companion object {
         private val cacheDir =
-            if (Environment.getExternalStorageState() == Environment.MEDIA_MOUNTED) App.instance!!.externalCacheDir else App.instance!!.cacheDir
+            if (Environment.getExternalStorageState() == Environment.MEDIA_MOUNTED) App.instance.externalCacheDir else App.instance.cacheDir
 
         fun saveData(data: ByteArray): Uri { // return a file: scheme uri
             val output = File(cacheDir, data.hashCode().toString())
@@ -23,7 +23,7 @@ class PageCache() {
 
         fun saveData(uri: Uri): Uri { // return a file: scheme uri
             val output = File(cacheDir, uri.hashCode().toString()+"."+findExt(uri))
-            val inputStream = App.instance!!.contentResolver.openInputStream(uri)
+            val inputStream = App.instance.contentResolver.openInputStream(uri)
             val outputStream = FileOutputStream(output)
             inputStream!!.copyTo(outputStream)
             inputStream.close()

@@ -31,10 +31,6 @@ fun ReaderScreen(pageModel: PageModel = viewModel()) {
     val hiddenSlider: Boolean by pageModel.hiddenSlider.observeAsState(false)
     val background: ImageBitmap by pageModel.background.observeAsState(ImageBitmap(1, 1))
     val size: Pair<Int, Int> by pageModel.size.observeAsState(Pair(0, 0))
-    /* = remember {
-        val bitmap = BitmapFactory.decodeStream(assets.open("background.png"))
-        bitmap.asImageBitmap()
-    }*/
     Background(bitmap = background, width = size.first, height = size.second)
     Page(bitmap = image)
     TapBox(

@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
 import org.custro.speculoosreborn.room.AppDatabase
 import org.custro.speculoosreborn.room.Manga
 
-class MainModel: ViewModel() {
+class InitModel: ViewModel() {
     private val _archiveUri = MutableLiveData(Uri.EMPTY)
     val archiveUri: LiveData<Uri> = _archiveUri
 
@@ -20,12 +20,12 @@ class MainModel: ViewModel() {
     val openReadNow: LiveData<Boolean?> = _openReadNow
 
     private val db =
-        Room.databaseBuilder(App.instance!!.applicationContext, AppDatabase::class.java, "manga-database").build()
+        Room.databaseBuilder(App.instance.applicationContext, AppDatabase::class.java, "manga-database").build()
 
     fun insertManga(manga: Manga) {
         viewModelScope.launch(Dispatchers.Default) {
             db.mangaDao().insertAll(manga)
-            Log.d("MainModel", "inserted: ${manga.uri.toString()}")
+            Log.d("MainModel", "inserted: ${manga.uri}")
         }
     }
 
