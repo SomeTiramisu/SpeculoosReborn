@@ -16,4 +16,7 @@ interface MangaDao {
 
     @Delete
     fun delete(manga: Manga)
+
+    @Query("DELETE FROM manga WHERE uri = :uri")
+    fun deleteUri(uri: String)
 }

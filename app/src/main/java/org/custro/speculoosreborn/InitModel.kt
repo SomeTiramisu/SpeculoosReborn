@@ -1,5 +1,6 @@
 package org.custro.speculoosreborn
 
+import android.database.sqlite.SQLiteConstraintException
 import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.LiveData
@@ -20,12 +21,23 @@ class InitModel: ViewModel() {
 
     fun insertManga(manga: Manga) {
         viewModelScope.launch(Dispatchers.Default) {
-            db.mangaDao().insertAll(manga)
-            Log.d("MainModel", "inserted: ${manga.uri}")
+            try {
+                db.mangaDao().insertAll(manga)
+                Log.d("MainModel", "inserted: ${manga.uri}")
+            } catch (e: SQLiteConstraintException) { //quite sure that should not be here
+                Log.d("MainModel", "already inserted: ${manga.uri}")
+            }
         }
     }
 
     fun getMangas(): LiveData<List<Manga>> {
         return db.mangaDao().getAll()
+    }
+
+    fun deleteManga(uri: String) {
+        viewModelScope.launch(Dispatchers.Default) {
+            db.mangaDao().deleteUri(uri)
+            Log.d("MainModel", "deleted: $uri")
+        }
     }
 }

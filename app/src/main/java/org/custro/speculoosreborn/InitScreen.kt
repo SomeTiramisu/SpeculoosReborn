@@ -1,6 +1,7 @@
 package org.custro.speculoosreborn
 
 import android.net.Uri
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -18,7 +19,12 @@ import androidx.compose.ui.unit.dp
 import org.custro.speculoosreborn.room.Manga
 
 @Composable
-fun InitScreen(initModel: InitModel, findManga: () -> Unit, setManga: (Uri) -> Unit, navigateToReaderScreen: () -> Unit) {
+fun InitScreen(
+    initModel: InitModel,
+    findManga: () -> Unit,
+    setManga: (Uri) -> Unit,
+    navigateToReaderScreen: () -> Unit
+) {
     val mangas: List<Manga> by initModel.getMangas().observeAsState(listOf(Manga("")))
     Scaffold(floatingActionButton = {
         FloatingActionButton(onClick = { findManga() }) {
@@ -32,16 +38,44 @@ fun InitScreen(initModel: InitModel, findManga: () -> Unit, setManga: (Uri) -> U
                 .fillMaxSize()
                 .verticalScroll(state = rememberScrollState(), enabled = true)
         ) {
-            for(m in mangas) {
+            for (m in mangas) {
+                /*
                 Button(onClick = { setManga(Uri.parse(m.uri)); navigateToReaderScreen()},
                    modifier = Modifier.padding(16.dp)) {
-                   Uri.parse(m.uri).lastPathSegment?.let { it1 -> Text(text = it1.split(':').last()) }
+                   Uri.parse(m.uri).lastPathSegment?.let { it1 -> Text(text = it1.split(':').last().split('/').last()) }
                 }
+                */
+                MangaCard(manga = m,
+                    onRead = { setManga(Uri.parse(it)); navigateToReaderScreen() },
+                    onDelete = { initModel.deleteManga(it) })
             }
             TextButton(onClick = {
                 navigateToReaderScreen()
             }) {
                 Text(text = "Start")
+            }
+        }
+    }
+}
+
+@Composable
+fun MangaCard(manga: Manga, onRead: (uri: String) -> Unit, onDelete: (uri: String) -> Unit) {
+    Card(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column() {
+            Uri.parse(manga.uri).lastPathSegment?.let { it1 ->
+                Text(
+                    text = it1.split(':').last().split('/').last()
+                )
+            }
+            Row() {
+                Button(onClick = { onDelete(manga.uri) }) {
+                    Text(text = "Remove")
+                }
+                Button(onClick = { onRead(manga.uri) }) {
+                    Text(text = "Read")
+                }
             }
         }
     }
