@@ -1,27 +1,43 @@
 package org.custro.speculoosreborn
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
+import android.net.Uri
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import org.custro.speculoosreborn.room.Manga
 
 @Composable
-fun InitScreen(findManga: () -> Unit, navigateToReaderScreen: () -> Unit) {
+fun InitScreen(initModel: InitModel, findManga: () -> Unit, setManga: (Uri) -> Unit, navigateToReaderScreen: () -> Unit) {
+    val mangas: List<Manga> by initModel.getMangas().observeAsState(listOf(Manga("")))
     Scaffold(floatingActionButton = {
-        FloatingActionButton(onClick = { findManga() /*/* getArchive.launch(arrayOf("*/*")) */ }) {
+        FloatingActionButton(onClick = { findManga() }) {
             Icon(Icons.Filled.Add, contentDescription = "Pick file and add it to library")
         }
     }) {
         Column(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(state = rememberScrollState(), enabled = true)
         ) {
+            for(m in mangas) {
+                Button(onClick = { setManga(Uri.parse(m.uri)); navigateToReaderScreen()},
+                   modifier = Modifier.padding(16.dp)) {
+                   Uri.parse(m.uri).lastPathSegment?.let { it1 -> Text(text = it1.split(':').last()) }
+                }
+            }
             TextButton(onClick = {
                 navigateToReaderScreen()
             }) {

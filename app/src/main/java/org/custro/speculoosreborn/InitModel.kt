@@ -14,10 +14,6 @@ import org.custro.speculoosreborn.room.Manga
 
 class InitModel: ViewModel() {
     private val _archiveUri = MutableLiveData(Uri.EMPTY)
-    val archiveUri: LiveData<Uri> = _archiveUri
-
-    private val _openReadNow: MutableLiveData<Boolean?> = MutableLiveData(false)
-    val openReadNow: LiveData<Boolean?> = _openReadNow
 
     private val db =
         Room.databaseBuilder(App.instance.applicationContext, AppDatabase::class.java, "manga-database").build()
@@ -31,10 +27,5 @@ class InitModel: ViewModel() {
 
     fun getMangas(): LiveData<List<Manga>> {
         return db.mangaDao().getAll()
-    }
-
-    fun onArchiveUriChange(value: Uri) {
-        _archiveUri.value = value
-        //insertManga(Manga(value.toString()))
     }
 }

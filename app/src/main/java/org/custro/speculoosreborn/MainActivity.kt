@@ -14,7 +14,9 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.ui.graphics.asImageBitmap
+import org.custro.speculoosreborn.room.Manga
 
 class MainActivity : ComponentActivity() {
     private val getArchive =
@@ -26,7 +28,8 @@ class MainActivity : ComponentActivity() {
             }
         }) { uri: Uri? ->
             if (uri != null) {
-                pageModel.onUriChange(uri)
+                //pageModel.onUriChange(uri)
+                initModel.insertManga(Manga(uri.toString()))
                 contentResolver.takePersistableUriPermission(
                     uri, Intent.FLAG_GRANT_READ_URI_PERMISSION or
                             Intent.FLAG_GRANT_WRITE_URI_PERMISSION
@@ -35,7 +38,7 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-    //private val mainModel: MainModel by viewModels()
+    private val initModel: InitModel by viewModels()
     private val pageModel: PageModel by viewModels()
 
     @ExperimentalAnimationApi
@@ -47,6 +50,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             MainNavigation(
                 pageModel = pageModel,
+                initModel = initModel,
                 findManga = { getArchive.launch(arrayOf("*/*")) },
                 showSystemUi = { showSystemUi() },
                 hideSystemUi = { hideSystemUi() }

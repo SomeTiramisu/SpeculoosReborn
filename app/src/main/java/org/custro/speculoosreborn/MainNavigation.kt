@@ -1,6 +1,7 @@
 package org.custro.speculoosreborn
 
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -10,6 +11,7 @@ import androidx.navigation.compose.rememberNavController
 @Composable
 fun MainNavigation(
     pageModel: PageModel,
+    initModel: InitModel,
     findManga: () -> Unit,
     showSystemUi: () -> Unit,
     hideSystemUi: () -> Unit
@@ -18,7 +20,7 @@ fun MainNavigation(
     NavHost(navController = navController, startDestination = "initScreen") {
         composable("initScreen") {
             showSystemUi()
-            InitScreen(findManga = findManga, navigateToReaderScreen = {
+            InitScreen(initModel = initModel, findManga = findManga, setManga = { pageModel.onUriChange(it) }, navigateToReaderScreen = {
                 navController.navigate("readerScreen")
             })
         }
