@@ -5,7 +5,7 @@ An alpha stage manga reader
 * Custom background textures
 * Auto crop
 * Dark borders detection and recreation
-* Good look resizing (bicubic)
+* Nice resizing (bicubic)
 
 ## Screenshots
 ![reader](/screenshots/reader.png)
