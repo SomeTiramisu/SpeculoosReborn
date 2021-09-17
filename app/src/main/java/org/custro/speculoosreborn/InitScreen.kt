@@ -39,12 +39,6 @@ fun InitScreen(
                 .verticalScroll(state = rememberScrollState(), enabled = true)
         ) {
             for (m in mangas) {
-                /*
-                Button(onClick = { setManga(Uri.parse(m.uri)); navigateToReaderScreen()},
-                   modifier = Modifier.padding(16.dp)) {
-                   Uri.parse(m.uri).lastPathSegment?.let { it1 -> Text(text = it1.split(':').last().split('/').last()) }
-                }
-                */
                 MangaCard(manga = m,
                     onRead = { setManga(Uri.parse(it)); navigateToReaderScreen() },
                     onDelete = { initModel.deleteManga(it) })
@@ -62,14 +56,15 @@ fun InitScreen(
 fun MangaCard(manga: Manga, onRead: (uri: String) -> Unit, onDelete: (uri: String) -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth()
+            .height(100.dp)
     ) {
-        Column() {
+        Column( verticalArrangement = Arrangement.Center ) {
             Uri.parse(manga.uri).lastPathSegment?.let { it1 ->
                 Text(
                     text = it1.split(':').last().split('/').last()
                 )
             }
-            Row() {
+            Row( horizontalArrangement = Arrangement.End ) {
                 Button(onClick = { onDelete(manga.uri) }) {
                     Text(text = "Remove")
                 }

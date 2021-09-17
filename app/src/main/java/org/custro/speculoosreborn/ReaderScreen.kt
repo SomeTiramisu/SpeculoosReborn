@@ -7,6 +7,8 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.gestures.rememberTransformableState
+import androidx.compose.foundation.gestures.transformable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Slider
 import androidx.compose.material.Text
@@ -14,9 +16,11 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.DefaultAlpha
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
@@ -59,10 +63,31 @@ fun Background(bitmap: ImageBitmap, width: Int, height: Int) {
 
 @Composable
 fun Page(bitmap: ImageBitmap) {
+    // set up all transformation states
+    var scale by remember { mutableStateOf(1f) }
+    var rotation by remember { mutableStateOf(0f) }
+    var offset by remember { mutableStateOf(Offset.Zero) }
+    val state = rememberTransformableState { zoomChange, offsetChange, rotationChange ->
+        scale *= zoomChange
+        /*if( 0.9f < scale && scale < 1.1f ) {
+            scale = 1f
+        }*/
+        rotation += rotationChange
+        /*if ( -3f < scale && scale < 3f ) {
+            rotation = 0f
+        }*/
+        offset += offsetChange
+    }
     Image(
         bitmap = bitmap,
         contentDescription = "page",
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize()/*.transformable(state = state).graphicsLayer(
+            scaleX = scale,
+            scaleY = scale,
+            rotationZ = rotation,
+            translationX = offset.x,
+            translationY = offset.y
+        )*/
     )
 }
 
