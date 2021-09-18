@@ -1,12 +1,9 @@
 package org.custro.speculoosreborn
 
 import android.net.Uri
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -25,7 +22,7 @@ fun InitScreen(
     setManga: (Uri) -> Unit,
     navigateToReaderScreen: () -> Unit
 ) {
-    val mangas: List<Manga> by initModel.getMangas().observeAsState(listOf(Manga("")))
+    val mangas: List<Manga> by initModel.getMangas().observeAsState(listOf())
     Scaffold(floatingActionButton = {
         FloatingActionButton(onClick = { findManga() }) {
             Icon(Icons.Filled.Add, contentDescription = "Pick file and add it to library")
@@ -39,7 +36,9 @@ fun InitScreen(
                 .verticalScroll(state = rememberScrollState(), enabled = true)
         ) {
             for (m in mangas) {
-                MangaCard(manga = m,
+                val cardModel = MangaCardModel()
+                cardModel.onMangaChange(m)
+                MangaCard(model = cardModel,
                     onRead = { setManga(Uri.parse(it)); navigateToReaderScreen() },
                     onDelete = { initModel.deleteManga(it) })
             }
@@ -47,30 +46,6 @@ fun InitScreen(
                 navigateToReaderScreen()
             }) {
                 Text(text = "Start")
-            }
-        }
-    }
-}
-
-@Composable
-fun MangaCard(manga: Manga, onRead: (uri: String) -> Unit, onDelete: (uri: String) -> Unit) {
-    Card(
-        modifier = Modifier.fillMaxWidth()
-            .height(100.dp)
-    ) {
-        Column( verticalArrangement = Arrangement.Center ) {
-            Uri.parse(manga.uri).lastPathSegment?.let { it1 ->
-                Text(
-                    text = it1.split(':').last().split('/').last()
-                )
-            }
-            Row( horizontalArrangement = Arrangement.End ) {
-                Button(onClick = { onDelete(manga.uri) }) {
-                    Text(text = "Remove")
-                }
-                Button(onClick = { onRead(manga.uri) }) {
-                    Text(text = "Read")
-                }
             }
         }
     }

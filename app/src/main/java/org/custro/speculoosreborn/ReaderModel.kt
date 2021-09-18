@@ -15,6 +15,7 @@ import kotlinx.coroutines.launch
 import org.custro.speculoosreborn.libtiramisuk.PageScheduler
 import org.custro.speculoosreborn.libtiramisuk.utils.MangaParser
 import org.opencv.android.Utils
+import org.custro.speculoosreborn.libtiramisuk.utils.matToBitmap
 import org.opencv.core.Mat
 
 class ReaderModel : ViewModel() {
@@ -101,9 +102,5 @@ class ReaderModel : ViewModel() {
         mScheduler!!.seekPages(index.value!!)
     }
 
-    private fun matToBitmap(src: Mat): Bitmap {
-        val bitmap = Bitmap.createBitmap(src.cols(), src.rows(), Bitmap.Config.ARGB_8888)
-        Utils.matToBitmap(src, bitmap)
-        return bitmap
-    }
+
 }
