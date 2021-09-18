@@ -9,5 +9,3 @@ interface Parser {
 }
 
 data class Header(val index: Int, val filename: String)
-
-data class Parsed(val uri: Uri, val size: Int, val headers: List<Header>)

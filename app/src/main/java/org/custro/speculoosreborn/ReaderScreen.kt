@@ -8,7 +8,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.rememberTransformableState
-import androidx.compose.foundation.gestures.transformable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Slider
 import androidx.compose.material.Text
@@ -20,7 +19,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.DefaultAlpha
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
@@ -28,27 +26,27 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 
 @ExperimentalAnimationApi
 @Composable
-fun ReaderScreen(pageModel: PageModel = viewModel()) {
-    val index: Int by pageModel.index.observeAsState(0)
-    val maxIndex: Int by pageModel.maxIndex.observeAsState(0)
-    val image: ImageBitmap by pageModel.image.observeAsState(ImageBitmap(1, 1))
-    val hiddenSlider: Boolean by pageModel.hiddenSlider.observeAsState(false)
-    val background: ImageBitmap by pageModel.background.observeAsState(ImageBitmap(1, 1))
-    val size: Pair<Int, Int> by pageModel.size.observeAsState(Pair(0, 0))
+fun ReaderScreen(readerModel: ReaderModel = viewModel()) {
+    val index: Int by readerModel.index.observeAsState(0)
+    val maxIndex: Int by readerModel.maxIndex.observeAsState(0)
+    val image: ImageBitmap by readerModel.image.observeAsState(ImageBitmap(1, 1))
+    val hiddenSlider: Boolean by readerModel.hiddenSlider.observeAsState(false)
+    val background: ImageBitmap by readerModel.background.observeAsState(ImageBitmap(1, 1))
+    val size: Pair<Int, Int> by readerModel.size.observeAsState(Pair(0, 0))
     Background(bitmap = background, width = size.first, height = size.second)
     Page(bitmap = image)
     TapBox(
         index = index,
         maxIndex = maxIndex,
-        onIndexChange = { pageModel.onIndexChange(it) },
+        onIndexChange = { readerModel.onIndexChange(it) },
         width = size.first,
         hiddenSlider = hiddenSlider,
-        onHiddenSliderChange = { pageModel.onHiddenSliderChange(it) }
+        onHiddenSliderChange = { readerModel.onHiddenSliderChange(it) }
     )
     SliderView(
         index = index,
         maxIndex = maxIndex,
-        onIndexChange = { pageModel.onIndexChange(it) },
+        onIndexChange = { readerModel.onIndexChange(it) },
         hidden = hiddenSlider
     )
 }

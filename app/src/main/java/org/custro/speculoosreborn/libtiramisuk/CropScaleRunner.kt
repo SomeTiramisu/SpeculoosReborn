@@ -2,31 +2,29 @@ package org.custro.speculoosreborn.libtiramisuk
 
 import android.util.Log
 import kotlinx.coroutines.*
-import org.custro.speculoosreborn.libtiramisuk.parser.Parser
 import org.custro.speculoosreborn.libtiramisuk.utils.*
+import org.opencv.core.Mat
 import org.opencv.core.Rect
 
-class CropScaleRunner(private val index: Int, private val parser: Parser) {
+class CropScaleRunner(private val width: Int, private val height: Int, private val getPage: () -> ByteArray, private val doDetect: Boolean = true, private val doScale: Boolean = true) {
     private val scope = CoroutineScope(Dispatchers.Default)
-    private var mPageResJob: Deferred<PagePair>? = null
-    private var mReq: PageRequest? = null
+    private var mPageResJob: Deferred<Mat>? = null
 
-    fun preload(req: PageRequest) {
+    fun preload() {
         if (mPageResJob == null) {
             mPageResJob = scope.async(start = CoroutineStart.LAZY) {
                 val pngRes: PngPair
                 withContext(Dispatchers.IO) {pngRes = cropDetect()}
-                cropScale(pngRes, req)
+                cropScale(pngRes)
             }
             mPageResJob!!.start()
         }
     }
 
-    suspend fun get(req: PageRequest): PagePair {
-        if (mPageResJob == null || req != mReq) {
-            mReq = req
+    suspend fun get(): Mat {
+        if (mPageResJob == null) {
             clear()
-            preload(req)
+            preload()
         }
         return mPageResJob!!.await()
     }
@@ -36,31 +34,31 @@ class CropScaleRunner(private val index: Int, private val parser: Parser) {
         mPageResJob = null
     }
 
-    private fun cropScale(p: PngPair, req: PageRequest): PagePair {
+    private fun cropScale(p: PngPair): Mat {
         val img = fromByteArray(p.img)
-        if (!img.empty()) {
-            cropScaleProcess(img, img, p.rec, req.width, req.height)
+        if (!img.empty() && doScale) {
+            cropScaleProcess(img, img, p.rec, width, height)
             if (p.isBlack) {
                 //Log.d("Runner", "is black")
-                addBlackBorders(img, img, req.width, req.height)
+                addBlackBorders(img, img, width, height)
             }
         }
-        Log.d("CropScale", "running: ${req.index}");
-        return PagePair(img, req)
+        Log.d("CropScale", "running: ")
+        return img
     }
 
     private fun cropDetect(): PngPair {
-        val png = parser.at(index)
+        val png = getPage()
         val img = fromByteArray(png)
         var roi = Rect()
         var isBlack = false
-        if (!img.empty() && index != 0) {
+        if (!img.empty() && doDetect) {
             val (r, b) = cropDetect(img)
             roi = r
             isBlack = b
 
         }
-        Log.d("CropDetect", "running: $index");
+        Log.d("CropDetect", "running: ")
         return PngPair(png, roi, isBlack)
     }
 }

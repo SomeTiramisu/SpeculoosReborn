@@ -14,9 +14,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.ui.graphics.asImageBitmap
-import org.custro.speculoosreborn.room.Manga
 
 class MainActivity : ComponentActivity() {
     private val getArchive =
@@ -28,18 +26,16 @@ class MainActivity : ComponentActivity() {
             }
         }) { uri: Uri? ->
             if (uri != null) {
-                //pageModel.onUriChange(uri)
-                initModel.insertManga(Manga(uri.toString()))
+                initModel.insertManga(uri)
                 contentResolver.takePersistableUriPermission(
                     uri, Intent.FLAG_GRANT_READ_URI_PERMISSION or
                             Intent.FLAG_GRANT_WRITE_URI_PERMISSION
                 )
-
             }
         }
 
     private val initModel: InitModel by viewModels()
-    private val pageModel: PageModel by viewModels()
+    private val readerModel: ReaderModel by viewModels()
 
     @ExperimentalAnimationApi
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,7 +45,7 @@ class MainActivity : ComponentActivity() {
         showOnCutout()
         setContent {
             MainNavigation(
-                pageModel = pageModel,
+                readerModel = readerModel,
                 initModel = initModel,
                 findManga = { getArchive.launch(arrayOf("*/*")) },
                 showSystemUi = { showSystemUi() },
@@ -60,8 +56,8 @@ class MainActivity : ComponentActivity() {
 
     override fun onStart() {
         super.onStart()
-        pageModel.onSizeChange(getMetrics())
-        pageModel.onBackgroundChange(
+        readerModel.onSizeChange(getMetrics())
+        readerModel.onBackgroundChange(
             BitmapFactory.decodeStream(assets.open("background.png")).asImageBitmap()
         )
     }

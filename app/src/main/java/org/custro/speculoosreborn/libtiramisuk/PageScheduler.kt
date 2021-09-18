@@ -1,49 +1,37 @@
 package org.custro.speculoosreborn.libtiramisuk
 
-import android.net.Uri
 import android.util.Log
-import org.custro.speculoosreborn.libtiramisuk.parser.ParserFactory
-import org.custro.speculoosreborn.libtiramisuk.utils.PageCache
-import org.custro.speculoosreborn.libtiramisuk.utils.PageRequest
+import org.custro.speculoosreborn.libtiramisuk.utils.MangaParser
 import org.opencv.core.Mat
 
-class PageScheduler {
-    private val mImagePreload: Int = 5
-    private var mPages: List<CropScaleRunner> = listOf()
+class PageScheduler(mangaParser: MangaParser, width: Int, height: Int) {
+    private val mImagePreload: Int = 3
+    private var mPages: List<CropScaleRunner>
 
     init {
         Log.d("Scheduler", "created")
+        Log.d("Scheduler", "file: ${mangaParser.uri}")
+        mPages = List(mangaParser.size) { index ->
+            CropScaleRunner(width, height, {mangaParser.at(index) }, index != 0 )
+        }
     }
 
-    fun open(uri: Uri): Int {
-        Log.d("Scheduler", "file: $uri")
-        val localUri = PageCache.saveData(uri)
-        val parser = ParserFactory.create(localUri)
-        for (x in mPages) {
-            x.clear()
-        }
-        mPages = List(parser!!.size) { index ->
-            CropScaleRunner(index, parser)
-        }
-        return parser.size
-    }
-
-    suspend fun at(req: PageRequest): Mat {
+    suspend fun at(index: Int): Mat {
         //Log.d("Scheduler", "get ${req.index}")
-        return mPages[req.index].get(req).img
+        return mPages[index].get()
     }
 
-    suspend fun seekPages(req: PageRequest) {
+    fun seekPages(index: Int) {
         for (i in mPages.indices) {
-            if ((req.index - mImagePreload > i) || (i > req.index + mImagePreload)) {
+            if ((index - mImagePreload > i) || (i > index + mImagePreload)) {
                 mPages[i].clear()
             }
         }
         for (i in 1..mImagePreload) {
-            val preq = PageRequest(req.index + i, req.width, req.height, req.uri)
-            val mreq = PageRequest(req.index - i, req.width, req.height, req.uri)
-            if (preq.index < mPages.size) mPages[preq.index].preload(preq)
-            if (mreq.index >= 0) mPages[mreq.index].preload(mreq)
+            val pi = index + i
+            val mi = index - i
+            if (pi < mPages.size) mPages[pi].preload()
+            if (mi >= 0) mPages[mi].preload()
         }
     }
 

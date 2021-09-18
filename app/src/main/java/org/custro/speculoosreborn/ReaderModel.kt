@@ -13,16 +13,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.custro.speculoosreborn.libtiramisuk.PageScheduler
-import org.custro.speculoosreborn.libtiramisuk.utils.PageRequest
+import org.custro.speculoosreborn.libtiramisuk.utils.MangaParser
 import org.opencv.android.Utils
 import org.opencv.core.Mat
 
-class PageModel : ViewModel() {
-    private val mScheduler = PageScheduler()
-    private var mUriOpenJob: Job? = null
-
-    private val _uri: MutableLiveData<Uri?> = MutableLiveData(null)
-    val uri: LiveData<Uri?> = _uri
+class ReaderModel : ViewModel() {
+    private var mScheduler: PageScheduler? = null
+    private var mMangaParser: MangaParser? = null
+    private var mSchedulerInitJob: Job? = null
 
     private val _index = MutableLiveData(0)
     val index: LiveData<Int> = _index
@@ -44,29 +42,44 @@ class PageModel : ViewModel() {
 
     fun onIndexChange(value: Int) {
         Log.d("PageModel", "new index: $value")
-        _index.value = value
-        genRequest()
+        if (value != index.value) {
+            _index.value = value
+            genRequest()
+        }
     }
 
     fun onSizeChange(value: Pair<Int, Int>) {
         Log.d("PageModel", "OnSizeChange called, new size: ${value.first}:${value.second}")
-        _size.value = value
-        //_image.value = ImageBitmap(1, 1) //to avoid flicker
-        genRequest()
+        if (value != size.value) {
+            _size.value = value
+            //_image.value = ImageBitmap(1, 1) //to avoid flicker
+            mSchedulerInitJob = viewModelScope.launch(Dispatchers.Default) {
+                initScheduler()
+            }
+        }
     }
 
     fun onUriChange(value: Uri) {
         Log.d("PageModel", "onUriChange called")
-        if (value != _uri.value) {
-            _uri.value = value
+        if (value != mMangaParser?.uri ?: Uri.EMPTY)  {
             _index.value = 0
             _image.value = ImageBitmap(1, 1)
-            mUriOpenJob = viewModelScope.launch(Dispatchers.Default) {
-                val maxIndex = mScheduler.open(value)
-                _maxIndex.postValue(maxIndex)
-                genRequest()
+            mSchedulerInitJob = viewModelScope.launch(Dispatchers.Default) {
+                initScheduler(value)
+                _maxIndex.postValue(mMangaParser!!.size)
             }
         }
+    }
+
+    private fun initScheduler(uri: Uri? = null) {
+        if (mMangaParser == null && uri == null) {
+            return
+        }
+        if (uri != null) {
+            mMangaParser = MangaParser(uri)
+        }
+        mScheduler = PageScheduler(mMangaParser!!, size.value!!.first, size.value!!.second)
+        genRequest()
     }
 
     fun onBackgroundChange(value: ImageBitmap) {
@@ -78,16 +91,14 @@ class PageModel : ViewModel() {
     }
 
     private fun genRequest() = viewModelScope.launch(Dispatchers.Default) {
-        if (_uri.value == null) {
+        if (mScheduler == null) {
             return@launch
         }
-        val req =
-            PageRequest(index.value!!, _size.value!!.first, _size.value!!.second, _uri.value!!)
-        mUriOpenJob?.join()
-        val it = mScheduler.at(req)
+        mSchedulerInitJob?.join()
+        val it = mScheduler!!.at(index.value!!)
         Log.d("ImageCallback", "imaged")
         _image.postValue(matToBitmap(it).asImageBitmap()) //called from another thread
-        mScheduler.seekPages(req)
+        mScheduler!!.seekPages(index.value!!)
     }
 
     private fun matToBitmap(src: Mat): Bitmap {

@@ -23,6 +23,15 @@ fun fromByteArray(src: ByteArray): Mat {
     return img
 }
 
+fun toByteArray(src: Mat): ByteArray {
+    if (src.empty()) {
+        return ByteArray(0)
+    }
+    val img = ByteArray(0)
+    Imgcodecs.imencode(".png", src, MatOfByte(*img))
+    return img
+}
+
 fun createMask(src: Mat, dst: Mat, notInv: Boolean = false) {
     Imgproc.cvtColor(src, dst, Imgproc.COLOR_RGBA2GRAY)
     Imgproc.threshold(dst, dst, 242.35, 255.0,
