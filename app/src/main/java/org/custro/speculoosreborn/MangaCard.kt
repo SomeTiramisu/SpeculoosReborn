@@ -34,7 +34,7 @@ fun MangaCard(model: MangaCardModel, onRead: (uri: String) -> Unit, onDelete: (u
                     Button(onClick = { onDelete(model.uri) }) {
                         Text(text = "Remove")
                     }
-                    Button(onClick = { onRead(model.uri) }) {
+                    Button(onClick = { onRead(model.localUri) }) {
                         Text(text = "Read")
                     }
                 }

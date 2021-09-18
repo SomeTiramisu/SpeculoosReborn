@@ -1,11 +1,9 @@
 package org.custro.speculoosreborn
 
-import android.graphics.ImageDecoder
 import android.net.Uri
 import android.util.Log
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.res.colorResource
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -14,7 +12,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.custro.speculoosreborn.libtiramisuk.utils.fromByteArray
 import org.custro.speculoosreborn.libtiramisuk.utils.matToBitmap
-import org.custro.speculoosreborn.libtiramisuk.utils.toByteArray
 import org.custro.speculoosreborn.room.Manga
 
 class MangaCardModel: ViewModel() {
@@ -23,9 +20,11 @@ class MangaCardModel: ViewModel() {
     val cover: LiveData<ImageBitmap> = _cover
     val uri
         get() = manga.uri
+    val localUri
+        get() = manga.localUri
 
-    fun onMangaChange(value: Manga) {
-        Log.d("MangacardModel", "Display ${value.uri.toString()}")
+    fun onMangaChange(value: Manga) { //assuming manga is valid
+        Log.d("MangaCardModel", "Display ${value.uri}")
         manga = value
         viewModelScope.launch(Dispatchers.Default) {
             val coverUri = Uri.parse(manga.cover)
@@ -38,5 +37,4 @@ class MangaCardModel: ViewModel() {
             _cover.postValue(coverImage)
         }
     }
-
 }

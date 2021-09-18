@@ -10,18 +10,18 @@ import androidx.room.Room
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.custro.speculoosreborn.libtiramisuk.utils.MangaParser
+import org.custro.speculoosreborn.libtiramisuk.utils.PageCache
 import org.custro.speculoosreborn.room.AppDatabase
 import org.custro.speculoosreborn.room.Manga
+import org.custro.speculoosreborn.room.correctManga
 
 class InitModel: ViewModel() {
-    private val db =
-        Room.databaseBuilder(App.instance.applicationContext, AppDatabase::class.java, "manga-database").build()
 
     fun insertManga(uri: Uri) {
         viewModelScope.launch(Dispatchers.Default) {
-            val manga = MangaParser(uri).manga
+            val manga = genManga(MangaParser(uri))
             try {
-                db.mangaDao().insertAll(manga)
+                App.db.mangaDao().insertAll(manga)
                 Log.d("MainModel", "inserted: ${manga.uri}")
             } catch (e: SQLiteConstraintException) { //quite sure that should not be here
                 Log.d("MainModel", "already inserted: ${manga.uri}")
@@ -29,13 +29,20 @@ class InitModel: ViewModel() {
         }
     }
 
+    private fun genManga(parser: MangaParser): Manga {
+        if (parser.uri.scheme == "file") {
+            return Manga(parser.uri.toString(), parser.uri.toString(), parser.cover.toString())
+        }
+        return Manga(parser.uri.toString(), PageCache.saveData(parser.uri).toString(), parser.cover.toString())
+    }
+
     fun getMangas(): LiveData<List<Manga>> {
-        return db.mangaDao().getAll()
+        return App.db.mangaDao().getAll()
     }
 
     fun deleteManga(uri: String) {
         viewModelScope.launch(Dispatchers.Default) {
-            db.mangaDao().deleteUri(uri)
+            App.db.mangaDao().deleteUri(uri)
             Log.d("MainModel", "deleted: $uri")
         }
     }
