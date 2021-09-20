@@ -6,9 +6,9 @@ import org.custro.speculoosreborn.libtiramisuk.parser.Parser
 import org.custro.speculoosreborn.libtiramisuk.parser.ParserFactory
 import java.io.Closeable
 
-class MangaParser(val uri: Uri): Closeable, AutoCloseable {
+class MangaParser(override val uri: Uri): Parser, Closeable, AutoCloseable {
     private var parser: Parser = ParserFactory.create(uri)
-    val size get() = parser.size
+    override val size get() = parser.size
     val cover: Uri by lazy  {
         val mat = fromByteArray(this.at(0))
         scale(mat, mat, 200, 200)
@@ -17,8 +17,12 @@ class MangaParser(val uri: Uri): Closeable, AutoCloseable {
         PageCache.saveData(toByteArray(mat), ".png")
     }
 
-    fun at(index: Int): ByteArray {
+    override fun at(index: Int): ByteArray {
         return parser.at(index)
+    }
+
+    override fun atRange(vararg indexes: Int): List<ByteArray> {
+        TODO("Not yet implemented")
     }
 
     override fun close() {

@@ -60,6 +60,10 @@ class ZipBStreamParser(override val uri: Uri) : Parser {
         return outAStream.toByteArray()
     }
 
+    override fun atRange(vararg indexes: Int): List<ByteArray> {
+        TODO("Not yet implemented")
+    }
+
     override fun close() {
         TODO("Not yet implemented")
     }

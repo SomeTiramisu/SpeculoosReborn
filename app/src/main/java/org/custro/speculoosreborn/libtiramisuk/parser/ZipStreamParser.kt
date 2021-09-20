@@ -42,10 +42,19 @@ class ZipStreamParser(override val uri: Uri) : Parser {
         //Log.d("ZipParser", "size: ${headers.size}")
     }
 
-    @Synchronized
     override fun at(index: Int): ByteArray {
         //Log.d("ZipStreamParser", "requested: $index")
         val entryIndex = headers[index].index
+        return dataAt(entryIndex)
+    }
+
+    override fun atRange(vararg indexes: Int): List<ByteArray> {
+        val entryIndexes = indexes.map { headers[it].index }.sorted()
+        return entryIndexes.map { dataAt(it) }
+    }
+
+    @Synchronized
+    private fun dataAt(entryIndex: Int): ByteArray {
         //Log.d("ZipStreamParser", "in file: $entryIndex")
         //Log.d("ZipStreamParser", "current: $currentIndex")
         var effectiveIndex = entryIndex - currentIndex

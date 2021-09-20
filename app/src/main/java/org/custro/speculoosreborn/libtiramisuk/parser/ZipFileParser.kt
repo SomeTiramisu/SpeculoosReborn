@@ -41,8 +41,12 @@ class ZipFileParser(override val uri: Uri) : Parser {
         return r
     }
 
-    override fun close() {
+    override fun atRange(vararg indexes: Int): List<ByteArray> {
         TODO("Not yet implemented")
+    }
+
+    override fun close() {
+        //TODO("Not yet implemented")
     }
 
     companion object {
