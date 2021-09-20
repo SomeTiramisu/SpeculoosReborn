@@ -47,6 +47,10 @@ class RarStreamParser(override val uri: Uri) : Parser {
         return r
     }
 
+    override fun close() {
+        TODO("Not yet implemented")
+    }
+
     private fun getInputStream() =
         if (uri.scheme == "file") uri.toFile().inputStream() else resolver.openInputStream(uri)
 

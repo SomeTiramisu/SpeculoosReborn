@@ -1,6 +1,5 @@
 package org.custro.speculoosreborn
 
-import android.graphics.Bitmap
 import android.net.Uri
 import android.util.Log
 import androidx.compose.ui.graphics.ImageBitmap
@@ -14,9 +13,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.custro.speculoosreborn.libtiramisuk.PageScheduler
 import org.custro.speculoosreborn.libtiramisuk.utils.MangaParser
-import org.opencv.android.Utils
 import org.custro.speculoosreborn.libtiramisuk.utils.matToBitmap
-import org.opencv.core.Mat
 
 class ReaderModel : ViewModel() {
     private var mScheduler: PageScheduler? = null
@@ -99,8 +96,11 @@ class ReaderModel : ViewModel() {
         val it = mScheduler!!.at(index.value!!)
         Log.d("ImageCallback", "imaged")
         _image.postValue(matToBitmap(it).asImageBitmap()) //called from another thread
-        mScheduler!!.seekPages(index.value!!)
+        mScheduler!!.seekPagesOrdered(index.value!!)
     }
 
-
+    override fun onCleared() {
+        super.onCleared()
+        mMangaParser?.close()
+    }
 }

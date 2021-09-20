@@ -45,6 +45,10 @@ class RarFileParser(override val uri: Uri) : Parser {
         return r
     }
 
+    override fun close() {
+        TODO("Not yet implemented")
+    }
+
     companion object {
         fun isSupported(uri: Uri) = uri.scheme == "file"
                 && uri.lastPathSegment?.lowercase()?.matches(Regex(".*\\.(rar|cbr)$")) ?: false

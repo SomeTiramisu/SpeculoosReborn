@@ -12,7 +12,7 @@ class CropScaleRunner(private val width: Int, private val height: Int, private v
 
     fun preload() {
         if (mPageResJob == null) {
-            mPageResJob = scope.async(start = CoroutineStart.LAZY) {
+            mPageResJob = scope.async(/*start = CoroutineStart.LAZY*/) {
                 val pngRes: PngPair
                 withContext(Dispatchers.IO) {pngRes = cropDetect()}
                 cropScale(pngRes)

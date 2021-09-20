@@ -19,7 +19,10 @@ class InitModel: ViewModel() {
 
     fun insertManga(uri: Uri) {
         viewModelScope.launch(Dispatchers.Default) {
-            val manga = genManga(MangaParser(uri))
+            val manga: Manga
+            MangaParser(uri).use {
+                manga = genManga(it)
+            }
             try {
                 App.db.mangaDao().insertAll(manga)
                 Log.d("MainModel", "inserted: ${manga.uri}")

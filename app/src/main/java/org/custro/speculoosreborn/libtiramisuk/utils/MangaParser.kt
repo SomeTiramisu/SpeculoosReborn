@@ -4,8 +4,9 @@ import android.net.Uri
 import android.util.Log
 import org.custro.speculoosreborn.libtiramisuk.parser.Parser
 import org.custro.speculoosreborn.libtiramisuk.parser.ParserFactory
+import java.io.Closeable
 
-class MangaParser(val uri: Uri) {
+class MangaParser(val uri: Uri): Closeable, AutoCloseable {
     private var parser: Parser = ParserFactory.create(uri)
     val size get() = parser.size
     val cover: Uri by lazy  {
@@ -18,5 +19,9 @@ class MangaParser(val uri: Uri) {
 
     fun at(index: Int): ByteArray {
         return parser.at(index)
+    }
+
+    override fun close() {
+        parser.close()
     }
 }

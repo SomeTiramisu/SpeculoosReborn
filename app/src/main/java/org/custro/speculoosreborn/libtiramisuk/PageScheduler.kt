@@ -21,7 +21,7 @@ class PageScheduler(mangaParser: MangaParser, width: Int, height: Int) {
         return mPages[index].get()
     }
 
-    fun seekPages(index: Int) {
+    fun seekPagesBouncing(index: Int) {
         for (i in mPages.indices) {
             if ((index - mImagePreload > i) || (i > index + mImagePreload)) {
                 mPages[i].clear()
@@ -35,4 +35,19 @@ class PageScheduler(mangaParser: MangaParser, width: Int, height: Int) {
         }
     }
 
+    fun seekPagesOrdered(index: Int) {
+        for (i in mPages.indices) {
+            if ((index - mImagePreload > i) || (i > index + mImagePreload)) {
+                mPages[i].clear()
+            }
+        }
+    for (i in mImagePreload downTo 1) {
+        val mi = index - i
+        if (mi >= 0) mPages[mi].preload()
+    }
+    for (i in 1..mImagePreload) {
+        val pi = index + i
+        if (pi < mPages.size) mPages[pi].preload()
+    }
+    }
 }

@@ -38,8 +38,9 @@ fun correctManga(manga: Manga) {
         newManga = Manga(newManga.uri, PageCache.saveData(Uri.parse(manga.uri)).toString(), newManga.cover)
     }
     if(!checkUri(manga.cover)) {
-        val mangaParser = MangaParser(Uri.parse(manga.uri))
-        newManga = Manga(newManga.uri, newManga.localUri, mangaParser.cover.toString())
+        MangaParser(Uri.parse(manga.uri)).use {
+            newManga = Manga(newManga.uri, newManga.localUri, it.cover.toString())
+        }
     }
     dao.updateManga(newManga)
     Log.d("correctManga", "${manga.uri} corrected")
