@@ -8,7 +8,7 @@ import org.custro.speculoosreborn.libtiramisuk.parser.ParserFactory
 class MangaParser(val uri: Uri) {
     private var parser: Parser = ParserFactory.create(uri)
     val size get() = parser.size
-    val cover: Uri = run {
+    val cover: Uri by lazy  {
         val mat = fromByteArray(this.at(0))
         scale(mat, mat, 200, 200)
         //matToBitmap(mat).asImageBitmap()
