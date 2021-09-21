@@ -1,10 +1,7 @@
 package org.custro.speculoosreborn.room
 
 import androidx.lifecycle.LiveData
-import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.Query
+import androidx.room.*
 
 @Dao
 interface MangaDao {
@@ -16,4 +13,10 @@ interface MangaDao {
 
     @Delete
     fun delete(manga: Manga)
+
+    @Update
+    fun updateManga(manga: Manga)
+
+    @Query("DELETE FROM manga WHERE uri = :uri")
+    fun deleteUri(uri: String)
 }

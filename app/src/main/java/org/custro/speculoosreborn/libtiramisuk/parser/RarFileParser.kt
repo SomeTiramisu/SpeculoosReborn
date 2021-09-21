@@ -34,7 +34,7 @@ class RarFileParser(override val uri: Uri) : Parser {
 
     override fun at(index: Int): ByteArray {
         val rar = Archive(uri.toFile())
-        var e: FileHeader? = null
+        lateinit var e: FileHeader
         for (i in 0..headers[index].index) {
             e = rar.nextFileHeader()
         }
@@ -43,6 +43,14 @@ class RarFileParser(override val uri: Uri) : Parser {
         iStream.close()
         rar.close()
         return r
+    }
+
+    override fun atRange(vararg indexes: Int): List<ByteArray> {
+        TODO("Not yet implemented")
+    }
+
+    override fun close() {
+        //TODO("Not yet implemented")
     }
 
     companion object {

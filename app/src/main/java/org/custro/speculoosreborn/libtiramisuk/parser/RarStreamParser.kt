@@ -1,23 +1,27 @@
 package org.custro.speculoosreborn.libtiramisuk.parser
 
 import android.net.Uri
+import android.util.Log
 import androidx.core.net.toFile
 import com.github.junrar.Archive
 import com.github.junrar.rarfile.FileHeader
 import org.custro.speculoosreborn.App
 import org.custro.speculoosreborn.libtiramisuk.utils.AlphanumComparator
+import java.util.zip.ZipInputStream
 
 
 class RarStreamParser(override val uri: Uri) : Parser {
-    private val resolver = App.instance!!.contentResolver
+    private val resolver = App.instance.contentResolver
     private val headers: MutableList<Header> = mutableListOf()
     override val size: Int
         get() {
             return headers.size
         }
+    private var currentIndex: Int = 0
+    private var inStream = getInputStream()
+    private var rarStream = Archive(inStream)
 
     init {
-        val rarStream = Archive(getInputStream())
         var e: FileHeader? = rarStream.nextFileHeader()
         var count = 0
         while (e != null) {
@@ -28,27 +32,60 @@ class RarStreamParser(override val uri: Uri) : Parser {
             e = rarStream.nextFileHeader()
             count += 1
         }
-        rarStream.close()
+        resetStreams()
         val entryNaturalOrder = compareBy<Header, String>(AlphanumComparator(), { it.filename })
-
         headers.sortWith(entryNaturalOrder)
     }
 
     override fun at(index: Int): ByteArray {
-        val rar = Archive(getInputStream())
-        var e: FileHeader? = null
-        for (i in 0..headers[index].index) {
-            e = rar.nextFileHeader()
+        Log.d("RarStreamParser", "requested: $index")
+        val entryIndex = headers[index].index
+        return dataAt(entryIndex)
+    }
+
+    override fun atRange(vararg indexes: Int): List<ByteArray> {
+        val entryIndexes = indexes.map { headers[it].index }.sorted()
+        return entryIndexes.map { dataAt(it) }
+    }
+
+    @Synchronized
+    private fun dataAt(entryIndex: Int): ByteArray {
+        Log.d("RarStreamParser", "in file: $entryIndex")
+        Log.d("RarStreamParser", "current: $currentIndex")
+        var effectiveIndex = entryIndex - currentIndex
+        if (effectiveIndex < 0) {
+            resetStreams()
+            effectiveIndex = entryIndex
         }
-        val iStream = rar.getInputStream(e)
-        val r = iStream.readBytes()
-        iStream.close()
-        rar.close()
+        Log.d("RarStreamParser", "effective: $effectiveIndex")
+
+        lateinit var e: FileHeader
+        for (i in 0..effectiveIndex) {
+            e = rarStream.nextFileHeader()
+            currentIndex += 1
+        }
+        val r: ByteArray
+        rarStream.getInputStream(e).use {
+            r = it.readBytes()
+        }
         return r
     }
 
+
+    override fun close() {
+        rarStream.close()
+        inStream.close()
+    }
+
     private fun getInputStream() =
-        if (uri.scheme == "file") uri.toFile().inputStream() else resolver.openInputStream(uri)
+        if (uri.scheme == "file") uri.toFile().inputStream() else resolver.openInputStream(uri)!!
+
+    private fun resetStreams() {
+        close()
+        inStream = getInputStream()
+        rarStream = Archive(inStream)
+        currentIndex = 0
+    }
 
     companion object {
         fun isSupported(uri: Uri) =

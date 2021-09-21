@@ -41,6 +41,14 @@ class ZipFileParser(override val uri: Uri) : Parser {
         return r
     }
 
+    override fun atRange(vararg indexes: Int): List<ByteArray> {
+        TODO("Not yet implemented")
+    }
+
+    override fun close() {
+        //TODO("Not yet implemented")
+    }
+
     companion object {
         fun isSupported(uri: Uri) = uri.scheme == "file"
                 && uri.lastPathSegment?.lowercase()?.matches(Regex(".*\\.(zip|cbz)$")) ?: false

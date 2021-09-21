@@ -1,11 +1,14 @@
 package org.custro.speculoosreborn.libtiramisuk.utils
 
+import android.graphics.Bitmap
+import org.opencv.android.Utils
 import org.opencv.core.*
 import org.opencv.core.Core.merge
 import org.opencv.core.Core.split
 import org.opencv.imgcodecs.Imgcodecs
 import org.opencv.imgproc.Imgproc
 import org.opencv.imgproc.Imgproc.boundingRect
+import org.opencv.imgproc.Imgproc.cvtColor
 import kotlin.math.min
 
 // A line will be considered as having content if 0.25% of it is filled.
@@ -21,6 +24,23 @@ fun fromByteArray(src: ByteArray): Mat {
     val img = Imgcodecs.imdecode(MatOfByte(*src), Imgcodecs.IMREAD_COLOR)
     Imgproc.cvtColor(img, img, Imgproc.COLOR_BGR2RGBA)
     return img
+}
+
+fun toByteArray(src: Mat): ByteArray {
+    if (src.empty()) {
+        return ByteArray(0)
+    }
+    val srcBGRA = Mat()
+    cvtColor(src, srcBGRA, Imgproc.COLOR_RGBA2BGRA)
+    val img = MatOfByte()
+    Imgcodecs.imencode(".png", srcBGRA, img)
+    return img.toArray()
+}
+
+fun matToBitmap(src: Mat): Bitmap {
+    val bitmap = Bitmap.createBitmap(src.cols(), src.rows(), Bitmap.Config.ARGB_8888)
+    Utils.matToBitmap(src, bitmap)
+    return bitmap
 }
 
 fun createMask(src: Mat, dst: Mat, notInv: Boolean = false) {
