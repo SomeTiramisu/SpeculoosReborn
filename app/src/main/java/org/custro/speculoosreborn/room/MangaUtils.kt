@@ -6,6 +6,14 @@ import androidx.core.net.toFile
 import org.custro.speculoosreborn.App
 import org.custro.speculoosreborn.libtiramisuk.utils.*
 
+
+fun genManga(parser: MangaParser): Manga {
+    if (parser.uri.scheme == "file") {
+        return Manga(parser.uri.toString(), parser.uri.toString(), parser.cover.toString())
+    }
+    return Manga(parser.uri.toString(), PageCache.saveData(parser.uri).toString(), parser.cover.toString())
+}
+
 fun isMangaValid(manga: Manga): Boolean {
     return checkUri(manga.uri) && checkUri(manga.localUri) && checkUri(manga.cover)
 }

@@ -13,7 +13,7 @@ import org.custro.speculoosreborn.libtiramisuk.utils.MangaParser
 import org.custro.speculoosreborn.libtiramisuk.utils.PageCache
 import org.custro.speculoosreborn.room.AppDatabase
 import org.custro.speculoosreborn.room.Manga
-import org.custro.speculoosreborn.room.correctManga
+import org.custro.speculoosreborn.room.genManga
 
 class InitModel: ViewModel() {
 
@@ -30,13 +30,6 @@ class InitModel: ViewModel() {
                 Log.d("MainModel", "already inserted: ${manga.uri}")
             }
         }
-    }
-
-    private fun genManga(parser: MangaParser): Manga {
-        if (parser.uri.scheme == "file") {
-            return Manga(parser.uri.toString(), parser.uri.toString(), parser.cover.toString())
-        }
-        return Manga(parser.uri.toString(), PageCache.saveData(parser.uri).toString(), parser.cover.toString())
     }
 
     fun getMangas(): LiveData<List<Manga>> {
