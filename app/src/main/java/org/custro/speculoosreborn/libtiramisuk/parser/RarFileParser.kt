@@ -15,42 +15,47 @@ class RarFileParser(override val uri: Uri) : Parser {
         }
 
     init {
-        val rarStream = Archive(uri.toFile())
-        var e: FileHeader? = rarStream.nextFileHeader()
+        val rarFile = Archive(uri.toFile())
+        var e: FileHeader? = rarFile.nextFileHeader()
         var count = 0
         while (e != null) {
             val name = e.fileName
             if (!e.isDirectory and ((".jpg" in name) or (".png" in name))) {
                 headers.add(Header(count, e.fileName))
             }
-            e = rarStream.nextFileHeader()
+            e = rarFile.nextFileHeader()
             count += 1
         }
-        rarStream.close()
+        rarFile.close()
         val entryNaturalOrder = compareBy<Header, String>(AlphanumComparator(), { it.filename })
 
         headers.sortWith(entryNaturalOrder)
     }
 
     override fun at(index: Int): ByteArray {
-        val rar = Archive(uri.toFile())
-        lateinit var e: FileHeader
-        for (i in 0..headers[index].index) {
-            e = rar.nextFileHeader()
-        }
-        val iStream = rar.getInputStream(e)
-        val r = iStream.readBytes()
-        iStream.close()
-        rar.close()
-        return r
+        val entryIndex = headers[index].index
+        return dataAt(entryIndex)
     }
 
     override fun atRange(vararg indexes: Int): List<ByteArray> {
         TODO("Not yet implemented")
     }
 
+    @Synchronized
+    private fun dataAt(entryIndex: Int): ByteArray {
+        val rarFile = Archive(uri.toFile())
+        lateinit var e: FileHeader
+        for (i in 0..entryIndex) {
+            e = rarFile.nextFileHeader()
+        }
+        val entryInStream = rarFile.getInputStream(e)
+        val r = entryInStream.readBytes()
+        entryInStream.close()
+        rarFile.close()
+        return r
+    }
+
     override fun close() {
-        //TODO("Not yet implemented")
     }
 
     companion object {

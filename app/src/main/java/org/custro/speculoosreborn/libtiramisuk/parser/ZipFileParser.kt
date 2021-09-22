@@ -33,20 +33,25 @@ class ZipFileParser(override val uri: Uri) : Parser {
 
     override fun at(index: Int): ByteArray {
         Log.d("ZipFileParser", "Reading $index")
-        val zipFile = ZipFile(uri.toFile(), OPEN_READ)
-        val entryInputStream = zipFile.getInputStream(zipFile.getEntry(headers[index].filename))
-        val r = entryInputStream.readBytes()
-        entryInputStream.close()
-        zipFile.close()
-        return r
+        val entryName = headers[index].filename
+        return dataAt(entryName)
     }
 
     override fun atRange(vararg indexes: Int): List<ByteArray> {
         TODO("Not yet implemented")
     }
 
+    @Synchronized
+    private fun dataAt(entryName: String): ByteArray {
+        val zipFile = ZipFile(uri.toFile(), OPEN_READ)
+        val entryInStream = zipFile.getInputStream(zipFile.getEntry(entryName))
+        val r = entryInStream.readBytes()
+        entryInStream.close()
+        zipFile.close()
+        return r
+    }
+
     override fun close() {
-        //TODO("Not yet implemented")
     }
 
     companion object {
