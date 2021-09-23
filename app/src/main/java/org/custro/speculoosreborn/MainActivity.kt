@@ -22,36 +22,6 @@ import androidx.core.view.WindowInsetsControllerCompat
 import org.custro.speculoosreborn.libtiramisuk.utils.PageCache
 
 class MainActivity : ComponentActivity() {
-    private val getArchive =
-        registerForActivityResult(object : ActivityResultContracts.OpenDocument() {
-            override fun createIntent(context: Context, input: Array<out String>): Intent {
-                val intent = super.createIntent(context, input)
-                intent.addCategory(Intent.CATEGORY_OPENABLE)
-                return intent
-            }
-        }) { uri: Uri? ->
-            if (uri != null) {
-                Log.d("getArchive", "selected: $uri")
-                contentResolver.takePersistableUriPermission(
-                    uri, Intent.FLAG_GRANT_READ_URI_PERMISSION or
-                            Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-                )
-
-                val savedUri = PageCache.saveData(uri)
-                initModel.insertManga(savedUri)
-            }
-        }
-
-    @Suppress("DEPRECATION")
-    private fun parseUri(uri: Uri): Uri {
-        val lastSegment = uri.lastPathSegment!!
-        if (lastSegment.split(":").first() == "primary") {
-            return Uri.parse("${Environment.getExternalStorageDirectory()}/${lastSegment.split(":").last()}")
-        }
-        return uri
-    }
-
-
     private val initModel: InitModel by viewModels()
     private val readerModel: ReaderModel by viewModels()
 
@@ -65,7 +35,6 @@ class MainActivity : ComponentActivity() {
             MainNavigation(
                 readerModel = readerModel,
                 initModel = initModel,
-                findManga = { getArchive.launch(arrayOf("*/*")) },
                 showSystemUi = { showSystemUiNew() },
                 hideSystemUi = { hideSystemUiNew() }
             )

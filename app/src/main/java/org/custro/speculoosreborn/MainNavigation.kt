@@ -11,7 +11,6 @@ import androidx.navigation.compose.rememberNavController
 fun MainNavigation(
     readerModel: ReaderModel,
     initModel: InitModel,
-    findManga: () -> Unit,
     showSystemUi: () -> Unit,
     hideSystemUi: () -> Unit
 ) {
@@ -19,13 +18,21 @@ fun MainNavigation(
     NavHost(navController = navController, startDestination = "initScreen") {
         composable("initScreen") {
             showSystemUi()
-            InitScreen(initModel = initModel, findManga = findManga, setManga = { readerModel.onUriChange(it) }, navigateToReaderScreen = {
+            InitScreen(initModel = initModel,
+                findManga = {
+                          navController.navigate("filePickerScreen")
+            },
+                setManga = { readerModel.onUriChange(it) },
+                navigateToReaderScreen = {
                 navController.navigate("readerScreen")
             })
         }
         composable("readerScreen") {
             hideSystemUi()
             ReaderScreen(readerModel = readerModel)
+        }
+        composable("filePickerScreen") {
+            FilePickerScreen()
         }
     }
 }

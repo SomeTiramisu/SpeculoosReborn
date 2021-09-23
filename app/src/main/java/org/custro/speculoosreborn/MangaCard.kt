@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.dp
 import org.custro.speculoosreborn.room.Manga
 
 @Composable
-fun MangaCard(model: MangaCardModel, onRead: (uri: String) -> Unit, onDelete: (uri: String) -> Unit) {
+fun MangaCard(model: MangaCardModel = MangaCardModel(), onRead: (uri: String) -> Unit, onDelete: (uri: String) -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
