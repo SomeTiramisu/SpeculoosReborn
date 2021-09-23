@@ -6,7 +6,9 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.util.DisplayMetrics
+import android.util.Log
 import android.view.View
 import android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
 import androidx.activity.ComponentActivity
@@ -15,6 +17,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.ui.graphics.asImageBitmap
+import org.custro.speculoosreborn.libtiramisuk.utils.PageCache
 
 class MainActivity : ComponentActivity() {
     private val getArchive =
@@ -26,13 +29,26 @@ class MainActivity : ComponentActivity() {
             }
         }) { uri: Uri? ->
             if (uri != null) {
-                initModel.insertManga(uri)
+                Log.d("getArchive", "selected: $uri")
                 contentResolver.takePersistableUriPermission(
                     uri, Intent.FLAG_GRANT_READ_URI_PERMISSION or
                             Intent.FLAG_GRANT_WRITE_URI_PERMISSION
                 )
+
+                val savedUri = PageCache.saveData(uri)
+                initModel.insertManga(savedUri)
             }
         }
+
+    @Suppress("DEPRECATION")
+    private fun parseUri(uri: Uri): Uri {
+        val lastSegment = uri.lastPathSegment!!
+        if (lastSegment.split(":").first() == "primary") {
+            return Uri.parse("${Environment.getExternalStorageDirectory()}/${lastSegment.split(":").last()}")
+        }
+        return uri
+    }
+
 
     private val initModel: InitModel by viewModels()
     private val readerModel: ReaderModel by viewModels()
