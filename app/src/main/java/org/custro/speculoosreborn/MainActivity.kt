@@ -9,7 +9,6 @@ import android.os.Bundle
 import android.os.Environment
 import android.util.DisplayMetrics
 import android.util.Log
-import android.view.View
 import android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -17,6 +16,9 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import org.custro.speculoosreborn.libtiramisuk.utils.PageCache
 
 class MainActivity : ComponentActivity() {
@@ -64,8 +66,8 @@ class MainActivity : ComponentActivity() {
                 readerModel = readerModel,
                 initModel = initModel,
                 findManga = { getArchive.launch(arrayOf("*/*")) },
-                showSystemUi = { showSystemUi() },
-                hideSystemUi = { hideSystemUi() }
+                showSystemUi = { showSystemUiNew() },
+                hideSystemUi = { hideSystemUiNew() }
             )
         }
     }
@@ -87,31 +89,13 @@ class MainActivity : ComponentActivity() {
         return Pair(width, height)
     }
 
-    @Suppress("DEPRECATION")
-    private fun hideSystemUi() {
-        window.decorView.systemUiVisibility =
-            View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or
-                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
-                    View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
-                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
-                    View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
-                    View.SYSTEM_UI_FLAG_FULLSCREEN
-    }
 
-    @Suppress("DEPRECATION")
     private fun hideSystemUiNew() {
-        window.decorView.systemUiVisibility =
-            View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or
-                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
-                    View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
-                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
-                    View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
-                    View.SYSTEM_UI_FLAG_FULLSCREEN
-    }
-
-    @Suppress("DEPRECATION")
-    private fun showSystemUi() {
-        window.decorView.systemUiVisibility = View.VISIBLE
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        WindowInsetsControllerCompat(window, window.decorView).let { controller ->
+            controller.hide(WindowInsetsCompat.Type.systemBars())
+            controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        }
     }
 
     private fun showOnCutout() {
@@ -120,8 +104,8 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    @Suppress("DEPRECATION")
     private fun showSystemUiNew() {
-        window.decorView.systemUiVisibility = View.VISIBLE
+        WindowCompat.setDecorFitsSystemWindows(window, true)
+        WindowInsetsControllerCompat(window, window.decorView).show(WindowInsetsCompat.Type.systemBars())
     }
 }
