@@ -40,10 +40,29 @@ class ReaderModel : ViewModel() {
 
     fun onIndexChange(value: Int) {
         Log.d("PageModel", "new index: $value")
-        if (value != index.value) {
-            _index.value = value
+        val normValue = normIndex(value)
+        if (normValue != index.value) {
+            _index.value = normValue
             genRequest()
         }
+    }
+
+    fun onIndexInc() {
+        onIndexChange(index.value!!+1)
+    }
+
+    fun onIndexDec() {
+        onIndexChange(index.value!!-1)
+    }
+
+    private fun normIndex(i: Int): Int {
+        if (i < 0) {
+            return 0
+        }
+        if (i > maxIndex.value!!) {
+            return maxIndex.value!!
+        }
+        return i
     }
 
     fun onSizeChange(value: Pair<Int, Int>) {
@@ -86,6 +105,10 @@ class ReaderModel : ViewModel() {
 
     fun onHiddenSliderChange(value: Boolean) {
         _hiddenSlider.value = value
+    }
+
+    fun onHiddenSliderSwitch() {
+        _hiddenSlider.value = !hiddenSlider.value!!
     }
 
     private fun genRequest() = viewModelScope.launch(Dispatchers.Default) {

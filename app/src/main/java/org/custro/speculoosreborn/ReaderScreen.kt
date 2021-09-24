@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.DefaultAlpha
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 
@@ -33,15 +34,14 @@ fun ReaderScreen(readerModel: ReaderModel = viewModel()) {
     val hiddenSlider: Boolean by readerModel.hiddenSlider.observeAsState(false)
     val background: ImageBitmap by readerModel.background.observeAsState(ImageBitmap(1, 1))
     val size: Pair<Int, Int> by readerModel.size.observeAsState(Pair(0, 0))
+    Log.d("TapBox", "hiddenSlider: $hiddenSlider")
     Background(bitmap = background, width = size.first, height = size.second)
     Page(bitmap = image)
     TapBox(
-        index = index,
-        maxIndex = maxIndex,
-        onIndexChange = { readerModel.onIndexChange(it) },
-        width = size.first,
-        hiddenSlider = hiddenSlider,
-        onHiddenSliderChange = { readerModel.onHiddenSliderChange(it) }
+        onIndexInc = { readerModel.onIndexInc() },
+        onIndexDec = { readerModel.onIndexDec() },
+        onHiddenSliderSwitch = { readerModel.onHiddenSliderSwitch() },
+        onHiddenSliderHid = { readerModel.onHiddenSliderChange(true) }
     )
     SliderView(
         index = index,
@@ -91,28 +91,29 @@ fun Page(bitmap: ImageBitmap) {
 
 @Composable
 fun TapBox(
-    index: Int,
-    maxIndex: Int,
-    onIndexChange: (Int) -> Unit,
-    width: Int,
-    hiddenSlider: Boolean,
-    onHiddenSliderChange: (Boolean) -> Unit
+    onIndexInc: () -> Unit,
+    onIndexDec: () -> Unit,
+    onHiddenSliderSwitch: () -> Unit,
+    onHiddenSliderHid: () -> Unit
 ) {
-    val key = index + maxIndex * (if (hiddenSlider) 0 else 1)
+    var width: Int by remember {
+        mutableStateOf(0)
+    }
     Box(modifier = Modifier
         .fillMaxSize()
-        .pointerInput(key) {
+        .onGloballyPositioned { width = it.size.width }
+        .pointerInput(null) {
             detectTapGestures { offset ->  //onTap
-                Log.d("TapBox", "Touched, $index, $maxIndex")
-                if (offset.x > 2 * width / 3 && index < maxIndex - 1) {
-                    onIndexChange(index + 1)
-                } else if (offset.x < width / 3 && index > 0) {
-                    onIndexChange(index - 1)
-                }
-                if (!hiddenSlider && index >= 0 && index <= maxIndex - 1) {
-                    onHiddenSliderChange(true)
+                Log.d("TapBox", "Touched, ${offset.x}, ${offset.y}, $width")
+                if (offset.x > 2 * width / 3) {
+                    onIndexInc()
+                    onHiddenSliderHid()
+                } else if (offset.x < width / 3) {
+                    onIndexDec()
+                    onHiddenSliderHid()
                 } else if (offset.x > width / 3 && offset.x < 2 * width / 3) {
-                    onHiddenSliderChange(false)
+                    //Log.d("TapBox", "hiddenSlider: $hiddenSlider")
+                    onHiddenSliderSwitch()
                 }
             }
         })
