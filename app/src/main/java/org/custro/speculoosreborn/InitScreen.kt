@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -28,25 +29,28 @@ fun InitScreen(
             Icon(Icons.Filled.Add, contentDescription = "Pick file and add it to library")
         }
     }) {
-        Column(
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(state = rememberScrollState(), enabled = true)
-        ) {
-            for (m in mangas) {
-                val cardModel = MangaCardModel()
-                cardModel.onMangaChange(m)
-                MangaCard(model = cardModel,
-                    onRead = { setManga(Uri.parse(it)); navigateToReaderScreen() },
-                    onDelete = { initModel.deleteManga(it) })
-            }
-            TextButton(onClick = {
-                navigateToReaderScreen()
-            }) {
-                Text(text = "Start")
-            }
+        MangaList(mangas = mangas,
+            onReadManga = { setManga(Uri.parse(it)); navigateToReaderScreen() },
+            onDeleteManga = { initModel.deleteManga(it) }
+        )
+    }
+}
+
+@Composable
+fun MangaList(
+    mangas: List<Manga>,
+    onReadManga: (String) -> Unit,
+    onDeleteManga: (String) -> Unit
+) {
+    LazyColumn(
+        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp)
+    ) {
+        items(mangas) { manga ->
+            val cardModel = MangaCardModel()
+            cardModel.onMangaChange(manga)
+            MangaCard(model = cardModel,
+                onRead = onReadManga,
+                onDelete = onDeleteManga)
         }
     }
 }

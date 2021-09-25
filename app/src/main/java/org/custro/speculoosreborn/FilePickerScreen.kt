@@ -1,30 +1,36 @@
 package org.custro.speculoosreborn
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.Modifier
 import java.io.File
 
 @Composable
 fun FilePickerScreen(model: FilePickerModel = FilePickerModel()) {
     val currentDir: File by model.currentDir.observeAsState(model.initialDir)
-    Column(            modifier = Modifier
-        .fillMaxSize()
-        .verticalScroll(state = rememberScrollState(), enabled = true)
-    ) {
-        TextButton(onClick = { model.onParentDir() }) {
+    FileList(files = currentDir.listFiles()?.toList() ?: listOf(),
+        onSelectFile = { model.onCurrentDirChange(it) },
+        onSelectParent = { model.onParentDir() }
+    )
+}
+
+@Composable
+fun FileList(files: List<File>,
+             onSelectFile: (File) -> Unit,
+             onSelectParent: () -> Unit
+) {
+    LazyColumn() {
+        item {
+            TextButton(onClick = onSelectParent) {
             Text(text = "..")
-        }
-        for (x in currentDir.listFiles() ?: Array<File>(0) { File("") }) {
-            TextButton(onClick = { model.onCurrentDirChange(x) }) {
-                Text(text = x.name)
+        } }
+        items(files) { file ->
+            TextButton(onClick = { onSelectFile(file) }) {
+                Text(text = file.name)
             }
         }
     }

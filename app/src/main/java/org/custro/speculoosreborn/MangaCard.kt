@@ -3,16 +3,21 @@ package org.custro.speculoosreborn
 import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Button
+import androidx.compose.material.TextButton
 import androidx.compose.material.Card
+import androidx.compose.material.Icon
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.RemoveCircleOutline
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import org.custro.speculoosreborn.room.Manga
+import androidx.compose.ui.unit.sp
 
 @Composable
 fun MangaCard(model: MangaCardModel = MangaCardModel(), onRead: (uri: String) -> Unit, onDelete: (uri: String) -> Unit) {
@@ -22,20 +27,25 @@ fun MangaCard(model: MangaCardModel = MangaCardModel(), onRead: (uri: String) ->
             .height(100.dp)
     ) {
         val cover: ImageBitmap by model.cover.observeAsState(ImageBitmap(1, 1))
-        Row() {
+        Row {
             Image(bitmap = cover, contentDescription = "front page")
-            Column(verticalArrangement = Arrangement.Center) {
+            Column(verticalArrangement = Arrangement.Center,
+            modifier = Modifier.padding(8.dp)) {
                 Uri.parse(model.uri).lastPathSegment?.let { it1 ->
                     Text(
-                        text = it1.split(':').last().split('/').last()
+                        text = it1.split(':').last().split('/').last(),
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.SemiBold
                     )
                 }
-                Row(horizontalArrangement = Arrangement.End) {
-                    Button(onClick = { onDelete(model.uri) }) {
+                Row {
+                    TextButton(onClick = { onDelete(model.uri) }) {
                         Text(text = "Remove")
+                        Icon(Icons.Filled.RemoveCircleOutline , "delete manga from list")
                     }
-                    Button(onClick = { onRead(model.localUri) }) {
+                    TextButton(onClick = { onRead(model.localUri) }) {
                         Text(text = "Read")
+                        Icon(Icons.Filled.PlayArrow, "read manga" )
                     }
                 }
             }
