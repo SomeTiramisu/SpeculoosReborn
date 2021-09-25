@@ -12,12 +12,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.custro.speculoosreborn.libtiramisuk.parser.ParserFactory
 import org.custro.speculoosreborn.libtiramisuk.utils.MangaParser
 import org.custro.speculoosreborn.room.Manga
 import org.custro.speculoosreborn.room.genManga
 import java.io.File
 
-class FilePickerModel: ViewModel() {
+class FilePickerModel : ViewModel() {
 
     val initialDir = App.instance.applicationContext.getExternalFilesDir(null)!!
         .parentFile!!
@@ -28,12 +29,15 @@ class FilePickerModel: ViewModel() {
     val currentDir: LiveData<File> = _currentDir
 
     fun onCurrentDirChange(value: File) {
-        if(value.isFile) {
-            insertManga(value.toUri())
+        if (value.isFile) {
+            if (ParserFactory.isSupported(value.toUri())) {
+                insertManga(value.toUri())
+            }
         } else {
-        _currentDir.value = value
+            _currentDir.value = value
         }
     }
+
     fun onParentDir() {
         _currentDir.value = _currentDir.value?.parentFile
     }
@@ -52,7 +56,4 @@ class FilePickerModel: ViewModel() {
             }
         }
     }
-
-
-
 }

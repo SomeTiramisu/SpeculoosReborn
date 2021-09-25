@@ -11,5 +11,11 @@ class ParserFactory() {
             if (RarStreamParser.isSupported(uri)) return RarStreamParser(uri)
             throw Exception("Unsupported file")
         }
+        fun isSupported(uri: Uri): Boolean {
+            return ZipFileParser.isSupported(uri) or
+                    ZipStreamParser.isSupported(uri) or
+                    RarFileParser.isSupported(uri) or
+                    RarStreamParser.isSupported(uri)
+        }
     }
 }

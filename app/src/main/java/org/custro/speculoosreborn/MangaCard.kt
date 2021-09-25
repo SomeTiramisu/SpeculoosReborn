@@ -39,11 +39,15 @@ fun MangaCard(model: MangaCardModel = MangaCardModel(), onRead: (uri: String) ->
                     )
                 }
                 Row {
-                    TextButton(onClick = { onDelete(model.uri) }) {
+                    TextButton(onClick = { onDelete(model.uri) },
+                    modifier = Modifier.fillMaxHeight()
+                    ) {
                         Text(text = "Remove")
                         Icon(Icons.Filled.RemoveCircleOutline , "delete manga from list")
                     }
-                    TextButton(onClick = { onRead(model.localUri) }) {
+                    TextButton(onClick = { onRead(model.localUri) },
+                        modifier = Modifier.fillMaxHeight()
+                    ) {
                         Text(text = "Read")
                         Icon(Icons.Filled.PlayArrow, "read manga" )
                     }
