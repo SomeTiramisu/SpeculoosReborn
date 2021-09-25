@@ -35,7 +35,8 @@ fun MangaCard(model: MangaCardModel = MangaCardModel(), onRead: (uri: String) ->
                     Text(
                         text = it1.split(':').last().split('/').last(),
                         fontSize = 20.sp,
-                        fontWeight = FontWeight.SemiBold
+                        fontWeight = FontWeight.SemiBold,
+                        maxLines = 1
                     )
                 }
                 Row {
