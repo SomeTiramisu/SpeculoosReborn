@@ -59,7 +59,7 @@ class ReaderModel : ViewModel() {
         if (i < 0) {
             return 0
         }
-        if (i > maxIndex.value!!) {
+        if (i >= maxIndex.value!!) {
             return maxIndex.value!!
         }
         return i
