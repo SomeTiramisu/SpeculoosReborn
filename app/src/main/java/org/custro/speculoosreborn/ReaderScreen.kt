@@ -6,8 +6,10 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.gestures.TransformableState
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.rememberTransformableState
+import androidx.compose.foundation.gestures.transformable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Slider
 import androidx.compose.material.Text
@@ -19,6 +21,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.DefaultAlpha
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -37,12 +40,12 @@ fun ReaderScreen(readerModel: ReaderModel = viewModel()) {
     Log.d("TapBox", "hiddenSlider: $hiddenSlider")
     Background(bitmap = background, width = size.first, height = size.second)
     Page(bitmap = image)
-    TapBox(
+    /*TapBox(
         onIndexInc = { readerModel.onIndexInc() },
         onIndexDec = { readerModel.onIndexDec() },
         onHiddenSliderSwitch = { readerModel.onHiddenSliderSwitch() },
         onHiddenSliderHid = { readerModel.onHiddenSliderChange(true) }
-    )
+    )*/
     SliderView(
         index = index,
         maxIndex = maxIndex,
@@ -66,26 +69,36 @@ fun Page(bitmap: ImageBitmap) {
     var rotation by remember { mutableStateOf(0f) }
     var offset by remember { mutableStateOf(Offset.Zero) }
     val state = rememberTransformableState { zoomChange, offsetChange, rotationChange ->
-        scale *= zoomChange
-        /*if( 0.9f < scale && scale < 1.1f ) {
-            scale = 1f
-        }*/
-        rotation += rotationChange
-        /*if ( -3f < scale && scale < 3f ) {
-            rotation = 0f
-        }*/
-        offset += offsetChange
+        val newScale = scale*zoomChange
+        scale = if( 0.95f < newScale && newScale < 1.05f ) {
+            1f
+        } else {
+            newScale
+        }
+        val newRotation = rotation + rotationChange
+        rotation = if ( -1.5f < newRotation && newRotation < 1.5f ) {
+            0f
+        } else {
+            newRotation
+        }
+        val newOffset = offset + offsetChange
+        Log.d("Offset", "${newOffset.getDistanceSquared()}")
+        offset = if (newOffset.getDistanceSquared() < 1000) {
+            Offset.Zero
+        } else {
+            newOffset
+        }
     }
     Image(
         bitmap = bitmap,
         contentDescription = "page",
-        modifier = Modifier.fillMaxSize()/*.transformable(state = state).graphicsLayer(
+        modifier = Modifier.fillMaxSize().transformable(state = state).graphicsLayer(
             scaleX = scale,
             scaleY = scale,
             rotationZ = rotation,
             translationX = offset.x,
             translationY = offset.y
-        )*/
+        )
     )
 }
 
@@ -96,11 +109,23 @@ fun TapBox(
     onHiddenSliderSwitch: () -> Unit,
     onHiddenSliderHid: () -> Unit
 ) {
-    var width: Int by remember {
-        mutableStateOf(0)
-    }
-    Box(modifier = Modifier
-        .fillMaxSize()
+    Box(modifier = Modifier.fillMaxSize()
+        .tapDetect(
+        onIndexInc,
+        onIndexDec,
+        onHiddenSliderSwitch,
+        onHiddenSliderHid
+    ))
+}
+
+fun Modifier.tapDetect(
+    onIndexInc: () -> Unit,
+    onIndexDec: () -> Unit,
+    onHiddenSliderSwitch: () -> Unit,
+    onHiddenSliderHid: () -> Unit
+): Modifier = then( run {
+    var width = 0
+     Modifier
         .onGloballyPositioned { width = it.size.width }
         .pointerInput(null) {
             detectTapGestures { offset ->  //onTap
@@ -116,8 +141,8 @@ fun TapBox(
                     onHiddenSliderSwitch()
                 }
             }
-        })
-}
+        }
+})
 
 @Composable
 fun IndexSlider(index: Int, maxIndex: Int, onIndexChange: (Int) -> Unit) {
