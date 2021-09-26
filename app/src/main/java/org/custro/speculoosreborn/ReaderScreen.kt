@@ -39,13 +39,12 @@ fun ReaderScreen(readerModel: ReaderModel = viewModel()) {
     val size: Pair<Int, Int> by readerModel.size.observeAsState(Pair(0, 0))
     Log.d("TapBox", "hiddenSlider: $hiddenSlider")
     Background(bitmap = background, width = size.first, height = size.second)
-    Page(bitmap = image)
-    /*TapBox(
+    Page(bitmap = image,
         onIndexInc = { readerModel.onIndexInc() },
         onIndexDec = { readerModel.onIndexDec() },
         onHiddenSliderSwitch = { readerModel.onHiddenSliderSwitch() },
         onHiddenSliderHid = { readerModel.onHiddenSliderChange(true) }
-    )*/
+    )
     SliderView(
         index = index,
         maxIndex = maxIndex,
@@ -63,7 +62,11 @@ fun Background(bitmap: ImageBitmap, width: Int, height: Int) {
 }
 
 @Composable
-fun Page(bitmap: ImageBitmap) {
+fun Page(bitmap: ImageBitmap,
+         onIndexInc: () -> Unit,
+         onIndexDec: () -> Unit,
+         onHiddenSliderSwitch: () -> Unit,
+         onHiddenSliderHid: () -> Unit) {
     // set up all transformation states
     var scale by remember { mutableStateOf(1f) }
     var rotation by remember { mutableStateOf(0f) }
@@ -89,6 +92,12 @@ fun Page(bitmap: ImageBitmap) {
             newOffset
         }
     }
+    Box(modifier = Modifier.tapDetect(
+        onIndexInc,
+        onIndexDec,
+        onHiddenSliderSwitch,
+        onHiddenSliderHid
+    )) {
     Image(
         bitmap = bitmap,
         contentDescription = "page",
@@ -99,23 +108,7 @@ fun Page(bitmap: ImageBitmap) {
             translationX = offset.x,
             translationY = offset.y
         )
-    )
-}
-
-@Composable
-fun TapBox(
-    onIndexInc: () -> Unit,
-    onIndexDec: () -> Unit,
-    onHiddenSliderSwitch: () -> Unit,
-    onHiddenSliderHid: () -> Unit
-) {
-    Box(modifier = Modifier.fillMaxSize()
-        .tapDetect(
-        onIndexInc,
-        onIndexDec,
-        onHiddenSliderSwitch,
-        onHiddenSliderHid
-    ))
+    )}
 }
 
 fun Modifier.tapDetect(
