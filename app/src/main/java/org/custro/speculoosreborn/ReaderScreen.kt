@@ -73,20 +73,20 @@ fun Page(bitmap: ImageBitmap,
     var offset by remember { mutableStateOf(Offset.Zero) }
     val state = rememberTransformableState { zoomChange, offsetChange, rotationChange ->
         val newScale = scale*zoomChange
-        scale = if( 0.95f < newScale && newScale < 1.05f ) {
+        scale = if( newScale < 1.05f ) {
             1f
         } else {
             newScale
         }
-        val newRotation = rotation + rotationChange
-        rotation = if ( -1.5f < newRotation && newRotation < 1.5f ) {
+        val newRotation = (rotation + rotationChange) % 360
+        rotation = if ( -1.5f < newRotation && newRotation < 1.5f || scale < 1.05f) {
             0f
         } else {
             newRotation
         }
         val newOffset = offset + offsetChange
-        Log.d("Offset", "${newOffset.getDistanceSquared()}")
-        offset = if (newOffset.getDistanceSquared() < 1000) {
+        //Log.d("Offset", "${newOffset}")
+        offset = if (newOffset.getDistanceSquared() < 1000 || scale < 1.05f) {
             Offset.Zero
         } else {
             newOffset
