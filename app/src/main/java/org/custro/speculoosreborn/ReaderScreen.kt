@@ -26,6 +26,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.toSize
 import androidx.lifecycle.viewmodel.compose.viewModel
 
 @ExperimentalAnimationApi
@@ -43,7 +44,8 @@ fun ReaderScreen(readerModel: ReaderModel = viewModel()) {
         onIndexInc = { readerModel.onIndexInc() },
         onIndexDec = { readerModel.onIndexDec() },
         onHiddenSliderSwitch = { readerModel.onHiddenSliderSwitch() },
-        onHiddenSliderHid = { readerModel.onHiddenSliderChange(true) }
+        onHiddenSliderHid = { readerModel.onHiddenSliderChange(true) },
+        onSizeChange = { readerModel.onSizeChange(it) }
     )
     SliderView(
         index = index,
@@ -66,7 +68,9 @@ fun Page(bitmap: ImageBitmap,
          onIndexInc: () -> Unit,
          onIndexDec: () -> Unit,
          onHiddenSliderSwitch: () -> Unit,
-         onHiddenSliderHid: () -> Unit) {
+         onHiddenSliderHid: () -> Unit,
+         onSizeChange: (Pair<Int, Int>) -> Unit
+) {
     // set up all transformation states
     var scale by remember { mutableStateOf(1f) }
     var rotation by remember { mutableStateOf(0f) }
@@ -101,7 +105,10 @@ fun Page(bitmap: ImageBitmap,
     Image(
         bitmap = bitmap,
         contentDescription = "page",
-        modifier = Modifier.fillMaxSize().transformable(state = state).graphicsLayer(
+        modifier = Modifier.fillMaxSize()
+            .onGloballyPositioned { onSizeChange(Pair(it.size.width, it.size.height)) }
+            .transformable(state = state)
+            .graphicsLayer(
             scaleX = scale,
             scaleY = scale,
             rotationZ = rotation,
