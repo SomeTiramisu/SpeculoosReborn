@@ -6,7 +6,6 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.gestures.TransformableState
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.rememberTransformableState
 import androidx.compose.foundation.gestures.transformable
@@ -26,7 +25,6 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.toSize
 import androidx.lifecycle.viewmodel.compose.viewModel
 
 @ExperimentalAnimationApi
@@ -37,9 +35,8 @@ fun ReaderScreen(readerModel: ReaderModel = viewModel()) {
     val image: ImageBitmap by readerModel.image.observeAsState(ImageBitmap(1, 1))
     val hiddenSlider: Boolean by readerModel.hiddenSlider.observeAsState(false)
     val background: ImageBitmap by readerModel.background.observeAsState(ImageBitmap(1, 1))
-    val size: Pair<Int, Int> by readerModel.size.observeAsState(Pair(0, 0))
     Log.d("TapBox", "hiddenSlider: $hiddenSlider")
-    Background(bitmap = background, width = size.first, height = size.second)
+    TiledImage(bitmap = background, contentDescription = "background")
     Page(bitmap = image,
         onIndexInc = { readerModel.onIndexInc() },
         onIndexDec = { readerModel.onIndexDec() },
@@ -52,14 +49,6 @@ fun ReaderScreen(readerModel: ReaderModel = viewModel()) {
         maxIndex = maxIndex,
         onIndexChange = { readerModel.onIndexChange(it) },
         hidden = hiddenSlider
-    )
-}
-
-
-@Composable
-fun Background(bitmap: ImageBitmap, width: Int, height: Int) {
-    TiledImage(
-        bitmap = bitmap, width = width, height = height, contentDescription = "background"
     )
 }
 
@@ -105,16 +94,17 @@ fun Page(bitmap: ImageBitmap,
     Image(
         bitmap = bitmap,
         contentDescription = "page",
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
             .onGloballyPositioned { onSizeChange(Pair(it.size.width, it.size.height)) }
             .transformable(state = state)
             .graphicsLayer(
-            scaleX = scale,
-            scaleY = scale,
-            rotationZ = rotation,
-            translationX = offset.x,
-            translationY = offset.y
-        )
+                scaleX = scale,
+                scaleY = scale,
+                rotationZ = rotation,
+                translationX = offset.x,
+                translationY = offset.y
+            )
     )}
 }
 
@@ -125,7 +115,7 @@ fun Modifier.tapDetect(
     onHiddenSliderHid: () -> Unit
 ): Modifier = then( run {
     var width = 0
-     Modifier
+    Modifier
         .onGloballyPositioned { width = it.size.width }
         .pointerInput(null) {
             detectTapGestures { offset ->  //onTap
@@ -194,18 +184,18 @@ fun SliderView(
 @Composable
 fun TiledImage(
     bitmap: ImageBitmap,
-    width: Int,
-    height: Int,
     contentDescription: String?,
     alpha: Float = DefaultAlpha,
     colorFilter: ColorFilter? = null
 ) {
-    val nwidth = width / bitmap.width + 2
-    val nheight = height / bitmap.height + 2
-    Column {
-        repeat(nwidth) {
+    var width: Int by remember { mutableStateOf(0) }
+    var height: Int by remember { mutableStateOf(0) }
+    val nWidth: Int by remember { mutableStateOf (   width / bitmap.width + 2 )}
+    val nHeight: Int by remember { mutableStateOf( height / bitmap.height + 2 )}
+    Column(modifier = Modifier.onGloballyPositioned { width = it.size.width; height = it.size.height }) {
+        repeat(nWidth) {
             Row {
-                repeat(nheight) {
+                repeat(nHeight) {
                     Image(
                         bitmap = bitmap,
                         contentDescription = contentDescription,
