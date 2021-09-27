@@ -30,8 +30,7 @@ class MangaCardModel: ViewModel() {
             val coverUri = Uri.parse(manga.cover)
             val coverImage = matToBitmap(
                 fromByteArray(
-                    App.instance.contentResolver.openInputStream(coverUri)!!
-                        .readBytes()
+                    App.instance.contentResolver.openInputStream(coverUri)!!.use { it.readBytes() }
                 )
             ).asImageBitmap()
             _cover.postValue(coverImage)
