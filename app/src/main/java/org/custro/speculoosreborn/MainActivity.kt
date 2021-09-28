@@ -1,8 +1,13 @@
 package org.custro.speculoosreborn
 
+import android.Manifest
+import android.content.Intent
 import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
+import android.provider.Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION
 import android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -12,6 +17,7 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.core.app.ActivityCompat
 
 class MainActivity : ComponentActivity() {
     private val initModel: InitModel by viewModels()
@@ -38,6 +44,30 @@ class MainActivity : ComponentActivity() {
         readerModel.onBackgroundChange(
             BitmapFactory.decodeStream(assets.open("background.png")).asImageBitmap()
         )
+        checkPermissions()
+    }
+
+    private fun checkPermissions() {
+        if (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                !Environment.isExternalStorageManager()
+            } else {
+                true
+            }
+        ) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                val intent = Intent(ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)
+                val uri: Uri = Uri.fromParts("package", packageName, null)
+                intent.data = uri
+                startActivity(intent)
+            } else {
+                ActivityCompat.requestPermissions(
+                    this, arrayOf(
+                        Manifest.permission.READ_EXTERNAL_STORAGE,
+                    ),
+                    1
+                )
+            }
+        }
     }
 
     private fun hideSystemUiNew() {
