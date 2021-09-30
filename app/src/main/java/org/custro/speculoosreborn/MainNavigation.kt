@@ -25,6 +25,9 @@ fun MainNavigation(
                 setManga = { readerModel.onUriChange(it) },
                 navigateToReaderScreen = {
                 navController.navigate("readerScreen")
+            },
+            navigateToSettingsScreen = {
+                navController.navigate("settingsScreen")
             })
         }
         composable("readerScreen") {
@@ -33,6 +36,9 @@ fun MainNavigation(
         }
         composable("filePickerScreen") {
             FilePickerScreen()
+        }
+        composable("settingsScreen") {
+            SettingsScreen()
         }
     }
 }
