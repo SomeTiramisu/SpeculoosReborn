@@ -10,6 +10,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.custro.speculoosreborn.libtiramisuk.PageScheduler
 import org.custro.speculoosreborn.libtiramisuk.utils.MangaParser
@@ -31,6 +33,9 @@ class ReaderModel : ViewModel() {
 
     private val _image = MutableLiveData(ImageBitmap(1, 1))
     val image: LiveData<ImageBitmap> = _image
+
+    private val _isBlackBorders = MutableLiveData(false)
+    val isBlackBorders: LiveData<Boolean> = _isBlackBorders
 
     private val _background = MutableLiveData(ImageBitmap(1, 1))
     val background: LiveData<ImageBitmap> = _background
@@ -70,9 +75,7 @@ class ReaderModel : ViewModel() {
         if (value != size.value) {
             _size.value = value
             //_image.value = ImageBitmap(1, 1) //to avoid flicker
-            mSchedulerInitJob = viewModelScope.launch(Dispatchers.Default) {
-                initScheduler()
-            }
+            genRequest()
         }
     }
 
@@ -95,7 +98,7 @@ class ReaderModel : ViewModel() {
         if (uri != null) {
             mMangaParser = MangaParser(uri)
         }
-        mScheduler = PageScheduler(mMangaParser!!, size.value!!.first, size.value!!.second)
+        mScheduler = PageScheduler(mMangaParser!!)
         genRequest()
     }
 
@@ -116,10 +119,12 @@ class ReaderModel : ViewModel() {
             return@launch
         }
         mSchedulerInitJob?.join()
-        val it = mScheduler!!.at(index.value!!)
-        Log.d("ImageCallback", "imaged")
-        _image.postValue(matToBitmap(it).asImageBitmap()) //called from another thread
-        mScheduler!!.seekPagesOrdered(index.value!!)
+        mScheduler!!.at(index.value!!, size.value!!.first, size.value!!.second).collectLatest { value ->
+            _image.postValue(matToBitmap(value.first).asImageBitmap()) //called from another thread
+            _isBlackBorders.postValue(value.second)
+            Log.d("ImageCallback", "imaged")
+            mScheduler!!.seekPagesOrdered(index.value!!)
+        }
     }
 
     override fun onCleared() {

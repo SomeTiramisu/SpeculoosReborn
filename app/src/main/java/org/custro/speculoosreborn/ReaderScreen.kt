@@ -33,11 +33,13 @@ fun ReaderScreen(readerModel: ReaderModel = viewModel()) {
     val index: Int by readerModel.index.observeAsState(0)
     val maxIndex: Int by readerModel.maxIndex.observeAsState(0)
     val image: ImageBitmap by readerModel.image.observeAsState(ImageBitmap(1, 1))
+    val isBlackBorders: Boolean by readerModel.isBlackBorders.observeAsState(false)
     val hiddenSlider: Boolean by readerModel.hiddenSlider.observeAsState(false)
     val background: ImageBitmap by readerModel.background.observeAsState(ImageBitmap(1, 1))
     Log.d("TapBox", "hiddenSlider: $hiddenSlider")
     TiledImage(bitmap = background, contentDescription = "background")
     Page(bitmap = image,
+        isBlackBorders = isBlackBorders,
         onIndexInc = { readerModel.onIndexInc() },
         onIndexDec = { readerModel.onIndexDec() },
         onHiddenSliderSwitch = { readerModel.onHiddenSliderSwitch() },
@@ -54,6 +56,7 @@ fun ReaderScreen(readerModel: ReaderModel = viewModel()) {
 
 @Composable
 fun Page(bitmap: ImageBitmap,
+         isBlackBorders: Boolean,
          onIndexInc: () -> Unit,
          onIndexDec: () -> Unit,
          onHiddenSliderSwitch: () -> Unit,

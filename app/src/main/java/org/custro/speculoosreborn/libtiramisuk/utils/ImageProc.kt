@@ -9,6 +9,7 @@ import org.opencv.imgcodecs.Imgcodecs
 import org.opencv.imgproc.Imgproc
 import org.opencv.imgproc.Imgproc.boundingRect
 import org.opencv.imgproc.Imgproc.cvtColor
+import org.opencv.imgproc.Imgproc.threshold
 import kotlin.math.min
 
 // A line will be considered as having content if 0.25% of it is filled.
@@ -22,7 +23,7 @@ fun fromByteArray(src: ByteArray): Mat {
         return Mat()
     }
     val img = Imgcodecs.imdecode(MatOfByte(*src), Imgcodecs.IMREAD_COLOR)
-    Imgproc.cvtColor(img, img, Imgproc.COLOR_BGR2RGBA)
+    cvtColor(img, img, Imgproc.COLOR_BGR2RGBA)
     return img
 }
 
@@ -44,8 +45,8 @@ fun matToBitmap(src: Mat): Bitmap {
 }
 
 fun createMask(src: Mat, dst: Mat, notInv: Boolean = false) {
-    Imgproc.cvtColor(src, dst, Imgproc.COLOR_RGBA2GRAY)
-    Imgproc.threshold(dst, dst, 242.35, 255.0,
+    cvtColor(src, dst, Imgproc.COLOR_RGBA2GRAY)
+    threshold(dst, dst, 242.35, 255.0,
         if (notInv) Imgproc.THRESH_BINARY else Imgproc.THRESH_BINARY_INV)
 }
 
@@ -141,6 +142,26 @@ fun cropScaleProcess(src: Mat, dst: Mat, roi: Rect, width: Int, height: Int) {
     } else {
         scale(src.submat(roi), tmp, width, height)
     }
+    createMask(tmp, mask)
+    tmp.copyTo(dst, mask)
+}
+
+fun cropProcessNew(src: Mat, dst: Mat, roi: Rect) {
+    val tmp = Mat()
+    val mask = Mat()
+    if (roi.empty()) {
+        src.copyTo(tmp)
+    } else {
+        src.submat(roi).copyTo(tmp)
+    }
+    createMask(tmp, mask)
+    tmp.copyTo(dst, mask)
+}
+
+fun scaleProcessNew(src: Mat, dst: Mat, width: Int, height: Int) {
+    val tmp = Mat()
+    val mask = Mat()
+    scale(src, tmp, width, height)
     createMask(tmp, mask)
     tmp.copyTo(dst, mask)
 }

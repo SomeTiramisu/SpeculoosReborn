@@ -2,31 +2,34 @@ package org.custro.speculoosreborn.libtiramisuk
 
 import android.util.Log
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import org.custro.speculoosreborn.libtiramisuk.utils.*
 import org.opencv.core.Mat
 import org.opencv.core.Rect
 
-class CropScaleRunner(private val width: Int, private val height: Int, private val getPage: () -> ByteArray, private val doDetect: Boolean = true, private val doScale: Boolean = true) {
+class CropScaleRunner(private val getPage: () -> ByteArray, private val doDetect: Boolean = true, private val doScale: Boolean = true) {
     private val scope = CoroutineScope(Dispatchers.Default)
-    private var mPageResJob: Deferred<Mat>? = null
+    private var mPageResJob: Deferred<CropPair>? = null
 
     fun preload() {
         if (mPageResJob == null) {
-            mPageResJob = scope.async(/*start = CoroutineStart.LAZY*/) {
-                val pngRes: PngPair
-                withContext(Dispatchers.IO) {pngRes = cropDetect()}
-                cropScale(pngRes)
+            mPageResJob = scope.async {
+                cropOnly(cropDetect())
             }
             mPageResJob!!.start()
         }
     }
 
-    suspend fun get(): Mat {
+    fun get(width: Int, height: Int): Flow<CropPair> = flow {
         if (mPageResJob == null) {
             clear()
             preload()
         }
-        return mPageResJob!!.await()
+        val res = mPageResJob!!.await()
+        emit(res)
+        //delay(1000)
+        emit(CropPair(scaleOnly(res.first, width, height), res.second))
     }
 
     fun clear() {
@@ -34,20 +37,26 @@ class CropScaleRunner(private val width: Int, private val height: Int, private v
         mPageResJob = null
     }
 
-    private fun cropScale(p: PngPair): Mat {
-        val img = fromByteArray(p.img)
-        if (!img.empty() && doScale) {
-            cropScaleProcess(img, img, p.rec, width, height)
-            if (p.isBlack) {
-                //Log.d("Runner", "is black")
-                addBlackBorders(img, img, width, height)
-            }
+    private fun cropOnly(p:  DetectTriple): CropPair {
+        val img = fromByteArray(p.first)
+        if (!img.empty()) {
+            cropProcessNew(img, img, p.second)
         }
-        Log.d("CropScale", "running: ")
+        Log.d("CropOnly", "running: ")
+        return CropPair(img, p.third)
+    }
+
+    private fun scaleOnly(p: Mat, width: Int, height: Int): Mat {
+        val img = Mat()
+        p.copyTo(img)
+        if (!p.empty()) {
+            scaleProcessNew(img, img, width, height)
+        }
+        Log.d("ScaleOnly", "running: ")
         return img
     }
 
-    private fun cropDetect(): PngPair {
+    private fun cropDetect(): DetectTriple {
         val png = getPage()
         val img = fromByteArray(png)
         var roi = Rect()
@@ -56,9 +65,8 @@ class CropScaleRunner(private val width: Int, private val height: Int, private v
             val (r, b) = cropDetect(img)
             roi = r
             isBlack = b
-
         }
         Log.d("CropDetect", "running: ")
-        return PngPair(png, roi, isBlack)
+        return DetectTriple(png, roi, isBlack)
     }
 }
