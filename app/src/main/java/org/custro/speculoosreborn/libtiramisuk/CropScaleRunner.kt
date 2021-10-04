@@ -16,9 +16,12 @@ import org.opencv.core.Rect
 class CropScaleRunner(private val getPage: () -> RendererPage, private val doDetect: Boolean = true, private val doScale: Boolean = true) {
     private val scope = CoroutineScope(Dispatchers.Default)
     private var mPageResJob: Deferred<Pair<Bitmap, RenderInfo>>? = null
+    private var preloadConfig: Pair<Int, Int>? = null
 
     fun preload(width: Int, height: Int) {
-        if (mPageResJob == null) {
+        if (mPageResJob == null || preloadConfig != Pair(width, height)) {
+            clear()
+            preloadConfig = Pair(width, height)
             mPageResJob = scope.async {
                 val bitmap: Bitmap = if (width == 0 || height == 0) {
                     Bitmap.createBitmap(1080, 1920, Bitmap.Config.ARGB_8888)
@@ -38,7 +41,7 @@ class CropScaleRunner(private val getPage: () -> RendererPage, private val doDet
     }
 
     fun get(width: Int, height: Int): Flow<Pair<Bitmap, RenderInfo>> = flow {
-        if (mPageResJob == null) {
+        if (mPageResJob == null || preloadConfig != Pair(width, height)) {
             clear()
             preload(width, height)
         }
