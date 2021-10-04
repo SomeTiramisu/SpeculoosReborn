@@ -18,13 +18,15 @@ class CropScaleRunner(private val getPage: () -> RendererPage, private val doDet
     fun preload(width: Int, height: Int) {
         if (mPageResJob == null) {
             mPageResJob = scope.async {
-                val res = getPage()
                 val bitmap: Bitmap = if (width == 0 || height == 0) {
                     Bitmap.createBitmap(1080, 1920, Bitmap.Config.ARGB_8888)
                 } else {
                     Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
                 }
-                val renderInfo = res.render(bitmap)
+                val renderInfo: RenderInfo
+                getPage().use {
+                    renderInfo = it.render(bitmap)
+                }
                 Pair(bitmap, renderInfo)
             }
             mPageResJob!!.start()
