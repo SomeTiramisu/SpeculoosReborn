@@ -12,6 +12,9 @@ class MangaRendererPage(private val page: ByteArray): RendererPage {
         val img = fromByteArray(page)
         val detect = cropDetect(img)
         cropScaleProcess(img, img, detect.first, bitmap.width, bitmap.height)
+        if (detect.second) {// reenable opencv borders
+            addBlackBorders(img, img, bitmap.width, bitmap.height)
+        }
         Log.d("MangaRendererPage", "img: w:${img.width()} h: ${img.height()} | btm: w:${bitmap.width} h:${bitmap.height}")
         bitmap.reconfigure(img.width(), img.height(), Bitmap.Config.ARGB_8888)
         Utils.matToBitmap(img, bitmap)

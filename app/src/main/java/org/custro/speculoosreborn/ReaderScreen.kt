@@ -104,7 +104,7 @@ fun Page(bitmap: ImageBitmap,
             .graphicsLayer(
                 scaleX = scale,
                 scaleY = scale,
-                rotationZ = rotation,
+                rotationZ = 0F,//rotation,
                 translationX = offset.x,
                 translationY = offset.y
             )
