@@ -5,6 +5,8 @@ import android.util.Log
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import org.custro.speculoosreborn.libtiramisuk.renderer.RenderInfo
 import org.custro.speculoosreborn.libtiramisuk.renderer.RendererPage
 import org.custro.speculoosreborn.libtiramisuk.utils.*
@@ -24,8 +26,10 @@ class CropScaleRunner(private val getPage: () -> RendererPage, private val doDet
                     Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
                 }
                 val renderInfo: RenderInfo
-                getPage().use {
-                    renderInfo = it.render(bitmap)
+                renderMutex.withLock { //slow down MangaRenderer, ensure PdfRenderer thread safety. We may remove @Syncronized from Parsers
+                    getPage().use {
+                        renderInfo = it.render(bitmap)
+                    }
                 }
                 Pair(bitmap, renderInfo)
             }
@@ -45,5 +49,9 @@ class CropScaleRunner(private val getPage: () -> RendererPage, private val doDet
     fun clear() {
         mPageResJob?.cancel()
         mPageResJob = null
+    }
+
+    companion object {
+        val renderMutex = Mutex()
     }
 }

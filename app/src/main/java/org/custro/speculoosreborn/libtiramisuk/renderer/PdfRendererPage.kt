@@ -13,7 +13,8 @@ class PdfRendererPage(private val page: PdfRenderer.Page): RendererPage {
         val fy = bitmap.height.toDouble()/page.height.toDouble()
         val f = min(fx, fy)
         bitmap.reconfigure((page.width*f).toInt(), (page.height*f).toInt(), Bitmap.Config.ARGB_8888)
-        page.render(bitmap, null, Matrix().apply { setScale(15F, 15F);postTranslate(-5000F, -5000F) } , RENDER_MODE_FOR_DISPLAY)
+        //page.render(bitmap, null, Matrix().apply { setScale(15F, 15F);postTranslate(-5000F, -5000F) } , RENDER_MODE_FOR_DISPLAY)
+        page.render(bitmap, null, null, RENDER_MODE_FOR_DISPLAY)
         return RenderInfo(false)
     }
 
