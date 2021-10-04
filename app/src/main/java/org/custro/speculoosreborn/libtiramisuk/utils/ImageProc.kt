@@ -44,6 +44,12 @@ fun matToBitmap(src: Mat): Bitmap {
     return bitmap
 }
 
+fun bitmapToMat(src: Bitmap): Mat {
+    val mat = Mat()
+    Utils.bitmapToMat(src, mat)
+    return mat
+}
+
 fun createMask(src: Mat, dst: Mat, notInv: Boolean = false) {
     cvtColor(src, dst, Imgproc.COLOR_RGBA2GRAY)
     threshold(dst, dst, 242.35, 255.0,
