@@ -6,6 +6,7 @@ import android.graphics.pdf.PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY
 
 class PdfRendererPage(private val page: PdfRenderer.Page): RendererPage {
     override fun render(bitmap: Bitmap): RenderInfo {
+        bitmap.reconfigure(bitmap.width, bitmap.height, Bitmap.Config.ARGB_8888)
         page.render(bitmap, null, null , RENDER_MODE_FOR_DISPLAY)
         return RenderInfo(false)
     }

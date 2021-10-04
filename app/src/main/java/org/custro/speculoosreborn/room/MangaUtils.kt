@@ -1,18 +1,23 @@
 package org.custro.speculoosreborn.room
 
+import android.graphics.Bitmap
 import android.net.Uri
 import android.util.Log
 import androidx.core.net.toFile
 import org.custro.speculoosreborn.App
+import org.custro.speculoosreborn.dpToPx
+import org.custro.speculoosreborn.libtiramisuk.renderer.RendererFactory
 import org.custro.speculoosreborn.libtiramisuk.utils.*
+import org.opencv.android.Utils
+import org.opencv.core.Mat
 
 
-fun genManga(parser: MangaParser): Manga {
+fun genManga(uri: Uri): Manga {
 
-    if (parser.uri.scheme == "file") {
-        return Manga(parser.uri.toString(), parser.uri.toString(), parser.cover.toString())
+    if (uri.scheme == "file") {
+        return Manga(uri.toString(), uri.toString(), genMangaCover(uri).toString())
     }
-    return Manga(parser.uri.toString(), PageCache.saveData(parser.uri).toString(), parser.cover.toString())
+    return Manga(uri.toString(), PageCache.saveData(uri).toString(), genMangaCover(uri).toString())
 
     //return Manga(parser.uri.toString(), parser.uri.toString(), parser.cover.toString())
 }
@@ -49,10 +54,23 @@ fun correctManga(manga: Manga) {
         newManga = Manga(newManga.uri, PageCache.saveData(Uri.parse(manga.uri)).toString(), newManga.cover)
     }
     if(!checkUri(manga.cover)) {
-        MangaParser(Uri.parse(manga.uri)).use {
-            newManga = Manga(newManga.uri, newManga.localUri, it.cover.toString())
-        }
+        newManga = Manga(newManga.uri, newManga.localUri, genMangaCover(Uri.parse(manga.uri)).toString())
     }
     dao.updateManga(newManga)
     Log.d("correctManga", "${manga.uri} corrected")
+}
+
+fun genMangaCover(uri: Uri): Uri {
+    val r: Uri
+    val context = App.instance.applicationContext
+    RendererFactory.create(uri).use { renderer ->
+        renderer.openPage(0).use { rendererPage ->
+            val bitmap = Bitmap.createBitmap(context.dpToPx(100), context.dpToPx(100), Bitmap.Config.ARGB_8888)
+            rendererPage.render(bitmap)
+            val mat = Mat()
+            Utils.bitmapToMat(bitmap, mat)
+            r = PageCache.saveData(toByteArray(mat), ".png")
+        }
+    }
+    return r
 }

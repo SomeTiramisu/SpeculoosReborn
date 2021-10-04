@@ -13,8 +13,6 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.custro.speculoosreborn.libtiramisuk.parser.ParserFactory
-import org.custro.speculoosreborn.libtiramisuk.utils.MangaParser
-import org.custro.speculoosreborn.room.Manga
 import org.custro.speculoosreborn.room.genManga
 import java.io.File
 
@@ -26,7 +24,8 @@ class FilePickerModel : ViewModel() {
     var currentExternalDirIndex = 0
 
     init {
-        externalDirs = App.instance.applicationContext.getExternalFilesDirs(null).toList().map { getAllFiles(it) }
+        externalDirs = App.instance.applicationContext.getExternalFilesDirs(null).toList()
+            .map { getAllFiles(it) }
         initialDir = externalDirs[0]
     }
 
@@ -62,10 +61,7 @@ class FilePickerModel : ViewModel() {
 
     private fun insertManga(uri: Uri) {
         viewModelScope.launch(Dispatchers.Default) {
-            val manga: Manga
-            MangaParser(uri).use {
-                manga = genManga(it)
-            }
+            val manga = genManga(uri)
             try {
                 App.db.mangaDao().insertAll(manga)
                 Log.d("MainModel", "inserted: ${manga.uri}")

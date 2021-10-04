@@ -2,13 +2,9 @@ package org.custro.speculoosreborn.libtiramisuk
 
 import android.graphics.Bitmap
 import android.util.Log
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import org.custro.speculoosreborn.libtiramisuk.renderer.RenderInfo
 import org.custro.speculoosreborn.libtiramisuk.renderer.Renderer
-import org.custro.speculoosreborn.libtiramisuk.utils.CropPair
-import org.custro.speculoosreborn.libtiramisuk.utils.MangaParser
-import org.opencv.core.Mat
 
 class PageScheduler(renderer: Renderer) {
     private val mImagePreload: Int = 3
