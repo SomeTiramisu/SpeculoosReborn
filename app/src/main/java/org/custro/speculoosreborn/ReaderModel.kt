@@ -14,12 +14,14 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.custro.speculoosreborn.libtiramisuk.PageScheduler
+import org.custro.speculoosreborn.libtiramisuk.renderer.Renderer
+import org.custro.speculoosreborn.libtiramisuk.renderer.RendererFactory
 import org.custro.speculoosreborn.libtiramisuk.utils.MangaParser
 import org.custro.speculoosreborn.libtiramisuk.utils.matToBitmap
 
 class ReaderModel : ViewModel() {
     private var mScheduler: PageScheduler? = null
-    private var mMangaParser: MangaParser? = null
+    private var mRenderer: Renderer? = null
     private var mSchedulerInitJob: Job? = null
 
     private val _index = MutableLiveData(0)
@@ -81,24 +83,24 @@ class ReaderModel : ViewModel() {
 
     fun onUriChange(value: Uri) {
         Log.d("PageModel", "onUriChange called")
-        if (value != mMangaParser?.uri ?: Uri.EMPTY)  {
+        if (value != mRenderer?.uri ?: Uri.EMPTY)  {
             _index.value = 0
             _image.value = ImageBitmap(1, 1)
             mSchedulerInitJob = viewModelScope.launch(Dispatchers.Default) {
                 initScheduler(value)
-                _maxIndex.postValue(mMangaParser!!.size)
+                _maxIndex.postValue(mRenderer!!.pageCount)
             }
         }
     }
 
     private fun initScheduler(uri: Uri? = null) {
-        if (mMangaParser == null && uri == null) {
+        if (mRenderer == null && uri == null) {
             return
         }
         if (uri != null) {
-            mMangaParser = MangaParser(uri)
+            mRenderer = RendererFactory.create(uri)
         }
-        mScheduler = PageScheduler(mMangaParser!!)
+        mScheduler = PageScheduler(mRenderer!!)
         genRequest()
     }
 
@@ -120,15 +122,15 @@ class ReaderModel : ViewModel() {
         }
         mSchedulerInitJob?.join()
         mScheduler!!.at(index.value!!, size.value!!.first, size.value!!.second).collectLatest { value ->
-            _image.postValue(matToBitmap(value.first).asImageBitmap()) //called from another thread
-            _isBlackBorders.postValue(value.second)
+            _image.postValue(value.first.asImageBitmap()) //called from another thread
+            _isBlackBorders.postValue(value.second.isBlackBorders)
             Log.d("ImageCallback", "imaged")
-            mScheduler!!.seekPagesOrdered(index.value!!)
+            mScheduler!!.seekPagesOrdered(index.value!!, size.value!!.first, size.value!!.second)
         }
     }
 
     override fun onCleared() {
         super.onCleared()
-        mMangaParser?.close()
+        mRenderer?.close()
     }
 }
