@@ -1,7 +1,6 @@
 package org.custro.speculoosreborn.libtiramisuk.renderer
 
 import android.net.Uri
-import org.custro.speculoosreborn.libtiramisuk.parser.*
 
 class RendererFactory {
     companion object {

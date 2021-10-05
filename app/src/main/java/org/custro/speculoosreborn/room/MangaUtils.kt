@@ -8,9 +8,8 @@ import org.custro.speculoosreborn.App
 import org.custro.speculoosreborn.dpToPx
 import org.custro.speculoosreborn.libtiramisuk.renderer.RenderConfig
 import org.custro.speculoosreborn.libtiramisuk.renderer.RendererFactory
-import org.custro.speculoosreborn.libtiramisuk.utils.*
-import org.opencv.android.Utils
-import org.opencv.core.Mat
+import org.custro.speculoosreborn.libtiramisuk.utils.PageCache
+import org.custro.speculoosreborn.libtiramisuk.utils.bitmapToByteArray
 
 
 fun genManga(uri: Uri): Manga {

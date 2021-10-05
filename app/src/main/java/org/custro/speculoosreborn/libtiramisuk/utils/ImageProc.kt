@@ -1,16 +1,13 @@
 package org.custro.speculoosreborn.libtiramisuk.utils
 
 import android.graphics.Bitmap
-import androidx.compose.ui.res.stringArrayResource
 import org.opencv.android.Utils
 import org.opencv.core.*
 import org.opencv.core.Core.merge
 import org.opencv.core.Core.split
 import org.opencv.imgcodecs.Imgcodecs
 import org.opencv.imgproc.Imgproc
-import org.opencv.imgproc.Imgproc.boundingRect
-import org.opencv.imgproc.Imgproc.cvtColor
-import org.opencv.imgproc.Imgproc.threshold
+import org.opencv.imgproc.Imgproc.*
 import java.io.ByteArrayOutputStream
 import kotlin.math.min
 
@@ -25,7 +22,7 @@ fun fromByteArray(src: ByteArray): Mat {
         return Mat()
     }
     val img = Imgcodecs.imdecode(MatOfByte(*src), Imgcodecs.IMREAD_COLOR)
-    cvtColor(img, img, Imgproc.COLOR_BGR2RGBA)
+    cvtColor(img, img, COLOR_BGR2RGBA)
     return img
 }
 
@@ -34,7 +31,7 @@ fun toByteArray(src: Mat): ByteArray {
         return ByteArray(0)
     }
     val srcBGRA = Mat()
-    cvtColor(src, srcBGRA, Imgproc.COLOR_RGBA2BGRA)
+    cvtColor(src, srcBGRA, COLOR_RGBA2BGRA)
     val img = MatOfByte()
     Imgcodecs.imencode(".png", srcBGRA, img)
     return img.toArray()
@@ -61,9 +58,9 @@ fun bitmapToByteArray(src: Bitmap): ByteArray {
 }
 
 fun createMask(src: Mat, dst: Mat, notInv: Boolean = false) {
-    cvtColor(src, dst, Imgproc.COLOR_RGBA2GRAY)
+    cvtColor(src, dst, COLOR_RGBA2GRAY)
     threshold(dst, dst, 242.35, 255.0,
-        if (notInv) Imgproc.THRESH_BINARY else Imgproc.THRESH_BINARY_INV)
+        if (notInv) THRESH_BINARY else THRESH_BINARY_INV)
 }
 
 fun scale(src: Mat, dst: Mat, width: Int, height: Int) {
@@ -86,9 +83,9 @@ fun scale(src: Mat, dst: Mat, width: Int, height: Int) {
     }
     val f = min(fx, fy)
     if (f > 1) {
-        Imgproc.resize(src, dst, Size(), f, f, Imgproc.INTER_CUBIC)
+        resize(src, dst, Size(), f, f, INTER_CUBIC)
     } else {
-        Imgproc.resize(src, dst, Size(), f, f, Imgproc.INTER_AREA)
+        resize(src, dst, Size(), f, f, INTER_AREA)
     }
 }
 /*

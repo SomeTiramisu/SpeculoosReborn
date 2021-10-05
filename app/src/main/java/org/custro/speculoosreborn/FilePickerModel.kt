@@ -2,8 +2,6 @@ package org.custro.speculoosreborn
 
 import android.database.sqlite.SQLiteConstraintException
 import android.net.Uri
-import android.os.Build
-import android.os.Environment
 import android.util.Log
 import androidx.core.net.toUri
 import androidx.lifecycle.LiveData
@@ -12,7 +10,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.custro.speculoosreborn.libtiramisuk.parser.ParserFactory
 import org.custro.speculoosreborn.libtiramisuk.renderer.RendererFactory
 import org.custro.speculoosreborn.room.genManga
 import java.io.File

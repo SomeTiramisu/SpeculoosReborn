@@ -7,7 +7,6 @@ import com.github.junrar.Archive
 import com.github.junrar.rarfile.FileHeader
 import org.custro.speculoosreborn.App
 import org.custro.speculoosreborn.libtiramisuk.utils.AlphanumComparator
-import java.util.zip.ZipInputStream
 
 
 class RarStreamParser(override val uri: Uri) : Parser {

@@ -3,7 +3,6 @@ package org.custro.speculoosreborn.libtiramisuk.renderer
 import android.graphics.pdf.PdfRenderer
 import android.net.Uri
 import org.custro.speculoosreborn.App
-import org.custro.speculoosreborn.libtiramisuk.parser.ParserFactory
 
 class PdfRenderer(override val uri: Uri) : Renderer {
     private val pdfFileDescriptor = App.instance.contentResolver.openFileDescriptor(uri, "r")!!

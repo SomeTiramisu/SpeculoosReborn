@@ -5,11 +5,8 @@ import android.util.Log
 import androidx.core.net.toFile
 import org.custro.speculoosreborn.App
 import org.custro.speculoosreborn.libtiramisuk.utils.AlphanumComparator
-import java.io.ByteArrayOutputStream
-import java.io.InputStream
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
-import kotlin.math.max
 
 
 class ZipStreamParser(override val uri: Uri) : Parser {
