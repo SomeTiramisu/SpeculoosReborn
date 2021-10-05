@@ -111,7 +111,7 @@ fun cropDetect(src: Mat): Rect {
     return rec3
 }
 */
-fun cropDetect(src: Mat): Pair<Rect, Boolean> {
+fun cropDetect(src: Mat): Rect {
     val maskWhite = Mat()
     val maskBlack = Mat()
     createMask(src, maskWhite)
@@ -119,9 +119,7 @@ fun cropDetect(src: Mat): Pair<Rect, Boolean> {
     val recWhite = boundingRect(maskWhite)
     val recBlack = boundingRect(maskBlack)
 
-    val isBlack = blackDetect(src)
-    //return if (recWhite.area()>recBlack.area()) Pair(recBlack, true) else Pair(recWhite, false)
-    return if (recWhite.area()>recBlack.area()) Pair(recBlack, isBlack) else Pair(recWhite, isBlack)
+    return if (recWhite.area()>recBlack.area()) recBlack else recWhite
 }
 
 fun blackDetect(src: Mat): Boolean {
@@ -150,10 +148,10 @@ fun blackDetect(src: Mat): Boolean {
     return blacks.toDouble() > 0.5*total.toDouble()
 }
 
-fun cropScaleProcess(src: Mat, dst: Mat, roi: Rect, width: Int, height: Int) {
+fun cropScaleMaskProcess(src: Mat, dst: Mat, roi: Rect?, width: Int, height: Int) {
     val tmp = Mat()
     val mask = Mat()
-    if (roi.empty()) {
+    if (roi == null || roi.empty()) {
         scale(src, tmp, width, height)
     } else {
         scale(src.submat(roi), tmp, width, height)
@@ -163,23 +161,21 @@ fun cropScaleProcess(src: Mat, dst: Mat, roi: Rect, width: Int, height: Int) {
 }
 
 fun cropProcessNew(src: Mat, dst: Mat, roi: Rect) {
-    val tmp = Mat()
-    val mask = Mat()
     if (roi.empty()) {
-        src.copyTo(tmp)
+        src.copyTo(dst)
     } else {
-        src.submat(roi).copyTo(tmp)
+        src.submat(roi).copyTo(dst)
     }
-    createMask(tmp, mask)
-    tmp.copyTo(dst, mask)
 }
 
 fun scaleProcessNew(src: Mat, dst: Mat, width: Int, height: Int) {
-    val tmp = Mat()
+    scale(src, dst, width, height)
+}
+
+fun maskProcessNew(src: Mat, dst: Mat) {
     val mask = Mat()
-    scale(src, tmp, width, height)
-    createMask(tmp, mask)
-    tmp.copyTo(dst, mask)
+    createMask(src, mask)
+    src.copyTo(dst, mask)
 }
 
 fun addBlackBorders(src: Mat, dst: Mat, width: Int, height: Int) {
