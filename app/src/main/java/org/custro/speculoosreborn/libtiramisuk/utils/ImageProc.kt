@@ -6,7 +6,6 @@ import org.opencv.core.*
 import org.opencv.core.Core.merge
 import org.opencv.core.Core.split
 import org.opencv.imgcodecs.Imgcodecs
-import org.opencv.imgproc.Imgproc
 import org.opencv.imgproc.Imgproc.*
 import java.io.ByteArrayOutputStream
 import kotlin.math.min
@@ -154,7 +153,7 @@ fun cropScaleMaskProcess(src: Mat, dst: Mat, roi: Rect?, width: Int, height: Int
         scale(src.submat(roi), tmp, width, height)
     }
     createMask(tmp, mask)
-    tmp.copyTo(dst, mask)
+    tmp.copyTo(dst, mask) //do not work if tmp.size == dst.size, only work when dst needs to be reconfigured
 }
 
 fun cropProcessNew(src: Mat, dst: Mat, roi: Rect) {
@@ -170,9 +169,11 @@ fun scaleProcessNew(src: Mat, dst: Mat, width: Int, height: Int) {
 }
 
 fun maskProcessNew(src: Mat, dst: Mat) {
+    val tmp = Mat()
     val mask = Mat()
     createMask(src, mask)
-    src.copyTo(dst, mask)
+    src.copyTo(tmp, mask)
+    tmp.copyTo(dst)
 }
 
 fun addBlackBorders(src: Mat, dst: Mat, width: Int, height: Int) {

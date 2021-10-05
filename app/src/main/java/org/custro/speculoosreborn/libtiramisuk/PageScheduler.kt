@@ -3,6 +3,7 @@ package org.custro.speculoosreborn.libtiramisuk
 import android.graphics.Bitmap
 import android.util.Log
 import kotlinx.coroutines.flow.Flow
+import org.custro.speculoosreborn.libtiramisuk.renderer.RenderConfig
 import org.custro.speculoosreborn.libtiramisuk.renderer.RenderInfo
 import org.custro.speculoosreborn.libtiramisuk.renderer.Renderer
 
@@ -14,7 +15,13 @@ class PageScheduler(renderer: Renderer) {
         Log.d("Scheduler", "created")
         Log.d("Scheduler", "file: ${renderer.uri}")
         mPages = List(renderer.pageCount) { index ->
-            CropScaleRunner({renderer.openPage(index) }, index != 0 )
+            val config = RenderConfig(
+                addBorders = index != 0,
+                doScale = true,
+                doCrop = index != 0,
+                doMask = true
+            )
+            CropScaleRunner({renderer.openPage(index) }, config )
         }
     }
 

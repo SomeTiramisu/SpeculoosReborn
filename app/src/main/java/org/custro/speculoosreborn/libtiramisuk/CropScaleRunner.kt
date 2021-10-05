@@ -12,7 +12,7 @@ import org.custro.speculoosreborn.libtiramisuk.renderer.RenderConfig
 import org.custro.speculoosreborn.libtiramisuk.renderer.RenderInfo
 import org.custro.speculoosreborn.libtiramisuk.renderer.RendererPage
 
-class CropScaleRunner(private val getPage: () -> RendererPage, private val doDetect: Boolean = true, private val doScale: Boolean = true) {
+class CropScaleRunner(private val getPage: () -> RendererPage, private val renderConfig: RenderConfig) {
     private val scope = CoroutineScope(Dispatchers.Default)
     private var mPageResJob: Deferred<Pair<Bitmap, RenderInfo>>? = null
     private var preloadConfig: Pair<Int, Int>? = null
@@ -30,13 +30,7 @@ class CropScaleRunner(private val getPage: () -> RendererPage, private val doDet
                 val renderInfo: RenderInfo
                 //renderMutex.withLock { //slow down MangaRenderer, ensure PdfRenderer thread safety. We may remove @Syncronized from Parsers
                     getPage().use {
-                        val config = RenderConfig(
-                            addBorders = true,
-                            doScale = true,
-                            doCrop = true,
-                            doMask = true
-                        )
-                        renderInfo = it.render(bitmap, config)
+                        renderInfo = it.render(bitmap, renderConfig)
                 //    }
                 }
                 Pair(bitmap, renderInfo)
