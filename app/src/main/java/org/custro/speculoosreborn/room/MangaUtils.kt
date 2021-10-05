@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.core.net.toFile
 import org.custro.speculoosreborn.App
 import org.custro.speculoosreborn.dpToPx
+import org.custro.speculoosreborn.libtiramisuk.renderer.RenderConfig
 import org.custro.speculoosreborn.libtiramisuk.renderer.RendererFactory
 import org.custro.speculoosreborn.libtiramisuk.utils.*
 import org.opencv.android.Utils
@@ -66,7 +67,13 @@ fun genMangaCover(uri: Uri): Uri {
     RendererFactory.create(uri).use { renderer ->
         renderer.openPage(0).use { rendererPage ->
             val bitmap = Bitmap.createBitmap(context.dpToPx(100), context.dpToPx(100), Bitmap.Config.ARGB_8888)
-            rendererPage.render(bitmap)
+            val config = RenderConfig(
+                addBorders = false,
+                doScale = true,
+                doCrop = false,
+                doMask = false
+            )
+            rendererPage.render(bitmap, config)
             r = PageCache.saveData(bitmapToByteArray(bitmap), ".png")
         }
     }

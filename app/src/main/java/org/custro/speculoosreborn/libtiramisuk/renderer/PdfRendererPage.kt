@@ -2,7 +2,6 @@ package org.custro.speculoosreborn.libtiramisuk.renderer
 
 import android.graphics.Bitmap
 import android.graphics.Matrix
-import android.graphics.Rect
 import android.graphics.pdf.PdfRenderer
 import android.graphics.pdf.PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY
 import android.util.Log
@@ -12,7 +11,7 @@ import org.custro.speculoosreborn.libtiramisuk.utils.cropDetect
 import kotlin.math.min
 
 class PdfRendererPage(private val page: PdfRenderer.Page): RendererPage {
-    override fun render(bitmap: Bitmap): RenderInfo {
+    override fun render(bitmap: Bitmap, config: RenderConfig): RenderInfo {
         val fx = bitmap.width.toDouble()/page.width.toDouble()
         val fy = bitmap.height.toDouble()/page.height.toDouble()
         val f = min(fx, fy)

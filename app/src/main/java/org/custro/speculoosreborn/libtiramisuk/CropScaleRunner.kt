@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import org.custro.speculoosreborn.libtiramisuk.renderer.RenderConfig
 import org.custro.speculoosreborn.libtiramisuk.renderer.RenderInfo
 import org.custro.speculoosreborn.libtiramisuk.renderer.RendererPage
 import org.custro.speculoosreborn.libtiramisuk.utils.*
@@ -31,7 +32,13 @@ class CropScaleRunner(private val getPage: () -> RendererPage, private val doDet
                 val renderInfo: RenderInfo
                 //renderMutex.withLock { //slow down MangaRenderer, ensure PdfRenderer thread safety. We may remove @Syncronized from Parsers
                     getPage().use {
-                        renderInfo = it.render(bitmap)
+                        val config = RenderConfig(
+                            addBorders = true,
+                            doScale = true,
+                            doCrop = true,
+                            doMask = true
+                        )
+                        renderInfo = it.render(bitmap, config)
                 //    }
                 }
                 Pair(bitmap, renderInfo)

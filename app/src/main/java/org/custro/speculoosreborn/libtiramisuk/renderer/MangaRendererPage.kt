@@ -4,11 +4,9 @@ import android.graphics.Bitmap
 import android.util.Log
 import org.custro.speculoosreborn.libtiramisuk.utils.*
 import org.opencv.android.Utils
-import org.opencv.core.Mat
-import org.opencv.core.Rect
 
 class MangaRendererPage(private val page: ByteArray): RendererPage {
-    override fun render(bitmap: Bitmap): RenderInfo {
+    override fun render(bitmap: Bitmap, config: RenderConfig): RenderInfo {
         val img = fromByteArray(page)
         val cropRect = cropDetect(img)
         val isBlackBorders = blackDetect(img)
