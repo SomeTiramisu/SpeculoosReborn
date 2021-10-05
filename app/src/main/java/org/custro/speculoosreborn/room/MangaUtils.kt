@@ -67,9 +67,7 @@ fun genMangaCover(uri: Uri): Uri {
         renderer.openPage(0).use { rendererPage ->
             val bitmap = Bitmap.createBitmap(context.dpToPx(100), context.dpToPx(100), Bitmap.Config.ARGB_8888)
             rendererPage.render(bitmap)
-            val mat = Mat()
-            Utils.bitmapToMat(bitmap, mat)
-            r = PageCache.saveData(toByteArray(mat), ".png")
+            r = PageCache.saveData(bitmapToByteArray(bitmap), ".png")
         }
     }
     return r
