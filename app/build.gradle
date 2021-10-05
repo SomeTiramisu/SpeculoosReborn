@@ -65,6 +65,9 @@ dependencies {
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.0'
     //implementation 'com.afollestad.material-dialogs:files:3.3.0'
     implementation "com.github.junrar:junrar:7.4.0"
+    //implementation 'org.apache.pdfbox:pdfbox:2.0.24'
+    implementation 'com.tom-roush:pdfbox-android:2.0.5.0'
+
     // ViewModel
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1"
     // LiveData
@@ -86,8 +89,6 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.4.0-rc01'
     // Integration with observables
     implementation 'androidx.compose.runtime:runtime-livedata:1.0.3'
-    implementation project(path: ':opencv')
-    implementation project(path: ':opencv')
     implementation project(path: ':opencv')
     def room_version = "2.3.0"
     implementation "androidx.room:room-runtime:$room_version"
