@@ -29,10 +29,10 @@ class CropScaleRunner(private val getPage: () -> RendererPage, private val doDet
                     Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
                 }
                 val renderInfo: RenderInfo
-                renderMutex.withLock { //slow down MangaRenderer, ensure PdfRenderer thread safety. We may remove @Syncronized from Parsers
+                //renderMutex.withLock { //slow down MangaRenderer, ensure PdfRenderer thread safety. We may remove @Syncronized from Parsers
                     getPage().use {
                         renderInfo = it.render(bitmap)
-                    }
+                //    }
                 }
                 Pair(bitmap, renderInfo)
             }
