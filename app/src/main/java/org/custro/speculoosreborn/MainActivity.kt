@@ -13,6 +13,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.material.MaterialTheme
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
@@ -30,12 +31,14 @@ class MainActivity : ComponentActivity() {
 
         showOnCutout()
         setContent {
-            MainNavigation(
-                readerModel = readerModel,
-                initModel = initModel,
-                showSystemUi = { showSystemUiNew() },
-                hideSystemUi = { hideSystemUiNew() }
-            )
+            MaterialTheme() {
+                MainNavigation(
+                    readerModel = readerModel,
+                    initModel = initModel,
+                    showSystemUi = { showSystemUiNew() },
+                    hideSystemUi = { hideSystemUiNew() }
+                )
+            }
         }
     }
 
