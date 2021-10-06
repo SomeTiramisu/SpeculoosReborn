@@ -3,6 +3,9 @@ package org.custro.speculoosreborn
 import android.database.sqlite.SQLiteConstraintException
 import android.net.Uri
 import android.util.Log
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.core.net.toUri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -20,10 +23,14 @@ class FilePickerModel : ViewModel() {
 
     val externalDirs: List<File>
     var currentExternalDirIndex = 0
+    private val _currentExternalDirName: MutableLiveData<String>
+    val currentExternalDirName: LiveData<String>
 
     init {
         externalDirs = App.instance.applicationContext.getExternalFilesDirs(null).toList()
             .map { getAllFiles(it) }
+        _currentExternalDirName = MutableLiveData(getExternalDirName())
+        currentExternalDirName = _currentExternalDirName
         initialDir = externalDirs[0]
     }
 
@@ -48,13 +55,25 @@ class FilePickerModel : ViewModel() {
     fun onParentDir() {
         val nextDir = _currentDir.value?.parentFile
         if (nextDir?.exists() == true && (nextDir.listFiles() ?: arrayOf()).isNotEmpty()) {
-            _currentDir.value = _currentDir.value?.parentFile
+            _currentDir.value = nextDir
         }
     }
 
     fun onExternalDirChange() {
         currentExternalDirIndex = (currentExternalDirIndex + 1) % externalDirs.size
         _currentDir.value = externalDirs[currentExternalDirIndex]
+        _currentExternalDirName.value = getExternalDirName()
+    }
+
+    private fun getExternalDirName(): String {
+        if (currentExternalDirIndex == 0) {
+            return "Internal"
+        }
+        if (externalDirs.size > 2) {
+            return "SD Card ${currentExternalDirIndex-1}"
+        } else {
+            return "SD Card"
+        }
     }
 
     private fun insertManga(uri: Uri) {
