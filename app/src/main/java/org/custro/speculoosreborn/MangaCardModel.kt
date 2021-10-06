@@ -1,9 +1,12 @@
 package org.custro.speculoosreborn
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.util.Log
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.core.net.toFile
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -28,11 +31,7 @@ class MangaCardModel: ViewModel() {
         manga = value
         viewModelScope.launch(Dispatchers.Default) {
             val coverUri = Uri.parse(manga.cover)
-            val coverImage = matToBitmap(
-                fromByteArray(
-                    App.instance.contentResolver.openInputStream(coverUri)!!.use { it.readBytes() }
-                )
-            ).asImageBitmap()
+            val coverImage = BitmapFactory.decodeFile(coverUri.toFile().path).asImageBitmap()
             _cover.postValue(coverImage)
         }
     }
