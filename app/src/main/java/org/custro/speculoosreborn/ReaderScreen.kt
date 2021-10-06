@@ -17,13 +17,11 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.DefaultAlpha
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.*
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 
@@ -138,13 +136,13 @@ fun Modifier.tapDetect(
 })
 
 @Composable
-fun IndexSlider(index: Int, maxIndex: Int, onIndexChange: (Int) -> Unit) {
+fun IndexSlider(index: Int, maxIndex: Int, onIndexChange: (Int) -> Unit, onSlidingIndexChange: (Int) -> Unit) {
     var sliderPosition by remember { mutableStateOf(0.0f) }
     var sliding by remember { mutableStateOf(false) }
     Slider(value = if (sliding) sliderPosition else index.toFloat(),
         steps = 0,
         modifier = Modifier.padding(start = 16.dp, end = 16.dp),
-        onValueChange = { sliding = true; sliderPosition = it },
+        onValueChange = { sliding = true; sliderPosition = it; onSlidingIndexChange(sliderPosition.toInt()) },
         valueRange = if (maxIndex > 0) 0.0f..(maxIndex - 1).toFloat() else 0.0f..1.0f,
         onValueChangeFinished = {
             sliding = false
@@ -162,6 +160,7 @@ fun SliderView(
     onIndexChange: (Int) -> Unit,
     hidden: Boolean = false
 ) {
+    var dispIndex by remember { mutableStateOf(index)}
     AnimatedVisibility(
         visible = !hidden,
         enter = fadeIn(),
@@ -173,12 +172,14 @@ fun SliderView(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = index.toString()
+                text = dispIndex.toString(),
+                style = TextStyle(shadow = Shadow(Color.White, Offset.Zero, 4F))
             )
             IndexSlider(
                 index = index,
                 maxIndex = maxIndex,
-                onIndexChange = onIndexChange
+                onIndexChange = onIndexChange,
+                onSlidingIndexChange = {dispIndex = it}
             )
         }
     }
