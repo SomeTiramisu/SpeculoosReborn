@@ -26,7 +26,7 @@ class PdfFileParser(override val uri: Uri) : Parser {
         }
     }
 
-
+    @Synchronized
     override fun at(index: Int): ByteArray {
         val imgObj = pdfFile.pages[index].resources.getXObject(headers[index]) as PDImageXObject
         return bitmapToByteArray(imgObj.image)
