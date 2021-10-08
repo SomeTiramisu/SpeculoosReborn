@@ -13,6 +13,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.core.view.WindowCompat
@@ -24,6 +26,8 @@ class MainActivity : ComponentActivity() {
     private val initModel: InitModel by viewModels()
     private val readerModel: ReaderModel by viewModels()
 
+    @ExperimentalMaterialApi
+    @ExperimentalFoundationApi
     @ExperimentalAnimationApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

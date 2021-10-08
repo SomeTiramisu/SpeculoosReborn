@@ -55,7 +55,7 @@ class FilePickerModel : ViewModel() {
     fun onParentDir() {
         val nextDir = _currentDir.value?.parentFile
         if (nextDir?.exists() == true && (nextDir.listFiles() ?: arrayOf()).isNotEmpty()) {
-            _currentDir.value = nextDir
+            _currentDir.value = nextDir!!
         }
     }
 

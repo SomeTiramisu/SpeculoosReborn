@@ -1,6 +1,7 @@
 package org.custro.speculoosreborn
 
 import android.net.Uri
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
@@ -16,6 +17,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Transformations
 
+@ExperimentalFoundationApi
 @Composable
 fun InitScreen(
     initModel: InitModel,
@@ -56,6 +58,7 @@ fun InitScreen(
     }
 }
 
+@ExperimentalFoundationApi
 @Composable
 fun MangaList(
     cardModels: List<MangaCardModel>,
