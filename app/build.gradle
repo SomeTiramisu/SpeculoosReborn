@@ -97,4 +97,8 @@ dependencies {
     kapt "androidx.room:room-compiler:$room_version"
 
     implementation "androidx.navigation:navigation-compose:2.4.0-beta02"
+
+    def compose_settings_version = "0.7.2"
+    implementation "com.github.alorma:compose-settings-ui:$compose_settings_version"
+    implementation "com.github.alorma:compose-settings-storage-preferences:$compose_settings_version"
 }

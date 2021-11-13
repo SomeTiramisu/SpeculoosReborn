@@ -44,9 +44,9 @@ fun InitScreen(
             TopAppBar(
                 title = { Text(text = stringResource(R.string.app_name)) },
                 actions = {
-                    IconButton(onClick = { navigateToSettingsScreen() }) {
-                        Icon(Icons.Filled.Settings, contentDescription = null)
-                    }
+                    //IconButton(onClick = { navigateToSettingsScreen() }) {
+                    //    Icon(Icons.Filled.Settings, contentDescription = null)
+                    //}
                 }
             )
         }
