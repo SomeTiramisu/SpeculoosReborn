@@ -35,7 +35,7 @@ class MainActivity : ComponentActivity() {
 
         showOnCutout()
         setContent {
-            MaterialTheme() {
+            MaterialTheme(colors = lightColors) {
                 MainNavigation(
                     readerModel = readerModel,
                     initModel = initModel,
