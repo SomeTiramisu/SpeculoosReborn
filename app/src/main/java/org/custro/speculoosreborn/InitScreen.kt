@@ -26,13 +26,7 @@ fun InitScreen(
     navigateToReaderScreen: () -> Unit,
     navigateToSettingsScreen: () -> Unit
 ) {
-    val mangaCardModels: List<MangaCardModel> by Transformations.map(initModel.getMangas()) {
-        it.map { manga ->
-            val model = MangaCardModel()
-            model.onMangaChange(manga)
-            model
-        }
-    }.observeAsState(initial = listOf())
+    val mangaCardModels: List<MangaCardModel> by initModel.mangaModels.observeAsState(initial = listOf())
 
     Scaffold(
         floatingActionButton = {

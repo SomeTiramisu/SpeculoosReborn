@@ -22,13 +22,13 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.app.ActivityCompat
 
+@ExperimentalMaterialApi
+@ExperimentalFoundationApi
+@ExperimentalAnimationApi
 class MainActivity : ComponentActivity() {
     private val initModel: InitModel by viewModels()
     private val readerModel: ReaderModel by viewModels()
 
-    @ExperimentalMaterialApi
-    @ExperimentalFoundationApi
-    @ExperimentalAnimationApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         System.loadLibrary("opencv_java4")
