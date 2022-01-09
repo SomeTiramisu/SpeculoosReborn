@@ -21,18 +21,21 @@ import java.io.File
 fun FilePickerScreen(model: FilePickerModel = viewModel()) {
     val currentDir: File by model.currentDir.observeAsState(model.initialDir)
     val currentExternalDirName: String by model.currentExternalDirName.observeAsState("")
-    Column(modifier = Modifier.fillMaxSize()) {
-        Button(onClick = { model.onExternalDirChange() },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
-        ) {
-            Text(text = currentExternalDirName)
+    Surface {
+        Column(modifier = Modifier.fillMaxSize()) {
+            Button(
+                onClick = { model.onExternalDirChange() },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp)
+            ) {
+                Text(text = currentExternalDirName)
+            }
+            FileList(files = currentDir.listFiles()?.toList() ?: listOf(),
+                onSelectFile = { model.onCurrentDirChange(it) },
+                onSelectParent = { model.onParentDir() }
+            )
         }
-        FileList(files = currentDir.listFiles()?.toList() ?: listOf(),
-            onSelectFile = { model.onCurrentDirChange(it) },
-            onSelectParent = { model.onParentDir() }
-        )
     }
 }
 
