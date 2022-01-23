@@ -27,7 +27,7 @@ fun SettingsScreen(model: SettingsModel = viewModel()) {
         Column {
             SettingsCheckbox(state = bordersState,
                 title = { Text("Borders") },
-                subtitle = { Text("Add black borders to fit") }) {
+                subtitle = { Text("Add black borders to fit screen") }) {
             }
             SettingsCheckbox(state = scaleState,
                 title = { Text("Scale") },

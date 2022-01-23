@@ -8,6 +8,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION
+import android.view.WindowManager
 import android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -16,11 +17,16 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.MaterialTheme.colors
+import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.app.ActivityCompat
+import androidx.core.view.WindowCompat.FEATURE_ACTION_BAR
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 @ExperimentalMaterialApi
 @ExperimentalFoundationApi
@@ -33,9 +39,20 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         System.loadLibrary("opencv_java4")
 
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+
         showOnCutout()
         setContent {
             MaterialTheme(colors = lightColors) {
+                val systemUiController = rememberSystemUiController()
+                val useDarkIcons = colors.isLight
+                SideEffect {
+                    systemUiController.setSystemBarsColor(
+                        color = Color.Transparent,
+                        darkIcons = useDarkIcons
+                    )
+                }
+
                 MainNavigation(
                     readerModel = readerModel,
                     initModel = initModel,
