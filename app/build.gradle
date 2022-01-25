@@ -104,18 +104,13 @@ dependencies {
 
     def nav_version = "2.4.0-rc01"
     implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
-    implementation("androidx.navigation:navigation-ui-ktx:$nav_version")
+    implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
 
     implementation "androidx.navigation:navigation-compose:2.4.0-rc01"
 
-    def compose_settings_version = "0.7.2"
-    implementation "com.github.alorma:compose-settings-ui:$compose_settings_version"
-    implementation "com.github.alorma:compose-settings-storage-preferences:$compose_settings_version"
-
-    def accompanist_version = "1.2.0-alpha01"
+    def accompanist_version = "0.24.0-alpha"
     implementation "com.google.accompanist:accompanist-systemuicontroller:$accompanist_version"
     implementation "com.google.accompanist:accompanist-insets:$accompanist_version"
     implementation "com.google.accompanist:accompanist-insets-ui:$accompanist_version"
 
-    implementation "androidx.preference:preference-ktx:1.1.1"
 }
