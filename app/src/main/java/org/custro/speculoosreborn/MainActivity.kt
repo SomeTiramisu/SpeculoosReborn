@@ -13,11 +13,13 @@ import android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHO
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.MaterialTheme.colors
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
@@ -27,13 +29,16 @@ import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.app.ActivityCompat
 import androidx.core.view.WindowCompat.FEATURE_ACTION_BAR
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import org.custro.speculoosreborn.ui.theme.AppTheme
 
+@ExperimentalMaterial3Api
 @ExperimentalMaterialApi
 @ExperimentalFoundationApi
 @ExperimentalAnimationApi
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
     private val initModel: InitModel by viewModels()
     private val readerModel: ReaderModel by viewModels()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,7 +48,7 @@ class MainActivity : ComponentActivity() {
 
         showOnCutout()
         setContent {
-            MaterialTheme(colors = lightColors) {
+            AppTheme {
                 val systemUiController = rememberSystemUiController()
                 val useDarkIcons = colors.isLight
                 SideEffect {

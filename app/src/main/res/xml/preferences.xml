@@ -1,19 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen
-    xmlns:app="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <CheckBoxPreference
         app:defaultValue="true"
         app:key="check_box_preference_1"
         app:title="Border" />
     <CheckBoxPreference
-        app:defaultValue="false"
+        app:defaultValue="true"
         app:key="check_box_preference_2"
         app:title="Scale" />
     <CheckBoxPreference
-        app:defaultValue="false"
+        app:defaultValue="true"
         app:key="check_box_preference_3"
         app:title="Mask" />
     <CheckBoxPreference
-        app:defaultValue="false"
+        app:defaultValue="true"
         app:key="check_box_preference_4"
         app:title="Crop" />
     <Preference
