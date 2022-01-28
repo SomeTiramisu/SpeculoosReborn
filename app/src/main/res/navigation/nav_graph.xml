@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/initFragment">
+    <fragment
+        android:id="@+id/initFragment"
+        android:name="org.custro.speculoosreborn.ui.fragment.InitFragment"
+        android:label="fragment_init"
+        tools:layout="@layout/fragment_init" >
+        <action
+            android:id="@+id/action_initFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment" />
+        <action
+            android:id="@+id/action_initFragment_to_filePickerFragment"
+            app:destination="@id/filePickerFragment" />
+        <action
+            android:id="@+id/action_initFragment_to_readerFragment"
+            app:destination="@id/readerFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="org.custro.speculoosreborn.ui.fragment.SettingsFragment"
+        android:label="SettingsFragment" />
+    <fragment
+        android:id="@+id/filePickerFragment"
+        android:name="org.custro.speculoosreborn.ui.fragment.FilePickerFragment"
+        android:label="fragment_filepicker"
+        tools:layout="@layout/fragment_filepicker" />
+    <fragment
+        android:id="@+id/readerFragment"
+        android:name="org.custro.speculoosreborn.ui.fragment.ReaderFragment"
+        android:label="fragment_reader"
+        tools:layout="@layout/fragment_reader" />
+</navigation>

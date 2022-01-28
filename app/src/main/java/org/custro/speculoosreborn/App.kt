@@ -6,9 +6,11 @@ import org.custro.speculoosreborn.room.AppDatabase
 
 class App: Application() {
     override fun onCreate() {
+        super.onCreate()
+
+        System.loadLibrary("opencv_java4")
         instance = this
         db = Room.databaseBuilder(applicationContext, AppDatabase::class.java, "manga-database").build()
-        super.onCreate()
     }
 
     companion object {

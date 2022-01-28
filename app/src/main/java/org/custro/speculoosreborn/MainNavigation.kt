@@ -8,10 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import org.custro.speculoosreborn.ui.FilePickerScreen
-import org.custro.speculoosreborn.ui.InitScreen
-import org.custro.speculoosreborn.ui.ReaderScreen
-import org.custro.speculoosreborn.ui.SettingsScreen
+import org.custro.speculoosreborn.ui.*
 import org.custro.speculoosreborn.ui.model.InitModel
 import org.custro.speculoosreborn.ui.model.ReaderModel
 
@@ -31,7 +28,7 @@ fun MainNavigation(
         composable("initScreen") {
             showSystemUi()
             InitScreen(initModel = initModel,
-                findManga = {
+                navigateToFilePicker = {
                           navController.navigate("filePickerScreen")
             },
                 setManga = { readerModel.onUriChange(it) },

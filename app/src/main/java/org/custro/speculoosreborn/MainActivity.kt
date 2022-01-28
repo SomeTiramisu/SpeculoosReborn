@@ -24,7 +24,9 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.app.ActivityCompat
+import androidx.navigation.findNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import org.custro.speculoosreborn.databinding.ActivityMainBinding
 import org.custro.speculoosreborn.ui.model.InitModel
 import org.custro.speculoosreborn.ui.model.ReaderModel
 import org.custro.speculoosreborn.ui.theme.AppTheme
@@ -34,17 +36,22 @@ import org.custro.speculoosreborn.ui.theme.AppTheme
 @ExperimentalFoundationApi
 @ExperimentalAnimationApi
 class MainActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityMainBinding
+
     private val initModel: InitModel by viewModels()
     private val readerModel: ReaderModel by viewModels()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        System.loadLibrary("opencv_java4")
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        val view = binding.root
 
-        WindowCompat.setDecorFitsSystemWindows(window, false)
+        //WindowCompat.setDecorFitsSystemWindows(window, false)
 
         showOnCutout()
+        setContentView(view)
+        /*
         setContent {
             AppTheme {
                 val systemUiController = rememberSystemUiController()
@@ -63,7 +70,7 @@ class MainActivity : AppCompatActivity() {
                     hideSystemUi = { hideSystemUiNew() }
                 )
             }
-        }
+        }*/
     }
 
     override fun onStart() {

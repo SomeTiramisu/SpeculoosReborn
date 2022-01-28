@@ -24,7 +24,7 @@ import org.custro.speculoosreborn.ui.model.MangaCardModel
 @Composable
 fun InitScreen(
     initModel: InitModel,
-    findManga: () -> Unit,
+    navigateToFilePicker: () -> Unit,
     setManga: (Uri) -> Unit,
     navigateToReaderScreen: () -> Unit,
     navigateToSettingsScreen: () -> Unit
@@ -33,7 +33,7 @@ fun InitScreen(
 
     Scaffold(
         floatingActionButton = {
-            FloatingActionButton(onClick = { findManga() }) {
+            FloatingActionButton(onClick = { navigateToFilePicker() }) {
                 Icon(Icons.Filled.Add, contentDescription = "Pick file and add it to library")
             }
         },
