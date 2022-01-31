@@ -7,8 +7,10 @@
         <entry key="app/src/main/res/layout/activity_reader.xml" value="0.29583333333333334" />
         <entry key="app/src/main/res/layout/fragment_filepicker.xml" value="0.10092592592592593" />
         <entry key="app/src/main/res/layout/fragment_init.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/fragment_manga_card.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fragment_reader.xml" value="0.1" />
         <entry key="app/src/main/res/layout/init_fragment.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/item_manga_card.xml" value="0.12892603850050657" />
         <entry key="app/src/main/res/layout/main.xml" value="0.1" />
         <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.1814814814814815" />
         <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.1814814814814815" />

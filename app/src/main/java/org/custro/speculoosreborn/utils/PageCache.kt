@@ -40,11 +40,6 @@ class PageCache() {
             return output.toUri()
         }
 
-        fun loadData(uri: Uri): ByteArray {
-            val input = uri.toFile()
-            return input.readBytes()
-        }
-
         private fun findExt(uri: Uri): String {
             return uri.lastPathSegment?.substringAfterLast('.', "") ?: ""
         }

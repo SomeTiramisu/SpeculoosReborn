@@ -14,7 +14,7 @@ import org.custro.speculoosreborn.room.isMangaValid
 
 class InitModel: ViewModel() {
 
-    val mangas: LiveData<List<Manga>> = Transformations.map(App.db.mangaDao().getAll()) { it ->
+    val mangas: LiveData<List<Manga>> = Transformations.map(App.db.mangaDao().getAll()) {
         it.map { m ->
             viewModelScope.launch(Dispatchers.Default) {
                 correctManga(m)

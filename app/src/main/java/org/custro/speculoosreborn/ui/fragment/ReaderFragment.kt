@@ -1,6 +1,8 @@
 package org.custro.speculoosreborn.ui.fragment
 
+import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -28,8 +30,14 @@ class ReaderFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        arguments?.getParcelable<Uri>("mangaUri")?.let {
+            Log.d("ReaderFragment", "Uri is $it")
+            model.onUriChange(it)
+        }
+
         _binding = FragmentReaderBinding.inflate(inflater, container, false)
         val view = binding.root
+
         binding.composeView.setContent {
             ReaderScreen(model)
         }
