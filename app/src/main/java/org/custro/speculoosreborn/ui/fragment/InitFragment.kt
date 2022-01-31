@@ -3,6 +3,7 @@ package org.custro.speculoosreborn.ui.fragment
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -59,6 +60,21 @@ class InitFragment : Fragment() {
             adapter.submitList(it)
         }
 
+        val appBar = binding.appbar
+        appBar.inflateMenu(R.menu.menu_init)
+        appBar.setOnMenuItemClickListener {
+            when(it.itemId) {
+                R.id.add -> {
+                    findNavController().navigate(R.id.action_initFragment_to_filePickerFragment)
+                    true
+                }
+                R.id.settings -> {
+                    findNavController().navigate(R.id.action_initFragment_to_settingsFragment)
+                    true
+                }
+                else -> false
+            }
+        }
         //childFragmentManager.commit {
         //    add(R.id.fragmentContainerView2, card)
         //    setReorderingAllowed(true)

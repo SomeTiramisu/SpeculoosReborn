@@ -10,6 +10,7 @@ import androidx.compose.ui.unit.sp
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import androidx.viewbinding.ViewBinding
 import org.custro.speculoosreborn.databinding.ItemMangaCardBinding
 import org.custro.speculoosreborn.room.Manga
 
