@@ -60,7 +60,8 @@ class InitFragment : Fragment() {
             adapter.submitList(it)
         }
 
-        val appBar = binding.appbar
+        val appBar = binding.toolbar
+        appBar.setTitle(R.string.app_name)
         appBar.inflateMenu(R.menu.menu_init)
         appBar.setOnMenuItemClickListener {
             when(it.itemId) {

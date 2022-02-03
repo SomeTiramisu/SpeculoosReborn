@@ -24,6 +24,7 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.app.ActivityCompat
+import androidx.core.view.ViewCompat
 import androidx.navigation.findNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import org.custro.speculoosreborn.databinding.ActivityMainBinding

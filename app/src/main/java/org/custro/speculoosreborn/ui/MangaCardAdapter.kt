@@ -1,12 +1,15 @@
 package org.custro.speculoosreborn.ui
 
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.material3.Text
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import androidx.core.net.toFile
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -34,6 +37,10 @@ class MangaCardAdapter(private val onCardClickListener: (Uri) -> Unit): ListAdap
         Uri.parse(item.uri).lastPathSegment?.let {
             holder.textView.text = it
         }
+        //TODO: un wrapper autour de Manga et MangaDao pour autocorrection et chargement cover ?
+        val coverUri = Uri.parse(item.cover)
+        val coverImage = BitmapFactory.decodeFile(coverUri.toFile().path)
+        holder.imageView.setImageBitmap(coverImage)
         holder.card.setOnClickListener {
             onCardClickListener(Uri.parse(item.localUri))
         }
