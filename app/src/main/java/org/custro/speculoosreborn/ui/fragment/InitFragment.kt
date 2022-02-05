@@ -61,8 +61,8 @@ class InitFragment : Fragment() {
         }
 
         val appBar = binding.toolbar
-        appBar.setTitle(R.string.app_name)
-        appBar.inflateMenu(R.menu.menu_init)
+        //appBar.setTitle(R.string.app_name)
+        //appBar.inflateMenu(R.menu.menu_init)
         appBar.setOnMenuItemClickListener {
             when(it.itemId) {
                 R.id.add -> {

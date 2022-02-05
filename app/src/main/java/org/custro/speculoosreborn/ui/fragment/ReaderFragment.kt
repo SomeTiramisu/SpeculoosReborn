@@ -5,6 +5,8 @@ import android.graphics.Shader
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -12,7 +14,9 @@ import android.view.View.*
 import android.view.ViewGroup
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.ui.graphics.asAndroidBitmap
+import androidx.core.os.HandlerCompat
 import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.Fragment
@@ -60,6 +64,7 @@ class ReaderFragment : Fragment() {
         }
 
 
+
         //findNavController().navigate(R.id.action_initFragment_to_settingsFragment)
         return view
     }
@@ -100,16 +105,28 @@ class ReaderFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        //TODO: see activity's showSystemUi
-        ViewCompat.getWindowInsetsController(requireView())?.apply {
-            hide(WindowInsetsCompat.Type.systemBars())
-            systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-        }
+        //Display on cutout (ignore it)
+        //delay for hiding after rotation (restart)
+        Handler(Looper.getMainLooper()).postDelayed({
+            WindowCompat.setDecorFitsSystemWindows(requireActivity().window, false)
+            //set fullscreen
+            ViewCompat.getWindowInsetsController(requireView())?.apply {
+                hide(WindowInsetsCompat.Type.systemBars())
+                systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            }
+            //100ms needed to get correct size
+            Handler(Looper.getMainLooper()).postDelayed({ model.onSizeChange(Pair(binding.pageImageView.width, binding.pageImageView.height))}, 100)
+        }, 300)
+
+        //Log.d("ReaderFragment","Fragment resumed")
     }
 
     override fun onStop() {
         super.onStop()
+        //restore system bars
         ViewCompat.getWindowInsetsController(requireView())?.show(WindowInsetsCompat.Type.systemBars())
+        //restore cutouts
+        WindowCompat.setDecorFitsSystemWindows(requireActivity().window, true)
     }
 
 }
