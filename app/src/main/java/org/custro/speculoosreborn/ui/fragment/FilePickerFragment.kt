@@ -1,5 +1,6 @@
 package org.custro.speculoosreborn.ui.fragment
 
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu.NONE
@@ -9,10 +10,12 @@ import android.widget.PopupMenu
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView.HORIZONTAL
 import org.custro.speculoosreborn.databinding.FragmentFilePickerBinding
 import org.custro.speculoosreborn.renderer.MangaRenderer
 import org.custro.speculoosreborn.renderer.PdfRenderer
 import org.custro.speculoosreborn.ui.FileListAdapter
+import org.custro.speculoosreborn.ui.QuickpathAdapter
 import org.custro.speculoosreborn.ui.model.FilePickerModel
 
 class FilePickerFragment : Fragment() {
@@ -39,21 +42,31 @@ class FilePickerFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
-        val adapter = FileListAdapter {
-            if (MangaRenderer.isSupported(it) || PdfRenderer.isSupported(it)) {
-                model.insertManga(it)
-            }
+        val quickpathAdapter = QuickpathAdapter(model.externalDirs[model.currentExternalDirIndex.value!!])
+        binding.quickPath.apply {
+            layoutManager = LinearLayoutManager(context).apply { orientation = HORIZONTAL }
+            adapter = quickpathAdapter
         }
+
+        val fileListAdapter = FileListAdapter({
+            val uri = Uri.fromFile(it)
+            if(MangaRenderer.isSupported(uri) || PdfRenderer.isSupported(uri)) {
+                model.insertManga(Uri.fromFile(it))
+            }
+        }, {
+            model.onDirChange(it)
+        })
 
         binding.recyclerView.apply {
             layoutManager = LinearLayoutManager(context)
-            this.adapter = adapter
+            adapter = fileListAdapter
         }
 
         model.currentExternalDirIndex.observe(viewLifecycleOwner) {
             binding.menu.setText(model.getExternalDirName(it))
-            adapter.submitList(model.externalDirs[it].listFiles()!!.toList())
+        }
+        model.currentDir.observe(viewLifecycleOwner) {
+            fileListAdapter.submitList(it.listFiles()!!.toList())
         }
 
         binding.menu.setOnClickListener { v ->

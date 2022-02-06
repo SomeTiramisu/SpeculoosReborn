@@ -1,6 +1,5 @@
 package org.custro.speculoosreborn.ui
 
-import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.appcompat.content.res.AppCompatResources
@@ -10,10 +9,9 @@ import androidx.recyclerview.widget.RecyclerView
 import org.custro.speculoosreborn.App
 import org.custro.speculoosreborn.R
 import org.custro.speculoosreborn.databinding.ItemFileListBinding
-import org.custro.speculoosreborn.room.Manga
 import java.io.File
 
-class FileListAdapter(private val onFileClickListener: (Uri) -> Unit): ListAdapter<File, FileListAdapter.ViewHolder>(FileDiffCallback) {
+class FileListAdapter(private val onFileClickListener: (File) -> Unit, private val onDirClickListener: (File) -> Unit): ListAdapter<File, FileListAdapter.ViewHolder>(FileDiffCallback) {
     class ViewHolder(itemViewBinding: ItemFileListBinding): RecyclerView.ViewHolder(itemViewBinding.root) {
         val textView = itemViewBinding.textView
         val imageView = itemViewBinding.imageView
@@ -31,9 +29,9 @@ class FileListAdapter(private val onFileClickListener: (Uri) -> Unit): ListAdapt
 
         holder.itemView.setOnClickListener {
             if(item.isFile) {
-                onFileClickListener(Uri.fromFile(item))
-            } else {
-                submitList(item.listFiles()!!.toList())
+                onFileClickListener(item)
+            } else if(item.isDirectory) {
+                onDirClickListener(item)
             }
         }
     }

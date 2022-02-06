@@ -4,10 +4,7 @@ import android.database.sqlite.SQLiteConstraintException
 import android.net.Uri
 import android.util.Log
 import androidx.core.net.toUri
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.custro.speculoosreborn.App
@@ -17,13 +14,26 @@ import java.io.File
 
 class FilePickerModel : ViewModel() {
     val externalDirs: List<File>
+
     //TODO: crash if no externaldir
+    //currentExternalDir is root of of current direcotry ex: /storage/emulated/0 or /storage/sdcard
     private val _currentExternalDirIndex = MutableLiveData(0)
     val currentExternalDirIndex: LiveData<Int> = _currentExternalDirIndex
+    val currentExternalDir: LiveData<File>
+
+    //currentDir is current visited dir
+    private val _currentDir: MutableLiveData<File>
+    val currentDir: LiveData<File>
 
     init {
-        externalDirs = App.instance.applicationContext.getExternalFilesDirs(null).toList()
-            .map { getBaseDir(it) }
+        externalDirs = App.instance.applicationContext.getExternalFilesDirs(null).toList().map { getBaseDir(it) }
+
+        currentExternalDir = Transformations.map(currentExternalDirIndex) {
+            externalDirs[it]
+        }
+
+        _currentDir = currentExternalDir as MutableLiveData<File>
+        currentDir = _currentDir
     }
 
     private fun getBaseDir(file: File): File {
@@ -43,6 +53,10 @@ class FilePickerModel : ViewModel() {
                 "SD Card"
             }
         }
+    }
+
+    fun onDirChange(file: File) {
+        _currentDir.value = file
     }
 
     fun insertManga(uri: Uri) {

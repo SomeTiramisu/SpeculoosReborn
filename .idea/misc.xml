@@ -15,7 +15,7 @@
         <entry key="app/src/main/res/drawable/outline_folder_24.xml" value="0.105" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.2" />
         <entry key="app/src/main/res/layout/activity_reader.xml" value="0.29583333333333334" />
-        <entry key="app/src/main/res/layout/fragment_file_picker.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/fragment_file_picker.xml" value="0.22" />
         <entry key="app/src/main/res/layout/fragment_filepicker.xml" value="0.10092592592592593" />
         <entry key="app/src/main/res/layout/fragment_init.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fragment_manga_card.xml" value="0.1" />
@@ -23,6 +23,7 @@
         <entry key="app/src/main/res/layout/init_fragment.xml" value="0.1" />
         <entry key="app/src/main/res/layout/item_file_list.xml" value="0.25" />
         <entry key="app/src/main/res/layout/item_manga_card.xml" value="0.33" />
+        <entry key="app/src/main/res/layout/item_quickpath.xml" value="0.3707136237256719" />
         <entry key="app/src/main/res/layout/main.xml" value="0.1" />
         <entry key="app/src/main/res/menu/menu_init.xml" value="0.2546875" />
         <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.1814814814814815" />
