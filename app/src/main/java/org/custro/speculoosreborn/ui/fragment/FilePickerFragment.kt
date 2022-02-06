@@ -42,7 +42,9 @@ class FilePickerFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val quickpathAdapter = QuickpathAdapter(model.externalDirs[model.currentExternalDirIndex.value!!])
+        val quickpathAdapter = QuickpathAdapter {
+            model.onDirChange(it)
+        }
         binding.quickPath.apply {
             layoutManager = LinearLayoutManager(context).apply { orientation = HORIZONTAL }
             adapter = quickpathAdapter
@@ -67,6 +69,7 @@ class FilePickerFragment : Fragment() {
         }
         model.currentDir.observe(viewLifecycleOwner) {
             fileListAdapter.submitList(it.listFiles()!!.toList())
+            quickpathAdapter.submitDir(it)
         }
 
         binding.menu.setOnClickListener { v ->
