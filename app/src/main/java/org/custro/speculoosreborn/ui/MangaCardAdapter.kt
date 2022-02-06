@@ -3,17 +3,11 @@ package org.custro.speculoosreborn.ui
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import androidx.compose.material3.Text
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.sp
 import androidx.core.net.toFile
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import androidx.viewbinding.ViewBinding
 import org.custro.speculoosreborn.databinding.ItemMangaCardBinding
 import org.custro.speculoosreborn.room.Manga
 

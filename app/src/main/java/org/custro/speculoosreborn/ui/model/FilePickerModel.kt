@@ -16,61 +16,30 @@ import org.custro.speculoosreborn.room.genManga
 import java.io.File
 
 class FilePickerModel : ViewModel() {
-
-    val initialDir: File
-
     val externalDirs: List<File>
-    var currentExternalDirIndex = 0
-    private val _currentExternalDirName: MutableLiveData<String>
-    val currentExternalDirName: LiveData<String>
+    private var currentExternalDirIndex = 0
 
     init {
         externalDirs = App.instance.applicationContext.getExternalFilesDirs(null).toList()
-            .map { getAllFiles(it) }
-        _currentExternalDirName = MutableLiveData(getExternalDirName())
-        currentExternalDirName = _currentExternalDirName
-        initialDir = externalDirs[0]
+            .map { getBaseDir(it) }
     }
 
-    private fun getAllFiles(file: File): File {
+    private fun getBaseDir(file: File): File {
         return file.parentFile!!.parentFile!!.parentFile!!.parentFile!!
-    }
-
-
-    private val _currentDir = MutableLiveData<File>(initialDir)
-    val currentDir: LiveData<File> = _currentDir
-
-    fun onCurrentDirChange(value: File) {
-        if (value.isFile) {
-            if (RendererFactory.isSupported(value.toUri())) {
-                insertManga(value.toUri())
-            }
-        } else {
-            _currentDir.value = value
-        }
-    }
-
-    fun onParentDir() {
-        val nextDir = _currentDir.value?.parentFile
-        if (nextDir?.exists() == true && (nextDir.listFiles() ?: arrayOf()).isNotEmpty()) {
-            _currentDir.value = nextDir!!
-        }
     }
 
     fun onExternalDirChange() {
         currentExternalDirIndex = (currentExternalDirIndex + 1) % externalDirs.size
-        _currentDir.value = externalDirs[currentExternalDirIndex]
-        _currentExternalDirName.value = getExternalDirName()
     }
 
-    private fun getExternalDirName(): String {
-        if (currentExternalDirIndex == 0) {
-            return "Internal"
-        }
-        if (externalDirs.size > 2) {
-            return "SD Card ${currentExternalDirIndex-1}"
-        } else {
-            return "SD Card"
+    fun getExternalDirName(index: Int): String {
+        return when(index) {
+            0 -> "Internal"
+            else -> if (externalDirs.size > 2) {
+                "SD Card ${index-1}"
+            } else {
+                "SD Card"
+            }
         }
     }
 

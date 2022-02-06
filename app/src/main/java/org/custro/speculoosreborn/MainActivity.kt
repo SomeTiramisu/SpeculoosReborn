@@ -11,26 +11,13 @@ import android.provider.Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION
 import android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.core.app.ActivityCompat
 import org.custro.speculoosreborn.databinding.ActivityMainBinding
 import org.custro.speculoosreborn.ui.model.InitModel
 import org.custro.speculoosreborn.ui.model.ReaderModel
 
-@ExperimentalMaterial3Api
-@ExperimentalMaterialApi
-@ExperimentalFoundationApi
-@ExperimentalAnimationApi
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
-
-    private val initModel: InitModel by viewModels()
-    private val readerModel: ReaderModel by viewModels()
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,9 +52,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        readerModel.onBackgroundChange(
-            BitmapFactory.decodeStream(assets.open("background.png")).asImageBitmap()
-        )
         checkPermissions()
     }
 

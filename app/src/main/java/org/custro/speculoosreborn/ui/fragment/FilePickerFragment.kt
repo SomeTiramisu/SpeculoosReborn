@@ -1,31 +1,18 @@
 package org.custro.speculoosreborn.ui.fragment
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.Menu.NONE
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Text
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.ComposeView
-import androidx.fragment.app.activityViewModels
+import android.widget.PopupMenu
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import org.custro.speculoosreborn.databinding.FragmentFilePickerBinding
-import org.custro.speculoosreborn.databinding.FragmentInitBinding
 import org.custro.speculoosreborn.ui.FileListAdapter
-import org.custro.speculoosreborn.ui.FilePickerScreen
-import org.custro.speculoosreborn.ui.InitScreen
 import org.custro.speculoosreborn.ui.model.FilePickerModel
-import org.custro.speculoosreborn.ui.model.InitModel
 
-@ExperimentalFoundationApi
-@ExperimentalMaterial3Api
-@ExperimentalMaterialApi
 class FilePickerFragment : Fragment() {
     private var _binding: FragmentFilePickerBinding? = null
     // This property is only valid between onCreateView and
@@ -50,9 +37,28 @@ class FilePickerFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
+        val adapter = FileListAdapter {}
+
         binding.recyclerView.apply {
             layoutManager = LinearLayoutManager(context)
-            adapter = FileListAdapter {}
+            this.adapter = adapter
+        }
+
+
+        binding.menu.setOnClickListener { v ->
+            val popup = PopupMenu(context, v)
+            model.externalDirs.onEachIndexed { index, file ->
+                popup.menu.add(NONE, index, NONE, model.getExternalDirName(index))
+            }
+            popup.setOnMenuItemClickListener { menuItem ->
+                binding.menu.setText(menuItem.title)
+                //Log.d("FilePicker", model.externalDirs[menuItem.itemId].listFiles()!!.toList().map { Uri.fromFile(it) }.toString())
+                adapter.submitList(model.externalDirs[menuItem.itemId].listFiles()!!.toList())
+                true
+            }
+            popup.show()
+
         }
 
     }

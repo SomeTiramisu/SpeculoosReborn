@@ -12,9 +12,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.View.*
 import android.view.ViewGroup
-import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.ui.graphics.asAndroidBitmap
-import androidx.core.os.HandlerCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
@@ -22,11 +19,9 @@ import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.google.android.material.slider.Slider
-import org.bouncycastle.pqc.math.linearalgebra.GF2nONBElement
 import org.custro.speculoosreborn.databinding.FragmentReaderBinding
 import org.custro.speculoosreborn.ui.model.ReaderModel
 
-@ExperimentalAnimationApi
 class ReaderFragment : Fragment() {
     private var _binding: FragmentReaderBinding? = null
     // This property is only valid between onCreateView and
@@ -78,7 +73,7 @@ class ReaderFragment : Fragment() {
 
         //TODO: check why correct size is set
         model.image.observe(viewLifecycleOwner) {
-            binding.pageImageView.setImageBitmap(it.asAndroidBitmap())
+            binding.pageImageView.setImageBitmap(it)
         }
 
         val slider = binding.pageSlider

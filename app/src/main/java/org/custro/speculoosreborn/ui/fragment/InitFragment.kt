@@ -1,30 +1,19 @@
 package org.custro.speculoosreborn.ui.fragment
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
-import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.core.os.bundleOf
-import androidx.fragment.app.commit
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import org.custro.speculoosreborn.App
 import org.custro.speculoosreborn.R
 import org.custro.speculoosreborn.databinding.FragmentInitBinding
-import org.custro.speculoosreborn.room.Manga
-import org.custro.speculoosreborn.ui.InitScreen
 import org.custro.speculoosreborn.ui.MangaCardAdapter
 import org.custro.speculoosreborn.ui.model.InitModel
-import org.custro.speculoosreborn.ui.model.MangaCardModel
 
-@ExperimentalFoundationApi
-@ExperimentalMaterial3Api
 class InitFragment : Fragment() {
     private var _binding: FragmentInitBinding? = null
     // This property is only valid between onCreateView and

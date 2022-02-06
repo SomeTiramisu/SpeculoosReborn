@@ -7,17 +7,16 @@
     tools:context=".ui.fragment.FilePickerFragment">
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/menu"
         style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Storage">
 
         <AutoCompleteTextView
+            android:id="@+id/menu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="none"
-            />
+            android:inputType="none" />
 
     </com.google.android.material.textfield.TextInputLayout>
 

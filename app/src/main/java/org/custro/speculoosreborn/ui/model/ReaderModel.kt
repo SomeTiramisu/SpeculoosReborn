@@ -1,9 +1,8 @@
 package org.custro.speculoosreborn.ui.model
 
+import android.graphics.Bitmap
 import android.net.Uri
 import android.util.Log
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -15,6 +14,7 @@ import kotlinx.coroutines.launch
 import org.custro.speculoosreborn.renderer.Renderer
 import org.custro.speculoosreborn.renderer.RendererFactory
 import org.custro.speculoosreborn.scheduler.PageScheduler
+import org.custro.speculoosreborn.utils.emptyBitmap
 
 class ReaderModel : ViewModel() {
     private var mScheduler: PageScheduler? = null
@@ -30,14 +30,14 @@ class ReaderModel : ViewModel() {
     private val _size = MutableLiveData(Pair(0, 0))
     val size: LiveData<Pair<Int, Int>> = _size
 
-    private val _image = MutableLiveData(ImageBitmap(1, 1))
-    val image: LiveData<ImageBitmap> = _image
+    private val _image = MutableLiveData(emptyBitmap())
+    val image: LiveData<Bitmap> = _image
 
     private val _isBlackBorders = MutableLiveData(false)
     val isBlackBorders: LiveData<Boolean> = _isBlackBorders
 
-    private val _background = MutableLiveData(ImageBitmap(1, 1))
-    val background: LiveData<ImageBitmap> = _background
+    private val _background = MutableLiveData(emptyBitmap())
+    val background: LiveData<Bitmap> = _background
 
     private val _hiddenSlider = MutableLiveData(false)
     val hiddenSlider: LiveData<Boolean> = _hiddenSlider
@@ -82,7 +82,7 @@ class ReaderModel : ViewModel() {
         Log.d("PageModel", "onUriChange called")
         if (value != mRenderer?.uri ?: Uri.EMPTY)  {
             _index.value = 0
-            _image.value = ImageBitmap(1, 1)
+            _image.value = emptyBitmap()
             mSchedulerInitJob = viewModelScope.launch(Dispatchers.Default) {
                 initScheduler(value)
                 _maxIndex.postValue(mRenderer!!.pageCount)
@@ -101,7 +101,7 @@ class ReaderModel : ViewModel() {
         genRequest()
     }
 
-    fun onBackgroundChange(value: ImageBitmap) {
+    fun onBackgroundChange(value: Bitmap) {
         _background.value = value
     }
 
@@ -119,7 +119,7 @@ class ReaderModel : ViewModel() {
         }
         mSchedulerInitJob?.join()
         mScheduler!!.at(index.value!!, size.value!!.first, size.value!!.second).collectLatest { value ->
-            _image.postValue(value.first.asImageBitmap()) //called from another thread
+            _image.postValue(value.first) //called from another thread
             _isBlackBorders.postValue(value.second.isBlackBorders)
             Log.d("ImageCallback", "imaged")
             mScheduler!!.seekPagesOrdered(index.value!!, size.value!!.first, size.value!!.second)
