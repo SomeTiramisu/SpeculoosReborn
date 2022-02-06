@@ -54,18 +54,14 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <androidx.compose.ui.platform.ComposeView
-        android:id="@+id/composeView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
     <FrameLayout
         android:id="@+id/pageBottomSheet"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:behavior_draggable="false"
         app:behavior_peekHeight="64dp"
-        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
+        style="@style/Widget.MaterialComponents.BottomSheet">
 
 
         <com.google.android.material.slider.Slider

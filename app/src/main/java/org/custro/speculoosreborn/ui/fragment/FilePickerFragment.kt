@@ -14,8 +14,10 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import org.custro.speculoosreborn.databinding.FragmentFilepickerBinding
+import androidx.recyclerview.widget.LinearLayoutManager
+import org.custro.speculoosreborn.databinding.FragmentFilePickerBinding
 import org.custro.speculoosreborn.databinding.FragmentInitBinding
+import org.custro.speculoosreborn.ui.FileListAdapter
 import org.custro.speculoosreborn.ui.FilePickerScreen
 import org.custro.speculoosreborn.ui.InitScreen
 import org.custro.speculoosreborn.ui.model.FilePickerModel
@@ -25,7 +27,7 @@ import org.custro.speculoosreborn.ui.model.InitModel
 @ExperimentalMaterial3Api
 @ExperimentalMaterialApi
 class FilePickerFragment : Fragment() {
-    private var _binding: FragmentFilepickerBinding? = null
+    private var _binding: FragmentFilePickerBinding? = null
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
@@ -36,13 +38,23 @@ class FilePickerFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentFilepickerBinding.inflate(inflater, container, false)
+        _binding = FragmentFilePickerBinding.inflate(inflater, container, false)
         val view = binding.root
-        binding.composeView.setContent {
-            FilePickerScreen(model)
-        }
-
-        //findNavController().navigate(R.id.action_initFragment_to_settingsFragment)
+        //binding.composeView.setContent {
+        //    FilePickerScreen(model)
+        //}
         return view
     }
+
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        binding.recyclerView.apply {
+            layoutManager = LinearLayoutManager(context)
+            adapter = FileListAdapter {}
+        }
+
+    }
+
 }

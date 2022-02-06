@@ -3,15 +3,25 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="app/src/main/res/drawable/baseline_add_20.xml" value="0.105" />
+        <entry key="app/src/main/res/drawable/baseline_add_24.xml" value="0.105" />
+        <entry key="app/src/main/res/drawable/baseline_book_24.xml" value="0.105" />
+        <entry key="app/src/main/res/drawable/baseline_file_24.xml" value="0.105" />
+        <entry key="app/src/main/res/drawable/baseline_folder_24.xml" value="0.105" />
         <entry key="app/src/main/res/drawable/baseline_settings_20.xml" value="0.191" />
         <entry key="app/src/main/res/drawable/baseline_settings_24.xml" value="0.191" />
+        <entry key="app/src/main/res/drawable/outline_book_24.xml" value="0.105" />
+        <entry key="app/src/main/res/drawable/outline_description_24.xml" value="0.105" />
+        <entry key="app/src/main/res/drawable/outline_folder_24.xml" value="0.105" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.2" />
         <entry key="app/src/main/res/layout/activity_reader.xml" value="0.29583333333333334" />
+        <entry key="app/src/main/res/layout/fragment_file_picker.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fragment_filepicker.xml" value="0.10092592592592593" />
         <entry key="app/src/main/res/layout/fragment_init.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fragment_manga_card.xml" value="0.1" />
-        <entry key="app/src/main/res/layout/fragment_reader.xml" value="0.13" />
+        <entry key="app/src/main/res/layout/fragment_reader.xml" value="0.1" />
         <entry key="app/src/main/res/layout/init_fragment.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/item_file_list.xml" value="0.25" />
         <entry key="app/src/main/res/layout/item_manga_card.xml" value="0.33" />
         <entry key="app/src/main/res/layout/main.xml" value="0.1" />
         <entry key="app/src/main/res/menu/menu_init.xml" value="0.2546875" />
