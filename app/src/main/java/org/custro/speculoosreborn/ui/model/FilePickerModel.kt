@@ -17,7 +17,9 @@ import java.io.File
 
 class FilePickerModel : ViewModel() {
     val externalDirs: List<File>
-    private var currentExternalDirIndex = 0
+    //TODO: crash if no externaldir
+    private val _currentExternalDirIndex = MutableLiveData(0)
+    val currentExternalDirIndex: LiveData<Int> = _currentExternalDirIndex
 
     init {
         externalDirs = App.instance.applicationContext.getExternalFilesDirs(null).toList()
@@ -28,8 +30,8 @@ class FilePickerModel : ViewModel() {
         return file.parentFile!!.parentFile!!.parentFile!!.parentFile!!
     }
 
-    fun onExternalDirChange() {
-        currentExternalDirIndex = (currentExternalDirIndex + 1) % externalDirs.size
+    fun onExternalDirChange(index: Int) {
+        _currentExternalDirIndex.value =  index % externalDirs.size
     }
 
     fun getExternalDirName(index: Int): String {
@@ -43,7 +45,7 @@ class FilePickerModel : ViewModel() {
         }
     }
 
-    private fun insertManga(uri: Uri) {
+    fun insertManga(uri: Uri) {
         viewModelScope.launch(Dispatchers.Default) {
             val manga = genManga(uri)
             try {

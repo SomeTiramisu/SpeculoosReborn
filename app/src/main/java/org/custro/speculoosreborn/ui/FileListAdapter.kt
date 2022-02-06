@@ -28,7 +28,16 @@ class FileListAdapter(private val onFileClickListener: (Uri) -> Unit): ListAdapt
         val item = getItem(position)
         holder.imageView.setImageDrawable(AppCompatResources.getDrawable(App.instance.applicationContext, R.drawable.baseline_book_24))
         holder.textView.text = item.name
+
+        holder.itemView.setOnClickListener {
+            if(item.isFile) {
+                onFileClickListener(Uri.fromFile(item))
+            } else {
+                submitList(item.listFiles()!!.toList())
+            }
+        }
     }
+
 
     companion object {
         object FileDiffCallback : DiffUtil.ItemCallback<File>() {

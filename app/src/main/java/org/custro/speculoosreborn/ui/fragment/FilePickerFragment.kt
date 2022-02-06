@@ -10,6 +10,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import org.custro.speculoosreborn.databinding.FragmentFilePickerBinding
+import org.custro.speculoosreborn.renderer.MangaRenderer
+import org.custro.speculoosreborn.renderer.PdfRenderer
 import org.custro.speculoosreborn.ui.FileListAdapter
 import org.custro.speculoosreborn.ui.model.FilePickerModel
 
@@ -38,13 +40,21 @@ class FilePickerFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
 
-        val adapter = FileListAdapter {}
+        val adapter = FileListAdapter {
+            if (MangaRenderer.isSupported(it) || PdfRenderer.isSupported(it)) {
+                model.insertManga(it)
+            }
+        }
 
         binding.recyclerView.apply {
             layoutManager = LinearLayoutManager(context)
             this.adapter = adapter
         }
 
+        model.currentExternalDirIndex.observe(viewLifecycleOwner) {
+            binding.menu.setText(model.getExternalDirName(it))
+            adapter.submitList(model.externalDirs[it].listFiles()!!.toList())
+        }
 
         binding.menu.setOnClickListener { v ->
             val popup = PopupMenu(context, v)
@@ -52,9 +62,7 @@ class FilePickerFragment : Fragment() {
                 popup.menu.add(NONE, index, NONE, model.getExternalDirName(index))
             }
             popup.setOnMenuItemClickListener { menuItem ->
-                binding.menu.setText(menuItem.title)
-                //Log.d("FilePicker", model.externalDirs[menuItem.itemId].listFiles()!!.toList().map { Uri.fromFile(it) }.toString())
-                adapter.submitList(model.externalDirs[menuItem.itemId].listFiles()!!.toList())
+                model.onExternalDirChange(menuItem.itemId)
                 true
             }
             popup.show()
