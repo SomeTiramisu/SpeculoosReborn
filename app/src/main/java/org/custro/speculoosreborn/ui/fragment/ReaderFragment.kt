@@ -1,6 +1,7 @@
 package org.custro.speculoosreborn.ui.fragment
 
 import android.graphics.BitmapFactory
+import android.graphics.ImageDecoder
 import android.graphics.Shader
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
@@ -18,9 +19,12 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.preference.PreferenceManager
 import com.google.android.material.slider.Slider
 import org.custro.speculoosreborn.databinding.FragmentReaderBinding
 import org.custro.speculoosreborn.ui.model.ReaderModel
+import org.custro.speculoosreborn.utils.fromByteArray
+import org.custro.speculoosreborn.utils.matToBitmap
 
 class ReaderFragment : Fragment() {
     private var _binding: FragmentReaderBinding? = null
@@ -67,7 +71,16 @@ class ReaderFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val background = BitmapDrawable(resources, BitmapFactory.decodeStream(context?.assets?.open("background.png")))
+        var background = BitmapDrawable(resources, BitmapFactory.decodeStream(context?.assets?.open("background.png")))
+
+        val backgroundUri = Uri.parse(PreferenceManager.getDefaultSharedPreferences(requireContext()).getString("background", ""))
+        if(backgroundUri != Uri.EMPTY) {
+            val backgroundBytes =
+                requireActivity().contentResolver.openInputStream(backgroundUri)?.readBytes()?.let {
+                    background = BitmapDrawable(resources, matToBitmap(fromByteArray(it)))
+                }
+        }
+
         background.setTileModeXY(Shader.TileMode.REPEAT, Shader.TileMode.REPEAT)
         binding.pageImageView.background = background
 
