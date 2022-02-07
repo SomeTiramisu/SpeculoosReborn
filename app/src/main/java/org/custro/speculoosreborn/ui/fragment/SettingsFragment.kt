@@ -1,6 +1,7 @@
 package org.custro.speculoosreborn.ui.fragment
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -16,14 +17,15 @@ class SettingsFragment: PreferenceFragmentCompat() {
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val getContent = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+        val getContent = registerForActivityResult(ActivityResultContracts.OpenDocument() ) { uri: Uri? ->
             if(uri != null) {
+                requireActivity().contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 preferenceManager.sharedPreferences?.edit()?.putString("background", uri.toString())?.apply()
             }
         }
 
         findPreference<Preference>("background")?.setOnPreferenceClickListener {
-            getContent.launch("image/*")
+            getContent.launch(arrayOf("image/*"))
             true
         }
 

@@ -2,10 +2,15 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:key="enable_background"
+        android:title="Use custom background texture" />
     <Preference
-        app:key="background"
-        app:title="Background texture"
-        app:summary="Select viewer texture"/>
+        android:key="background"
+        android:title="Background texture"
+        android:summary="Select viewer texture"
+        android:dependency="enable_background"/>
 
 
 </PreferenceScreen>

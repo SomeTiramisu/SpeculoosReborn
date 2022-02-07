@@ -28,20 +28,17 @@ class FileListAdapter(private val onFileClickListener: (File) -> Unit, private v
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = getItem(position)
         val itemUri = Uri.fromFile(item)
-        val bookDrawable = AppCompatResources.getDrawable(App.instance.applicationContext, R.drawable.baseline_book_24)
-        val fileDrawable = AppCompatResources.getDrawable(App.instance.applicationContext, R.drawable.baseline_file_24)
-        val folderDrawable = AppCompatResources.getDrawable(App.instance.applicationContext, R.drawable.baseline_folder_24)
         holder.textView.text = item.name
 
         if(MangaRenderer.isSupported(itemUri) || PdfRenderer.isSupported(itemUri)) {
-            holder.imageView.setImageDrawable(bookDrawable)
+            holder.imageView.setImageResource(R.drawable.baseline_book_24)
             holder.itemView.setOnClickListener {
                 onFileClickListener(item)
             }
         } else if(item.isFile) {
-            holder.imageView.setImageDrawable(fileDrawable)
+            holder.imageView.setImageResource(R.drawable.baseline_file_24)
         } else if(item.isDirectory) {
-            holder.imageView.setImageDrawable(folderDrawable)
+            holder.imageView.setImageResource(R.drawable.baseline_folder_24)
             holder.itemView.setOnClickListener {
                 onDirClickListener(item)
             }
