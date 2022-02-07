@@ -9,7 +9,7 @@
     <Preference
         android:key="background"
         android:title="Background texture"
-        android:summary="Select viewer texture"
+        android:summary="Select texture"
         android:dependency="enable_background"/>
 
 

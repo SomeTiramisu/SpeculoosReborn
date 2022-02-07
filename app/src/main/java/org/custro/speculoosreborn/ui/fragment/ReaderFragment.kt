@@ -1,9 +1,9 @@
 package org.custro.speculoosreborn.ui.fragment
 
 import android.graphics.BitmapFactory
-import android.graphics.ImageDecoder
 import android.graphics.Shader
 import android.graphics.drawable.BitmapDrawable
+import android.graphics.pdf.PdfRenderer
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -71,18 +71,22 @@ class ReaderFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        var background = BitmapDrawable(resources, BitmapFactory.decodeStream(context?.assets?.open("background.png")))
-
-        val backgroundUri = Uri.parse(PreferenceManager.getDefaultSharedPreferences(requireContext()).getString("background", ""))
-        if(backgroundUri != Uri.EMPTY) {
-            val backgroundBytes =
-                requireActivity().contentResolver.openInputStream(backgroundUri)?.readBytes()?.let {
-                    background = BitmapDrawable(resources, matToBitmap(fromByteArray(it)))
-                }
+        //TOOD: make this readable
+        if(PreferenceManager.getDefaultSharedPreferences(requireContext()).getBoolean("enable_background", false)) {
+            val settBackgroundUri = Uri.parse(PreferenceManager.getDefaultSharedPreferences(requireContext()).getString("background", ""))
+            if(settBackgroundUri != Uri.EMPTY) {
+                    requireActivity().contentResolver.openInputStream(settBackgroundUri)?.readBytes()?.let {
+                        val background = BitmapDrawable(resources, matToBitmap(fromByteArray(it)))
+                        background.setTileModeXY(Shader.TileMode.REPEAT, Shader.TileMode.REPEAT)
+                        binding.pageImageView.background = background
+                    }
+            }
+        } else { //TODO remove non-free background from assets
+            val background = BitmapDrawable(resources, BitmapFactory.decodeStream(context?.assets?.open("background.png")))
+            background.setTileModeXY(Shader.TileMode.REPEAT, Shader.TileMode.REPEAT)
+            binding.pageImageView.background = background
         }
 
-        background.setTileModeXY(Shader.TileMode.REPEAT, Shader.TileMode.REPEAT)
-        binding.pageImageView.background = background
 
         //TODO: check why correct size is set
         model.image.observe(viewLifecycleOwner) {
