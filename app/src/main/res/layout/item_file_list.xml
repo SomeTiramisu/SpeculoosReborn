@@ -13,6 +13,7 @@
         android:id="@+id/imageView"
         android:layout_width="64dp"
         android:layout_height="match_parent"
+        android:scaleType="center"
         tools:src="@drawable/baseline_file_24" />
 
     <TextView

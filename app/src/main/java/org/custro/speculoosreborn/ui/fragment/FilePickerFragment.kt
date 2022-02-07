@@ -75,7 +75,7 @@ class FilePickerFragment : Fragment() {
         }
 
 
-        //Overriding getFilter to show full selection everytime
+        //Overriding getFilter to disable filtering: show full selection everytime
         val menuAdapter = object: ArrayAdapter<String>(requireContext(), R.layout.item_externals_dir, model.externalDirs.mapIndexed { i, _ -> model.getExternalDirName(i) }) {
             override fun getFilter(): Filter {
                 return object: Filter() {
