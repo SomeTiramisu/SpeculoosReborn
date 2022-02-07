@@ -2,11 +2,13 @@ package org.custro.speculoosreborn.ui.fragment
 
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu.NONE
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.Filter
 import android.widget.PopupMenu
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -67,33 +69,28 @@ class FilePickerFragment : Fragment() {
             adapter = fileListAdapter
         }
 
-        model.currentExternalDirIndex.observe(viewLifecycleOwner) {
-            binding.menu.setText(model.getExternalDirName(it))
-        }
         model.currentDir.observe(viewLifecycleOwner) {
             fileListAdapter.submitList(it.listFiles()!!.toList())
             quickpathAdapter.submitDir(it)
         }
 
 
-        binding.menu.setAdapter(ArrayAdapter(requireContext(), R.layout.item_externals_dir, model.externalDirs.mapIndexed { i, _ -> model.getExternalDirName(i) }))
-        binding.menu.setOnItemClickListener { _, _, _, id ->
-            model.onExternalDirChange(id.toInt())
+        //Overriding getFilter to show full selection everytime
+        val menuAdapter = object: ArrayAdapter<String>(requireContext(), R.layout.item_externals_dir, model.externalDirs.mapIndexed { i, _ -> model.getExternalDirName(i) }) {
+            override fun getFilter(): Filter {
+                return object: Filter() {
+                    override fun performFiltering(p0: CharSequence?): FilterResults? { return null }
+                    override fun publishResults(p0: CharSequence?, p1: FilterResults?) {}
+                }
+            }
         }
-        /*
-        binding.menu.setOnClickListener { v ->
-            val popup = PopupMenu(context, v)
-            model.externalDirs.onEachIndexed { index, file ->
-                popup.menu.add(NONE, index, NONE, model.getExternalDirName(index))
+        binding.menu.apply {
+            setText(model.getExternalDirName(model.currentExternalDirIndex.value!!), false)
+            setAdapter(menuAdapter)
+            setOnItemClickListener { _, _, _, id ->
+                model.onExternalDirChange(id.toInt())
             }
-            popup.setOnMenuItemClickListener { menuItem ->
-                model.onExternalDirChange(menuItem.itemId)
-                true
-            }
-            popup.show()
-
-        }*/
-
+        }
     }
 
 }
