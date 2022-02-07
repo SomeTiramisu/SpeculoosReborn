@@ -6,11 +6,13 @@ import android.view.LayoutInflater
 import android.view.Menu.NONE
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.PopupMenu
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView.HORIZONTAL
+import org.custro.speculoosreborn.R
 import org.custro.speculoosreborn.databinding.FragmentFilePickerBinding
 import org.custro.speculoosreborn.renderer.MangaRenderer
 import org.custro.speculoosreborn.renderer.PdfRenderer
@@ -73,6 +75,12 @@ class FilePickerFragment : Fragment() {
             quickpathAdapter.submitDir(it)
         }
 
+
+        binding.menu.setAdapter(ArrayAdapter(requireContext(), R.layout.item_externals_dir, model.externalDirs.mapIndexed { i, _ -> model.getExternalDirName(i) }))
+        binding.menu.setOnItemClickListener { _, _, _, id ->
+            model.onExternalDirChange(id.toInt())
+        }
+        /*
         binding.menu.setOnClickListener { v ->
             val popup = PopupMenu(context, v)
             model.externalDirs.onEachIndexed { index, file ->
@@ -84,7 +92,7 @@ class FilePickerFragment : Fragment() {
             }
             popup.show()
 
-        }
+        }*/
 
     }
 
