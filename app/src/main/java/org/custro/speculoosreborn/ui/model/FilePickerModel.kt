@@ -56,8 +56,9 @@ class FilePickerModel : ViewModel() {
     }
 
     fun onDirChange(file: File) {
-        //TODO: crash when no read acess
-        _currentDir.value = file
+        if(file.canRead()) {
+            _currentDir.value = file
+        }
     }
 
     fun insertManga(uri: Uri) {

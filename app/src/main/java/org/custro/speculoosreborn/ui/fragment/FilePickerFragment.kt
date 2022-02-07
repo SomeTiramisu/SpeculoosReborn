@@ -50,6 +50,7 @@ class FilePickerFragment : Fragment() {
             adapter = quickpathAdapter
         }
 
+        //TODO: support check may be not needed here
         val fileListAdapter = FileListAdapter({
             val uri = Uri.fromFile(it)
             if(MangaRenderer.isSupported(uri) || PdfRenderer.isSupported(uri)) {
