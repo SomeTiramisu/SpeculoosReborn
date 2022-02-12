@@ -1,5 +1,9 @@
 package org.custro.speculoosreborn.ui.model
 
+import android.database.sqlite.SQLiteConstraintException
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
@@ -8,36 +12,24 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.custro.speculoosreborn.App
-import org.custro.speculoosreborn.room.Manga
-import org.custro.speculoosreborn.room.correctManga
-import org.custro.speculoosreborn.room.isMangaValid
+import org.custro.speculoosreborn.room.MangaEntity
+import org.custro.speculoosreborn.utils.CacheUtils
+import org.custro.speculoosreborn.utils.MangaUtils
+import org.custro.speculoosreborn.utils.emptyBitmap
 
 class InitModel: ViewModel() {
 
-    val mangas: LiveData<List<Manga>> = Transformations.map(App.db.mangaDao().getAll()) {
-        it.map { m ->
+    val mangas: LiveData<List<Pair<MangaEntity, Bitmap>>> = Transformations.map(App.db.mangaDao().getAll()) {
+        it.map { entity ->
             viewModelScope.launch(Dispatchers.Default) {
-                correctManga(m)
+                MangaUtils.correctManga(entity)
+                val coverFile = CacheUtils.getNow(entity.coverId)
+                if (coverFile != null) {
+
+                }
             }
-            m
-        }.filter { m ->
-            isMangaValid(m)
+            Pair(entity, emptyBitmap())
         }
     }
 
-    val mangaModels: LiveData<List<MangaCardModel>> = Transformations.map(mangas) {
-        it.map { manga ->
-            val model = MangaCardModel()
-            model.onMangaChange(manga)
-            model
-        }
-    }
-
-
-    fun deleteManga(uri: String) {
-        viewModelScope.launch(Dispatchers.Default) {
-            App.db.mangaDao().deleteUri(uri)
-            Log.d("MainModel", "deleted: $uri")
-        }
-    }
 }

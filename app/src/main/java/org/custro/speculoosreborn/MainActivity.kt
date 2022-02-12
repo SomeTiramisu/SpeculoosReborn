@@ -28,54 +28,17 @@ class MainActivity : AppCompatActivity() {
 
         showOnCutout()
         setContentView(view)
-        /*
-        setContent {
-            AppTheme {
-                val systemUiController = rememberSystemUiController()
-                val useDarkIcons = colors.isLight
-                SideEffect {
-                    systemUiController.setSystemBarsColor(
-                        color = Color.Transparent,
-                        darkIcons = useDarkIcons
-                    )
-                }
-
-                MainNavigation(
-                    readerModel = readerModel,
-                    initModel = initModel,
-                    showSystemUi = { showSystemUiNew() },
-                    hideSystemUi = { hideSystemUiNew() }
-                )
-            }
-        }*/
     }
 
     override fun onStart() {
         super.onStart()
-        checkPermissions()
-    }
-
-    private fun checkPermissions() {
-        if (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                !Environment.isExternalStorageManager()
-            } else {
-                true
-            }
-        ) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                val intent = Intent(ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)
-                val uri: Uri = Uri.fromParts("package", packageName, null)
-                intent.data = uri
-                startActivity(intent)
-            } else {
-                ActivityCompat.requestPermissions(
-                    this, arrayOf(
-                        Manifest.permission.READ_EXTERNAL_STORAGE,
-                    ),
-                    1
-                )
-            }
-        }
+/*
+        ActivityCompat.requestPermissions(
+            this, arrayOf(
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+            ),
+            1
+        )*/
     }
 
     private fun showOnCutout() {

@@ -5,18 +5,18 @@ import androidx.room.*
 
 @Dao
 interface MangaDao {
-    @Query("SELECT * FROM manga")
-    fun getAll(): LiveData<List<Manga>>
+    @Query("SELECT * FROM mangaEntity")
+    fun getAll(): LiveData<List<MangaEntity>>
 
     @Insert
-    fun insertAll(vararg mangas: Manga)
+    fun insert(vararg mangas: MangaEntity)
 
     @Delete
-    fun delete(manga: Manga)
+    fun delete(manga: MangaEntity)
 
     @Update
-    fun updateManga(manga: Manga)
+    fun update(manga: MangaEntity)
 
-    @Query("DELETE FROM manga WHERE uri = :uri")
-    fun deleteUri(uri: String)
+    @Query("DELETE FROM mangaEntity WHERE uri = :uri")
+    fun delete(uri: String)
 }

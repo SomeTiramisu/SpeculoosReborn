@@ -12,8 +12,12 @@ import android.widget.Filter
 import android.widget.PopupMenu
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView.HORIZONTAL
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import org.custro.speculoosreborn.App
 import org.custro.speculoosreborn.R
 import org.custro.speculoosreborn.databinding.FragmentFilePickerBinding
 import org.custro.speculoosreborn.renderer.MangaRenderer
@@ -21,6 +25,7 @@ import org.custro.speculoosreborn.renderer.PdfRenderer
 import org.custro.speculoosreborn.ui.FileListAdapter
 import org.custro.speculoosreborn.ui.QuickpathAdapter
 import org.custro.speculoosreborn.ui.model.FilePickerModel
+import org.custro.speculoosreborn.utils.MangaUtils
 
 class FilePickerFragment : Fragment() {
     private var _binding: FragmentFilePickerBinding? = null
@@ -58,7 +63,10 @@ class FilePickerFragment : Fragment() {
         val fileListAdapter = FileListAdapter({
             val uri = Uri.fromFile(it)
             if(MangaRenderer.isSupported(uri) || PdfRenderer.isSupported(uri)) {
-                model.insertManga(Uri.fromFile(it))
+                model.viewModelScope.launch(Dispatchers.Default) {  //ugly ?
+                    val entity = MangaUtils.genMangaEntity(Uri.fromFile(it))
+                    App.db.mangaDao().insert(entity)
+                }
             }
         }, {
             model.onDirChange(it)
