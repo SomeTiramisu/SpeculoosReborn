@@ -16,9 +16,6 @@ class PageCache() {
         private val cacheDir =
             if (Environment.getExternalStorageState() == Environment.MEDIA_MOUNTED) App.instance.externalCacheDir else App.instance.cacheDir
 
-        fun saveData(data: ByteArray, ext: String? = null): Uri { // return a file: scheme uri
-            return saveData(data.inputStream(), ext)
-        }
 
         fun saveData(uri: Uri): Uri { // return a file: scheme uri
             val output = File(cacheDir, concatExt(genUUID(), findExt(uri)))
@@ -59,8 +56,5 @@ class PageCache() {
             return "$name${ext?.let { normaliseExt(it) }?: ""}"
         }
 
-        fun delete() {
-            cacheDir?.deleteRecursively()
-        }
     }
 }

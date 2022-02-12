@@ -6,7 +6,9 @@ import androidx.core.net.toFile
 import com.tom_roush.pdfbox.cos.COSName
 import com.tom_roush.pdfbox.pdmodel.PDDocument
 import com.tom_roush.pdfbox.pdmodel.graphics.image.PDImageXObject
+import org.custro.speculoosreborn.App
 import org.custro.speculoosreborn.utils.bitmapToByteArray
+import java.nio.ByteBuffer
 
 class PdfFileParser(override val uri: Uri) : Parser {
     private val pdfFile = PDDocument.load(uri.toFile())
@@ -41,8 +43,17 @@ class PdfFileParser(override val uri: Uri) : Parser {
     }
 
     companion object {
-        fun isSupported(uri: Uri) = uri.scheme == "file"
-                && uri.lastPathSegment?.lowercase()?.matches(Regex(".*\\.(pdf)$")) ?: false
+        //fun isSupported(uri: Uri) = uri.scheme == "file"
+        //        && uri.lastPathSegment?.lowercase()?.matches(Regex(".*\\.(pdf)$")) ?: false
+        fun isSupported(uri: Uri): Boolean {
+            if (uri.scheme != "file") {
+                return false
+            }
+            val buf = ByteArray(8)
+            App.instance.contentResolver.openInputStream(uri)!!.read(buf, 0, 5)
+            val magic = ByteBuffer.wrap(buf).long
+            return magic == 0x255044462D
+        }
     }
 }
 

@@ -7,6 +7,7 @@ import com.github.junrar.Archive
 import com.github.junrar.rarfile.FileHeader
 import org.custro.speculoosreborn.App
 import org.custro.speculoosreborn.utils.AlphanumComparator
+import java.nio.ByteBuffer
 
 
 class RarStreamParser(override val uri: Uri) : Parser {
@@ -87,7 +88,13 @@ class RarStreamParser(override val uri: Uri) : Parser {
     }
 
     companion object {
-        fun isSupported(uri: Uri) =
-            uri.lastPathSegment?.lowercase()?.matches(Regex(".*\\.(rar|cbr)$")) ?: false
+        //fun isSupported(uri: Uri) =
+        //    uri.lastPathSegment?.lowercase()?.matches(Regex(".*\\.(rar|cbr)$")) ?: false
+        fun isSupported(uri: Uri): Boolean {
+            val buf = ByteArray(8)
+            App.instance.contentResolver.openInputStream(uri)!!.read(buf, 0, 7)
+            val magic = ByteBuffer.wrap(buf).long
+            return magic == 0x526172211A0700
+        }
     }
 }

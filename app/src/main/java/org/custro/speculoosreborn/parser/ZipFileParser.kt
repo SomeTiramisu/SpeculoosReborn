@@ -3,7 +3,9 @@ package org.custro.speculoosreborn.parser
 import android.net.Uri
 import android.util.Log
 import androidx.core.net.toFile
+import org.custro.speculoosreborn.App
 import org.custro.speculoosreborn.utils.AlphanumComparator
+import java.nio.ByteBuffer
 import java.util.zip.ZipFile
 import java.util.zip.ZipFile.OPEN_READ
 
@@ -55,7 +57,16 @@ class ZipFileParser(override val uri: Uri) : Parser {
     }
 
     companion object {
-        fun isSupported(uri: Uri) = uri.scheme == "file"
-                && uri.lastPathSegment?.lowercase()?.matches(Regex(".*\\.(zip|cbz)$")) ?: false
+        //fun isSupported(uri: Uri) = uri.scheme == "file"
+        //       && uri.lastPathSegment?.lowercase()?.matches(Regex(".*\\.(zip|cbz)$")) ?: false
+        fun isSupported(uri: Uri): Boolean {
+            if (uri.scheme != "file") {
+                return false
+            }
+            val buf = ByteArray(4)
+            App.instance.contentResolver.openInputStream(uri)!!.read(buf)
+            val magic = ByteBuffer.wrap(buf).int
+            return magic == 0x504B0304 || magic == 0x504B0506
+        }
     }
 }

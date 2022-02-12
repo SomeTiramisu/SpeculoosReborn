@@ -7,6 +7,7 @@ import org.custro.speculoosreborn.utils.AlphanumComparator
 import java.io.BufferedInputStream
 import java.io.BufferedOutputStream
 import java.io.ByteArrayOutputStream
+import java.nio.ByteBuffer
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 
@@ -71,7 +72,13 @@ class ZipBStreamParser(override val uri: Uri) : Parser {
         resolver.openInputStream(uri)
 
     companion object {
-        fun isSupported(uri: Uri) =
-            uri.lastPathSegment?.lowercase()?.matches(Regex(".*\\.(zip|cbz)$")) ?: false
+        //fun isSupported(uri: Uri) =
+        //    uri.lastPathSegment?.lowercase()?.matches(Regex(".*\\.(zip|cbz)$")) ?: false
+        fun isSupported(uri: Uri): Boolean {
+            val buf = ByteArray(4)
+            App.instance.contentResolver.openInputStream(uri)!!.read(buf)
+            val magic = ByteBuffer.wrap(buf).int
+            return magic == 0x504B0304 || magic == 0x504B0506
+        }
     }
 }

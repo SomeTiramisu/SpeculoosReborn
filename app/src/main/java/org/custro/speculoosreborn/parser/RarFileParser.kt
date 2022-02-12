@@ -4,7 +4,9 @@ import android.net.Uri
 import androidx.core.net.toFile
 import com.github.junrar.Archive
 import com.github.junrar.rarfile.FileHeader
+import org.custro.speculoosreborn.App
 import org.custro.speculoosreborn.utils.AlphanumComparator
+import java.nio.ByteBuffer
 
 
 class RarFileParser(override val uri: Uri) : Parser {
@@ -59,7 +61,16 @@ class RarFileParser(override val uri: Uri) : Parser {
     }
 
     companion object {
-        fun isSupported(uri: Uri) = uri.scheme == "file"
-                && uri.lastPathSegment?.lowercase()?.matches(Regex(".*\\.(rar|cbr)$")) ?: false
+        //fun isSupported(uri: Uri) = uri.scheme == "file"
+        //        && uri.lastPathSegment?.lowercase()?.matches(Regex(".*\\.(rar|cbr)$")) ?: false
+        fun isSupported(uri: Uri): Boolean {
+            if (uri.scheme != "file") {
+                return false
+            }
+            val buf = ByteArray(8)
+            App.instance.contentResolver.openInputStream(uri)!!.read(buf, 0, 7)
+            val magic = ByteBuffer.wrap(buf).long
+            return magic == 0x526172211A0700
+        }
     }
 }
