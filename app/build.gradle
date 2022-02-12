@@ -62,9 +62,9 @@ dependencies {
     //implementation "com.afollestad.material-dialogs:files:3.3.0"
     implementation 'com.github.junrar:junrar:7.4.1'
     //implementation "org.apache.pdfbox:pdfbox:2.0.24"
-    implementation 'com.tom-roush:pdfbox-android:2.0.13.0'
+    implementation 'com.tom-roush:pdfbox-android:2.0.14.0'
 
-    def lifecycle_version = "2.5.0-alpha01"
+    def lifecycle_version = '2.5.0-alpha02'
     // ViewModel
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
     // LiveData
@@ -75,13 +75,13 @@ dependencies {
     implementation "androidx.room:room-runtime:$room_version"
     kapt "androidx.room:room-compiler:$room_version"
 
-    def nav_version = "2.5.0-alpha01"
+    def nav_version = '2.5.0-alpha02'
     implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
     implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
 
     implementation "androidx.preference:preference-ktx:1.2.0"
 
-    implementation 'androidx.fragment:fragment-ktx:1.5.0-alpha01'
+    implementation 'androidx.fragment:fragment-ktx:1.5.0-alpha02'
 
     implementation("androidx.recyclerview:recyclerview:1.2.1")
     // For control over item selection of both touch and mouse driven selection
