@@ -36,12 +36,6 @@ class ReaderModel : ViewModel() {
     private val _isBlackBorders = MutableLiveData(false)
     val isBlackBorders: LiveData<Boolean> = _isBlackBorders
 
-    private val _background = MutableLiveData(emptyBitmap())
-    val background: LiveData<Bitmap> = _background
-
-    private val _hiddenSlider = MutableLiveData(false)
-    val hiddenSlider: LiveData<Boolean> = _hiddenSlider
-
     fun onIndexChange(value: Int) {
         Log.d("PageModel", "new index: $value")
         val normValue = normIndex(value)
@@ -80,7 +74,8 @@ class ReaderModel : ViewModel() {
 
     fun onUriChange(value: Uri) {
         Log.d("PageModel", "onUriChange called")
-        if (value != mRenderer?.uri ?: Uri.EMPTY)  {
+        //TODO: fix reload
+        if (value != mRenderer?.uri ?: Uri.EMPTY || true)  {
             _index.value = 0
             _image.value = emptyBitmap()
             mSchedulerInitJob = viewModelScope.launch(Dispatchers.Default) {
@@ -99,18 +94,6 @@ class ReaderModel : ViewModel() {
         }
         mScheduler = PageScheduler(mRenderer!!)
         genRequest()
-    }
-
-    fun onBackgroundChange(value: Bitmap) {
-        _background.value = value
-    }
-
-    fun onHiddenSliderChange(value: Boolean) {
-        _hiddenSlider.value = value
-    }
-
-    fun onHiddenSliderSwitch() {
-        _hiddenSlider.value = !hiddenSlider.value!!
     }
 
     private fun genRequest() = viewModelScope.launch(Dispatchers.Default) {
