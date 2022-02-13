@@ -11,6 +11,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.coroutineScope
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -64,11 +66,15 @@ class InitFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        viewLifecycleOwner.lifecycleScope
+        lifecycle.coroutineScope
         val recyclerView = binding.recyclerView
         val adapter = MangaCardAdapter {
             model.viewModelScope.launch(Dispatchers.Default) {
                 //TODO: handle restart with new file and same uri
-                CacheUtils.save(requireActivity().contentResolver.openInputStream(it)!!, "current")
+                requireActivity().contentResolver.openInputStream(it).use {
+                    CacheUtils.save(it!!, "current")
+                }
                 Log.d("SEE", "cached")
                 val x = CacheUtils.get("current")
                 MainScope().launch {
