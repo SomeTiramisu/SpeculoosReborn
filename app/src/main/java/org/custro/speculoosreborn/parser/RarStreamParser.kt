@@ -92,7 +92,9 @@ class RarStreamParser(override val uri: Uri) : Parser {
         //    uri.lastPathSegment?.lowercase()?.matches(Regex(".*\\.(rar|cbr)$")) ?: false
         fun isSupported(uri: Uri): Boolean {
             val buf = ByteArray(8)
-            App.instance.contentResolver.openInputStream(uri)!!.read(buf, 0, 7)
+            App.instance.contentResolver.openInputStream(uri)?.use {
+                it.read(buf, 0, 7)
+            }
             val magic = ByteBuffer.wrap(buf).long
             return magic == 0x526172211A0700
         }

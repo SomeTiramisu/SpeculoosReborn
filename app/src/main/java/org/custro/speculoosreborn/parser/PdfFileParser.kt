@@ -50,7 +50,9 @@ class PdfFileParser(override val uri: Uri) : Parser {
                 return false
             }
             val buf = ByteArray(8)
-            App.instance.contentResolver.openInputStream(uri)!!.read(buf, 0, 5)
+            App.instance.contentResolver.openInputStream(uri)?.use {
+                it.read(buf, 0, 5)
+            }
             val magic = ByteBuffer.wrap(buf).long
             return magic == 0x255044462D
         }

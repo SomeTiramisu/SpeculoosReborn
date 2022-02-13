@@ -64,7 +64,9 @@ class ZipFileParser(override val uri: Uri) : Parser {
                 return false
             }
             val buf = ByteArray(4)
-            App.instance.contentResolver.openInputStream(uri)!!.read(buf)
+            App.instance.contentResolver.openInputStream(uri)?.use {
+                it.read(buf)
+            }
             val magic = ByteBuffer.wrap(buf).int
             return magic == 0x504B0304 || magic == 0x504B0506
         }
