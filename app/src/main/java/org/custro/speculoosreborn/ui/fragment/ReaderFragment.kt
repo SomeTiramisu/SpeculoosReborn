@@ -71,7 +71,7 @@ class ReaderFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        //TOOD: make this readable
+        //TODO: make this readable
         if(PreferenceManager.getDefaultSharedPreferences(requireContext()).getBoolean("enable_background", false)) {
             val settBackgroundUri = Uri.parse(PreferenceManager.getDefaultSharedPreferences(requireContext()).getString("background", ""))
             if(settBackgroundUri != Uri.EMPTY) {
