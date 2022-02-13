@@ -24,6 +24,7 @@ import org.custro.speculoosreborn.R
 import org.custro.speculoosreborn.databinding.FragmentInitBinding
 import org.custro.speculoosreborn.ui.MangaCardAdapter
 import org.custro.speculoosreborn.ui.model.InitModel
+import org.custro.speculoosreborn.ui.model.MangaCardModel
 import org.custro.speculoosreborn.utils.CacheUtils
 import org.custro.speculoosreborn.utils.MangaUtils
 
@@ -69,7 +70,7 @@ class InitFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope
         lifecycle.coroutineScope
         val recyclerView = binding.recyclerView
-        val adapter = MangaCardAdapter {
+        val adapter = MangaCardAdapter(viewLifecycleOwner) {
             model.viewModelScope.launch(Dispatchers.Default) {
                 //TODO: handle restart with new file and same uri
                 requireActivity().contentResolver.openInputStream(it).use {
@@ -91,7 +92,7 @@ class InitFragment : Fragment() {
         recyclerView.adapter = adapter
 
         model.mangas.observe(viewLifecycleOwner) {
-            adapter.submitList(it)
+            adapter.submitList(it.map { MangaCardModel(it) })
         }
 
         val appBar = binding.toolbar

@@ -6,21 +6,25 @@ import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.net.toFile
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.findViewTreeLifecycleOwner
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import org.custro.speculoosreborn.databinding.ItemMangaCardBinding
 import org.custro.speculoosreborn.room.MangaEntity
+import org.custro.speculoosreborn.ui.model.MangaCardModel
 import org.custro.speculoosreborn.utils.CacheUtils
 
-typealias Item = Pair<MangaEntity, Bitmap>
+typealias Item = MangaCardModel
 
-class MangaCardAdapter(private val onCardClickListener: (Uri) -> Unit): ListAdapter<Item, MangaCardAdapter.ViewHolder>(MangaDiffCallback) {
+class MangaCardAdapter(private val owner: LifecycleOwner, private val onCardClickListener: (Uri) -> Unit): ListAdapter<Item, MangaCardAdapter.ViewHolder>(MangaDiffCallback) {
 
     class ViewHolder(itemViewBinding: ItemMangaCardBinding): RecyclerView.ViewHolder(itemViewBinding.root) {
         val textView = itemViewBinding.textView
         val imageView = itemViewBinding.imageView
         val card = itemViewBinding.card
+        val root = itemViewBinding.root
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -32,25 +36,28 @@ class MangaCardAdapter(private val onCardClickListener: (Uri) -> Unit): ListAdap
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = getItem(position)
-        Uri.parse(item.first.uri).lastPathSegment?.let {
-            holder.textView.text = it.split(":").last()
+        item.name?.let {
+            holder.textView.text = it
         }
         //TODO: un wrapper autour de Manga et MangaDao pour autocorrection et chargement cover ?
-        holder.imageView.setImageBitmap(item.second)
+        item.cover.observe(owner) {
+            val bitmap = BitmapFactory.decodeFile(it.path)
+            holder.imageView.setImageBitmap(bitmap)
+        }
         holder.card.setOnClickListener {
             //TODO: use cached file
-            onCardClickListener(Uri.parse(item.first.uri))
+            onCardClickListener(Uri.parse(item.entity.uri))
         }
     }
 
     companion object {
         object MangaDiffCallback : DiffUtil.ItemCallback<Item>() {
             override fun areItemsTheSame(oldItem: Item, newItem: Item): Boolean {
-                return oldItem.first.uri == newItem.first.uri
+                return oldItem.entity.uri == newItem.entity.uri
             }
 
             override fun areContentsTheSame(oldItem: Item, newItem: Item): Boolean {
-                return oldItem.first == newItem.first
+                return oldItem.entity == newItem.entity
             }
         }
     }
