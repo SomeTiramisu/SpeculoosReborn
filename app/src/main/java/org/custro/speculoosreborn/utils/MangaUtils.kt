@@ -46,7 +46,9 @@ object MangaUtils {
                     doMask = false
                 )
                 rendererPage.render(bitmap, config)
-                r = CacheUtils.save(bitmapToByteArray(bitmap).inputStream())
+                bitmapToByteArray(bitmap).inputStream().use {
+                    r = CacheUtils.save(it)
+                }
             }
         }
         return r
