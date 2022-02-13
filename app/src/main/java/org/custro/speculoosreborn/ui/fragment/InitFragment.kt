@@ -11,9 +11,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.coroutineScope
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.Dispatchers
@@ -30,25 +28,28 @@ import org.custro.speculoosreborn.utils.MangaUtils
 
 class InitFragment : Fragment() {
     private var _binding: FragmentInitBinding? = null
+
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
 
-    private val getContent = registerForActivityResult(ActivityResultContracts.OpenDocument() ) { uri: Uri? ->
-        if (uri != null) {
-            Log.d("InitFragment", uri.toString())
+    private val getContent =
+        registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri: Uri? ->
+            if (uri != null) {
+                Log.d("InitFragment", uri.toString())
 
-            requireActivity().contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                requireActivity().contentResolver.takePersistableUriPermission(
+                    uri,
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION
+                )
 
-            model.viewModelScope.launch(Dispatchers.Default) {  //ugly ?
-                val entity = MangaUtils.genMangaEntity(uri)
-                App.db.mangaDao().insert(entity)
+                model.viewModelScope.launch(Dispatchers.Default) {  //ugly ?
+                    val entity = MangaUtils.genMangaEntity(uri)
+                    App.db.mangaDao().insert(entity)
+                }
+
             }
-
-            //val bundle = bundleOf("mangaUri" to uri)
-            //findNavController().navigate(R.id.action_initFragment_to_readerFragment, bundle)
         }
-    }
 
     private val model: InitModel by viewModels()
 
@@ -78,12 +79,17 @@ class InitFragment : Fragment() {
                 }
                 Log.d("SEE", "cached")
                 val x = CacheUtils.get("current")
-                MainScope().launch {
-                        x.observe(viewLifecycleOwner) { file ->
-                        val uri = Uri.fromFile(file)
-                        val bundle = bundleOf("mangaUri" to uri)
-                        Log.d("SEE", "navigating")
-                        findNavController().navigate(R.id.action_initFragment_to_readerFragment, bundle)
+                viewLifecycleOwner.lifecycleScope.launch {
+                    viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                        x.collect { file ->
+                            val uri = Uri.fromFile(file)
+                            val bundle = bundleOf("mangaUri" to uri)
+                            Log.d("SEE", "navigating")
+                            findNavController().navigate(
+                                R.id.action_initFragment_to_readerFragment,
+                                bundle
+                            )
+                        }
                     }
                 }
             }
@@ -97,7 +103,7 @@ class InitFragment : Fragment() {
 
         val appBar = binding.toolbar
         appBar.setOnMenuItemClickListener {
-            when(it.itemId) {
+            when (it.itemId) {
                 R.id.add -> {
                     //findNavController().navigate(R.id.action_initFragment_to_filePickerFragment)
                     getContent.launch(arrayOf("*/*"))

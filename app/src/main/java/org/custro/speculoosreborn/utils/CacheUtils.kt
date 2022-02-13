@@ -1,8 +1,8 @@
 package org.custro.speculoosreborn.utils
 
-import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.Transformations
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.runBlocking
 import org.custro.speculoosreborn.App
 import org.custro.speculoosreborn.room.CachedFileEntity
 import java.io.File
@@ -15,11 +15,16 @@ object CacheUtils {
     private val dao = App.db.cacheDao()
 
     init {
-        for(cachedFile in dao.getAll().value?: emptyList()) {
-            if(System.currentTimeMillis() - cachedFile.lastAccess > 2592000000L) {
-                File(cachedFile.path).delete()
-                dao.delete(cachedFile)
-            }
+        //TODO: clean old files + update lastAccess on read
+        runBlocking {/*
+            dao.getAll().collect { cachedFiles ->
+                for(cachedFile in cachedFiles) {
+                    if(System.currentTimeMillis() - cachedFile.lastAccess > 2592000000L) {
+                        File(cachedFile.path).delete()
+                        dao.delete(cachedFile)
+                    }
+                }
+            }*/
         }
     }
 
@@ -37,18 +42,10 @@ object CacheUtils {
         dao.insert(CachedFileEntity(uuid, output.path, System.currentTimeMillis(), ""))
     }
 
-    fun get(uuid: String): LiveData<File> {
-        return Transformations.map(dao.get(uuid)) {
+    fun get(uuid: String): Flow<File> {
+        return dao.get(uuid).map {
             File(it.path)
         }
-    }
-
-    fun getNow(uuid: String): File? {
-        val cachedFile = dao.getNow(uuid)
-        if (cachedFile != null) {
-            return File(cachedFile.path)
-        }
-        return null
     }
 
     private fun genUUID(): String {

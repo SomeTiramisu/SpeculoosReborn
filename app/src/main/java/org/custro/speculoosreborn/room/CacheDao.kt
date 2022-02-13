@@ -1,21 +1,21 @@
 package org.custro.speculoosreborn.room
 
-import androidx.lifecycle.LiveData
 import androidx.room.*
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface CacheDao {
     @Query("SELECT * FROM cachedFileEntity")
-    fun getAll(): LiveData<List<CachedFileEntity>>
+    fun getAll(): Flow<List<CachedFileEntity>>
 
-    @Query("SELECT * FROM cachedFileEntity")
-    fun getAllNow(): List<CachedFileEntity>
-
-    @Query("SELECT * FROM cachedFileEntity WHERE uuid=:uuid")
-    fun get(uuid: String): LiveData<CachedFileEntity>
+    //@Query("SELECT * FROM cachedFileEntity")
+    //fun getAllNow(): List<CachedFileEntity>
 
     @Query("SELECT * FROM cachedFileEntity WHERE uuid=:uuid")
-    fun getNow(uuid: String): CachedFileEntity?
+    fun get(uuid: String): Flow<CachedFileEntity>
+
+    //@Query("SELECT * FROM cachedFileEntity WHERE uuid=:uuid")
+    //fun getNow(uuid: String): CachedFileEntity?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(vararg cachedFile: CachedFileEntity)

@@ -8,9 +8,12 @@ import android.view.ViewGroup
 import androidx.core.net.toFile
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.findViewTreeLifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import org.custro.speculoosreborn.databinding.ItemMangaCardBinding
 import org.custro.speculoosreborn.room.MangaEntity
 import org.custro.speculoosreborn.ui.model.MangaCardModel
@@ -39,10 +42,11 @@ class MangaCardAdapter(private val owner: LifecycleOwner, private val onCardClic
         item.name?.let {
             holder.textView.text = it
         }
-        //TODO: un wrapper autour de Manga et MangaDao pour autocorrection et chargement cover ?
-        item.cover.observe(owner) {
-            val bitmap = BitmapFactory.decodeFile(it.path)
-            holder.imageView.setImageBitmap(bitmap)
+        owner.lifecycleScope.launch {
+            item.cover.collect {
+                val bitmap = BitmapFactory.decodeFile(it.path)
+                holder.imageView.setImageBitmap(bitmap)
+            }
         }
         holder.card.setOnClickListener {
             //TODO: use cached file

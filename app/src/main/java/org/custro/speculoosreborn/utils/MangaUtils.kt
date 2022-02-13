@@ -7,7 +7,9 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.custro.speculoosreborn.App
 import org.custro.speculoosreborn.renderer.RenderConfig
 import org.custro.speculoosreborn.renderer.RendererFactory
@@ -22,12 +24,15 @@ object MangaUtils {
     }
 
     fun correctManga(entity: MangaEntity) {
+        runBlocking {
             var newEntity = entity
-            val cachedCover = CacheUtils.getNow(entity.coverId)
-            if (cachedCover == null || !cachedCover.exists()) {
-                newEntity = MangaEntity(entity.uri, genMangaCover(Uri.parse(entity.uri)))
+            CacheUtils.get(entity.coverId).collect {
+                if(!it.exists()) {
+                    newEntity = MangaEntity(entity.uri, genMangaCover(Uri.parse(entity.uri)))
+                }
             }
-            dao.update(entity)
+            dao.update(newEntity)
+        }
     }
 
     private fun genMangaCover(uri: Uri): String {
