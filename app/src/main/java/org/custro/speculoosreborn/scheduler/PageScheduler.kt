@@ -25,10 +25,16 @@ class PageScheduler(renderer: Renderer) {
             CropScaleRunner({ renderer.openPage(index) }, config)
         }
     }
-
-    suspend fun at(index: Int, width: Int, height: Int): Pair<Bitmap, RenderInfo> = withContext(Dispatchers.Default) {
+    //TODO: using withContext(Dispatches.IO) alone fail on second attempt, seems not related to mPageRunners
+    //NOTE: on second opening
+    //    = withContext(Dispatches.IO) { blocking } fail
+    //    = coroutineScope {blocking} success
+    //    = coroutineScope {withContext(Dispatches.IO) {blocking}} success
+    suspend fun at(index: Int, width: Int, height: Int): Pair<Bitmap, RenderInfo> = coroutineScope {
         Log.d("Scheduler", "get $index")
-        mPageRunners[index].get(width, height)
+        withContext(Dispatchers.IO) {
+            mPageRunners[index].get(width, height)
+        }
     }
 
 
