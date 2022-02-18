@@ -2,9 +2,6 @@ package org.custro.speculoosreborn.scheduler
 
 import android.graphics.Bitmap
 import android.util.Log
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.withContext
 import org.custro.speculoosreborn.renderer.RenderConfig
 import org.custro.speculoosreborn.renderer.RenderInfo
 import org.custro.speculoosreborn.renderer.Renderer
@@ -25,20 +22,19 @@ class PageScheduler(renderer: Renderer) {
             CropScaleRunner({ renderer.openPage(index) }, config)
         }
     }
+
     //TODO: using withContext(Dispatches.IO) alone fail on second attempt, seems not related to mPageRunners
     //NOTE: on second opening
     //    = withContext(Dispatches.IO) { blocking } fail
     //    = coroutineScope {blocking} success
     //    = coroutineScope {withContext(Dispatches.IO) {blocking}} success
-    suspend fun at(index: Int, width: Int, height: Int): Pair<Bitmap, RenderInfo> = coroutineScope {
+    fun at(index: Int, width: Int, height: Int): Pair<Bitmap, RenderInfo> {
         Log.d("Scheduler", "get $index")
-        withContext(Dispatchers.IO) {
-            mPageRunners[index].get(width, height)
-        }
+        return mPageRunners[index].get(width, height)
     }
 
 
-    suspend fun seekPagesBouncing(index: Int, width: Int, height: Int) = withContext(Dispatchers.Default) {
+    fun seekPagesBouncing(index: Int, width: Int, height: Int) {
         for (i in mPageRunners.indices) {
             if ((index - mImagePreload > i) || (i > index + mImagePreload)) {
                 mPageRunners[i].clear()
@@ -52,7 +48,7 @@ class PageScheduler(renderer: Renderer) {
         }
     }
 
-    suspend fun seekPagesOrdered(index: Int, width: Int, height: Int) = withContext(Dispatchers.Default) {
+    fun seekPagesOrdered(index: Int, width: Int, height: Int) {
         for (i in mPageRunners.indices) {
             if ((index - mImagePreload > i) || (i > index + mImagePreload)) {
                 mPageRunners[i].clear()
