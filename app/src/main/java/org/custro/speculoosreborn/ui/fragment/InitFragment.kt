@@ -5,18 +5,24 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.*
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.custro.speculoosreborn.App
 import org.custro.speculoosreborn.R
 import org.custro.speculoosreborn.databinding.FragmentInitBinding
@@ -43,7 +49,7 @@ class InitFragment : Fragment() {
                     Intent.FLAG_GRANT_READ_URI_PERMISSION
                 )
 
-                model.viewModelScope.launch(Dispatchers.Default) {  //ugly ?
+                viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Default) {  //ugly ?
                     val entity = MangaUtils.genMangaEntity(uri)
                     App.db.mangaDao().insert(entity)
                 }
@@ -60,45 +66,31 @@ class InitFragment : Fragment() {
         _binding = FragmentInitBinding.inflate(inflater, container, false)
         val view = binding.root
 
-
-        //findNavController().navigate(R.id.action_initFragment_to_filePickerFragment)
         return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewLifecycleOwner.lifecycleScope
-        lifecycle.coroutineScope
         val recyclerView = binding.recyclerView
         val adapter = MangaCardAdapter(viewLifecycleOwner) {
-            model.viewModelScope.launch(Dispatchers.Default) {
-                //TODO: handle restart with new file and same uri
-                requireActivity().contentResolver.openInputStream(it).use {
-                    CacheUtils.save(it!!, "current")
-                }
-                Log.d("SEE", "cached")
-                val x = CacheUtils.get("current")
-                viewLifecycleOwner.lifecycleScope.launch {
-                    viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                        x.collect { file ->
-                            val uri = Uri.fromFile(file)
-                            val bundle = bundleOf("mangaUri" to uri)
-                            Log.d("SEE", "navigating")
-                            findNavController().navigate(
-                                R.id.action_initFragment_to_readerFragment,
-                                bundle
-                            )
-                        }
-                    }
-                }
-            }
+            //TODO: handle restart with new file and same uri
+            val bundle = bundleOf("mangaUri" to it)
+            Log.d("SEE", "navigating")
+            findNavController().navigate(
+                R.id.action_initFragment_to_readerFragment,
+                bundle
+            )
         }
         recyclerView.layoutManager = LinearLayoutManager(context)
         recyclerView.adapter = adapter
 
-        model.mangas.observe(viewLifecycleOwner) {
-            adapter.submitList(it.map { MangaCardModel(it) })
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                model.mangas.collect {
+                    adapter.submitList(it.map(::MangaCardModel))
+                }
+            }
         }
 
         val appBar = binding.toolbar

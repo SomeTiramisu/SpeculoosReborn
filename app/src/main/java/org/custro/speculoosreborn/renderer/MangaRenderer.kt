@@ -1,6 +1,7 @@
 package org.custro.speculoosreborn.renderer
 
 import android.net.Uri
+import android.util.Log
 import org.custro.speculoosreborn.parser.Parser
 import org.custro.speculoosreborn.parser.ParserFactory
 
@@ -11,6 +12,7 @@ class MangaRenderer(override val uri: Uri): Renderer {
         get() = parser.size
 
     override fun openPage(index: Int): RendererPage {
+        Log.d("MangaRenderer", "opening: $index")
         return MangaRendererPage(parser.at(index))
     }
 

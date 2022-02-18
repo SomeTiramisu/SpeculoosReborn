@@ -2,11 +2,12 @@ package org.custro.speculoosreborn.room
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface MangaDao {
     @Query("SELECT * FROM mangaEntity")
-    fun getAll(): LiveData<List<MangaEntity>>
+    fun getAll(): Flow<List<MangaEntity>>
 
     @Insert
     fun insert(vararg mangas: MangaEntity)

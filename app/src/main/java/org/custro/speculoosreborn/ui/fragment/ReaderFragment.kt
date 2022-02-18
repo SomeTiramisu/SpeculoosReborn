@@ -19,22 +19,32 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.preference.PreferenceManager
 import com.google.android.material.slider.Slider
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.custro.speculoosreborn.databinding.FragmentReaderBinding
 import org.custro.speculoosreborn.ui.model.ReaderModel
+import org.custro.speculoosreborn.utils.CacheUtils
 import org.custro.speculoosreborn.utils.fromByteArray
 import org.custro.speculoosreborn.utils.matToBitmap
 
 class ReaderFragment : Fragment() {
     private var _binding: FragmentReaderBinding? = null
+
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
 
     //Un seul viewModel pour tous les fragments. Similaire à compose. On peut zussi sauvearder
     // la derniere page dans la DB
-    private val model: ReaderModel by viewModels({requireParentFragment()})
+    //private val model: ReaderModel by viewModels({requireParentFragment()})
+    private val model: ReaderModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -42,27 +52,30 @@ class ReaderFragment : Fragment() {
     ): View {
         arguments?.getParcelable<Uri>("mangaUri")?.let {
             Log.d("ReaderFragment", "Uri is $it")
-            model.onUriChange(it)
+
+            viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+                viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+
+                    val uuid = System.currentTimeMillis().toString()
+
+                    requireActivity().contentResolver.openInputStream(it).use { stream ->
+                        CacheUtils.save(stream!!, "current")
+                        //CacheUtils.save(stream!!, uuid)
+                    }
+                    CacheUtils.get("current").collect {
+                        //CacheUtils.get(uuid).collect {
+                        val uri = Uri.fromFile(it)
+                        withContext(Dispatchers.Main) {
+                            model.onUriChange(uri)
+                        }
+                    }
+                }
+            }
+
         }
 
         _binding = FragmentReaderBinding.inflate(inflater, container, false)
         val view = binding.root
-
-        binding.nextButton.setOnClickListener {
-            model.onIndexInc()
-        }
-        binding.previousButton.setOnClickListener {
-            model.onIndexDec()
-        }
-        binding.middleButton.setOnClickListener {
-            when(binding.pageBottomSheet.visibility) {
-                VISIBLE -> binding.pageBottomSheet.visibility = GONE
-                GONE -> binding.pageBottomSheet.visibility = VISIBLE
-                INVISIBLE -> Unit
-            }
-        }
-
-
 
         //findNavController().navigate(R.id.action_initFragment_to_settingsFragment)
         return view
@@ -71,18 +84,42 @@ class ReaderFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.nextButton.setOnClickListener {
+            model.onIndexInc()
+        }
+        binding.previousButton.setOnClickListener {
+            model.onIndexDec()
+        }
+        binding.middleButton.setOnClickListener {
+            when (binding.pageBottomSheet.visibility) {
+                VISIBLE -> binding.pageBottomSheet.visibility = GONE
+                GONE -> binding.pageBottomSheet.visibility = VISIBLE
+                INVISIBLE -> Unit
+            }
+        }
+
+
         //TODO: make this readable
-        if(PreferenceManager.getDefaultSharedPreferences(requireContext()).getBoolean("enable_background", false)) {
-            val settBackgroundUri = Uri.parse(PreferenceManager.getDefaultSharedPreferences(requireContext()).getString("background", ""))
-            if(settBackgroundUri != Uri.EMPTY) {
-                    requireActivity().contentResolver.openInputStream(settBackgroundUri)?.readBytes()?.let {
+        if (PreferenceManager.getDefaultSharedPreferences(requireContext())
+                .getBoolean("enable_background", false)
+        ) {
+            val settBackgroundUri = Uri.parse(
+                PreferenceManager.getDefaultSharedPreferences(requireContext())
+                    .getString("background", "")
+            )
+            if (settBackgroundUri != Uri.EMPTY) {
+                requireActivity().contentResolver.openInputStream(settBackgroundUri)?.readBytes()
+                    ?.let {
                         val background = BitmapDrawable(resources, matToBitmap(fromByteArray(it)))
                         background.setTileModeXY(Shader.TileMode.REPEAT, Shader.TileMode.REPEAT)
                         binding.pageImageView.background = background
                     }
             }
         } else { //TODO remove non-free background from assets
-            val background = BitmapDrawable(resources, BitmapFactory.decodeStream(context?.assets?.open("background.png")))
+            val background = BitmapDrawable(
+                resources,
+                BitmapFactory.decodeStream(context?.assets?.open("background.png"))
+            )
             background.setTileModeXY(Shader.TileMode.REPEAT, Shader.TileMode.REPEAT)
             binding.pageImageView.background = background
         }
@@ -97,7 +134,7 @@ class ReaderFragment : Fragment() {
         slider.isTickVisible = false
         slider.valueFrom = 0f
         model.maxIndex.observe(viewLifecycleOwner) {
-            slider.valueTo = if(slider.valueFrom < it)  it.toFloat()  else  slider.valueFrom + 1
+            slider.valueTo = if (slider.valueFrom < it) it.toFloat() else slider.valueFrom + 1
         }
         slider.stepSize = 1f
         slider.addOnSliderTouchListener(object : Slider.OnSliderTouchListener {
@@ -124,10 +161,18 @@ class ReaderFragment : Fragment() {
             //set fullscreen
             ViewCompat.getWindowInsetsController(requireView())?.apply {
                 hide(WindowInsetsCompat.Type.systemBars())
-                systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+                systemBarsBehavior =
+                    WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
             }
             //100ms needed to get correct size
-            Handler(Looper.getMainLooper()).postDelayed({ model.onSizeChange(Pair(binding.pageImageView.width, binding.pageImageView.height))}, 100)
+            Handler(Looper.getMainLooper()).postDelayed({
+                model.onSizeChange(
+                    Pair(
+                        binding.pageImageView.width,
+                        binding.pageImageView.height
+                    )
+                )
+            }, 100)
         }, 300)
 
         //Log.d("ReaderFragment","Fragment resumed")
@@ -136,7 +181,8 @@ class ReaderFragment : Fragment() {
     override fun onStop() {
         super.onStop()
         //restore system bars
-        ViewCompat.getWindowInsetsController(requireView())?.show(WindowInsetsCompat.Type.systemBars())
+        ViewCompat.getWindowInsetsController(requireView())
+            ?.show(WindowInsetsCompat.Type.systemBars())
         //restore cutouts
         WindowCompat.setDecorFitsSystemWindows(requireActivity().window, true)
     }

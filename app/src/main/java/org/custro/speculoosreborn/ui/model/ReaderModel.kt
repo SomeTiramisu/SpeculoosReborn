@@ -7,10 +7,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 import org.custro.speculoosreborn.renderer.Renderer
 import org.custro.speculoosreborn.renderer.RendererFactory
 import org.custro.speculoosreborn.scheduler.PageScheduler
@@ -19,7 +17,6 @@ import org.custro.speculoosreborn.utils.emptyBitmap
 class ReaderModel : ViewModel() {
     private var mScheduler: PageScheduler? = null
     private var mRenderer: Renderer? = null
-    private var mSchedulerInitJob: Job? = null
 
     private val _index = MutableLiveData(0)
     val index: LiveData<Int> = _index
@@ -35,6 +32,11 @@ class ReaderModel : ViewModel() {
 
     private val _isBlackBorders = MutableLiveData(false)
     val isBlackBorders: LiveData<Boolean> = _isBlackBorders
+
+    init {
+        Log.d("ReaderModel", "new viewmodel")
+    }
+
 
     fun onIndexChange(value: Int) {
         Log.d("PageModel", "new index: $value")
@@ -57,7 +59,7 @@ class ReaderModel : ViewModel() {
         if (i < 0) {
             return 0
         }
-        if (i > maxIndex.value!! - 1) {
+        if (i > 0 && i > maxIndex.value!! - 1) {
             return maxIndex.value!! - 1
         }
         return i
@@ -72,40 +74,40 @@ class ReaderModel : ViewModel() {
         }
     }
 
+    //must be called before everything else. Called once
     fun onUriChange(value: Uri) {
         Log.d("PageModel", "onUriChange called")
         //TODO: fix reload
-        if (value != mRenderer?.uri ?: Uri.EMPTY || true)  {
+        if (mRenderer == null && value != Uri.EMPTY)  {
             _index.value = 0
-            _image.value = emptyBitmap()
-            mSchedulerInitJob = viewModelScope.launch(Dispatchers.Default) {
-                initScheduler(value)
-                _maxIndex.postValue(mRenderer!!.pageCount)
-            }
+            mRenderer = RendererFactory.create(value)
+            _maxIndex.value = mRenderer!!.pageCount
+            mScheduler = PageScheduler(mRenderer!!)
+            genRequest()
         }
     }
 
-    private fun initScheduler(uri: Uri? = null) {
-        if (mRenderer == null && uri == null) {
+    private fun genRequest() {
+        if(mScheduler == null) {
             return
         }
-        if (uri != null) {
-            mRenderer = RendererFactory.create(uri)
-        }
-        mScheduler = PageScheduler(mRenderer!!)
-        genRequest()
-    }
+        Log.d("ReaderModel", "requesting ${index.value}")
+        viewModelScope.launch {
+            Log.d("ReaderModel", "requesting in viewmodelScope")
+            //launch {
+                val res = mScheduler!!.at(index.value!!, size.value!!.first, size.value!!.second)
+                _image.postValue(res.first) //called from another thread
+                _isBlackBorders.postValue(res.second.isBlackBorders)
+                Log.d("ImageCallback", "imaged")
+           // }
+           // launch {
+                mScheduler!!.seekPagesOrdered(
+                    index.value!!,
+                    size.value!!.first,
+                    size.value!!.second
+                )
 
-    private fun genRequest() = viewModelScope.launch(Dispatchers.Default) {
-        if (mScheduler == null) {
-            return@launch
-        }
-        mSchedulerInitJob?.join()
-        mScheduler!!.at(index.value!!, size.value!!.first, size.value!!.second).collectLatest { value ->
-            _image.postValue(value.first) //called from another thread
-            _isBlackBorders.postValue(value.second.isBlackBorders)
-            Log.d("ImageCallback", "imaged")
-            mScheduler!!.seekPagesOrdered(index.value!!, size.value!!.first, size.value!!.second)
+           // }
         }
     }
 
