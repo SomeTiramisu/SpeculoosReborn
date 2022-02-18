@@ -14,8 +14,7 @@ class PageScheduler(renderer: Renderer) {
     private var mPageRunners: List<CropScaleRunner>
 
     init {
-        Log.d("Scheduler", "created")
-        Log.d("Scheduler", "file: ${renderer.uri}")
+        Log.d("Scheduler", "New scheduler with file: ${renderer.uri}")
         mPageRunners = List(renderer.pageCount) { index ->
             val config = RenderConfig(
                 addBorders = index != 0,

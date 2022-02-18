@@ -1,5 +1,6 @@
 package org.custro.speculoosreborn.utils
 
+import android.util.Log
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
@@ -35,6 +36,7 @@ object CacheUtils {
     }
 
     fun save(stream: InputStream, uuid: String) {
+        Log.d("CacheUtil", "saving $uuid")
         val output = File(cacheDir, uuid)
         val outputStream = FileOutputStream(output)
         stream.copyTo(outputStream)
@@ -43,6 +45,7 @@ object CacheUtils {
     }
 
     fun get(uuid: String): Flow<File> {
+        Log.d("CacheUtil", "loading $uuid")
         return dao.get(uuid).map {
             File(it.path)
         }

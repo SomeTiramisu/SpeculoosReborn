@@ -112,7 +112,7 @@ class ReaderModel : ViewModel() {
     }
 
     override fun onCleared() {
-        super.onCleared()
         mRenderer?.close()
+        super.onCleared()
     }
 }
