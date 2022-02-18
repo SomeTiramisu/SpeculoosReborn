@@ -92,6 +92,7 @@ class ReaderModel : ViewModel() {
             return
         }
         Log.d("ReaderModel", "requesting ${index.value}")
+        //NOTE: Do not influence the problem
         viewModelScope.launch {
             Log.d("ReaderModel", "requesting in viewmodelScope")
             //launch {
