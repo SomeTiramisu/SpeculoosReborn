@@ -1,17 +1,13 @@
 package org.custro.speculoosreborn.parser
 
-import android.net.Uri
-import android.util.Log
-import androidx.core.net.toFile
-import org.custro.speculoosreborn.App
 import org.custro.speculoosreborn.utils.AlphanumComparator
+import java.io.InputStream
 import java.nio.ByteBuffer
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 
 
-class ZipStreamParser(override val uri: Uri) : Parser {
-    private val resolver = App.instance.contentResolver
+class ZipStreamParser(private val getInputStream: () -> InputStream) : Parser {
     private val headers: MutableList<Header> = mutableListOf()
     override val size: Int
         get() {
@@ -23,7 +19,7 @@ class ZipStreamParser(override val uri: Uri) : Parser {
 
 
     init {
-        Log.d("ZipStreamParser", "scheme: ${uri.scheme}")
+        //Log.d("ZipStreamParser", "scheme: ${uri.scheme}")
         var e: ZipEntry? = zipStream.nextEntry
         var count = 0
         while (e != null) {
@@ -35,7 +31,7 @@ class ZipStreamParser(override val uri: Uri) : Parser {
             count += 1
         }
         resetStreams()
-        val entryNaturalOrder = compareBy<Header, String>(AlphanumComparator(), { it.filename })
+        val entryNaturalOrder = compareBy<Header, String>(AlphanumComparator()) { it.filename }
         headers.sortWith(entryNaturalOrder)
         //Log.d("ZipParser", "size: ${headers.size}")
     }
@@ -76,11 +72,8 @@ class ZipStreamParser(override val uri: Uri) : Parser {
         inStream.close()
     }
 
-    private fun getInputStream() =
-        if (uri.scheme == "file") uri.toFile().inputStream() else resolver.openInputStream(uri)!!
-
     private fun resetStreams() {
-        Log.d("ZipStreamParser", "streams reset")
+        //Log.d("ZipStreamParser", "streams reset")
         close()
         inStream = getInputStream()
         zipStream = ZipInputStream(inStream)
@@ -88,11 +81,9 @@ class ZipStreamParser(override val uri: Uri) : Parser {
     }
 
     companion object {
-        //fun isSupported(uri: Uri) =
-        //    uri.lastPathSegment?.lowercase()?.matches(Regex(".*\\.(zip|cbz)$")) ?: false
-        fun isSupported(uri: Uri): Boolean {
+        fun isSupported(getInputStream: () -> InputStream): Boolean {
             val buf = ByteArray(4)
-            App.instance.contentResolver.openInputStream(uri)?.use {
+            getInputStream().use {
                 it.read(buf)
             }
             val magic = ByteBuffer.wrap(buf).int

@@ -4,3 +4,4 @@ include ':app'
 def opencvsdk='/home/guillaume/android-sdk/opencv-4.5.5-tiny'
 include ':opencv'
 project(':opencv').projectDir = new File(opencvsdk + '/sdk')
+include ':core'

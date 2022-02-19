@@ -3,6 +3,7 @@ package org.custro.speculoosreborn.ui.model
 import android.graphics.Bitmap
 import android.net.Uri
 import android.util.Log
+import androidx.core.net.toFile
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -78,9 +79,10 @@ class ReaderModel : ViewModel() {
     fun onUriChange(value: Uri) {
         Log.d("PageModel", "onUriChange called")
         //TODO: fix reload
-        if (mRenderer == null && value != Uri.EMPTY)  {
+        //TODO: Enable for stream
+        if (mRenderer == null && value != Uri.EMPTY && value.scheme == "file")  {
             _index.value = 0
-            mRenderer = RendererFactory.create(value)
+            mRenderer = RendererFactory.create(value.toFile())
             _maxIndex.value = mRenderer!!.pageCount
             mScheduler = PageScheduler(mRenderer!!)
             genRequest()

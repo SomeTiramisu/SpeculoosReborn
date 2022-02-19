@@ -4,14 +4,14 @@ import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.net.toFile
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import org.custro.speculoosreborn.App
 import org.custro.speculoosreborn.R
 import org.custro.speculoosreborn.databinding.ItemFileListBinding
-import org.custro.speculoosreborn.renderer.MangaRenderer
-import org.custro.speculoosreborn.renderer.PdfRenderer
+import org.custro.speculoosreborn.renderer.RendererFactory
 import java.io.File
 
 class FileListAdapter(private val onFileClickListener: (File) -> Unit, private val onDirClickListener: (File) -> Unit): ListAdapter<File, FileListAdapter.ViewHolder>(FileDiffCallback) {
@@ -30,7 +30,7 @@ class FileListAdapter(private val onFileClickListener: (File) -> Unit, private v
         val itemUri = Uri.fromFile(item)
         holder.textView.text = item.name
 
-        if(MangaRenderer.isSupported(itemUri) || PdfRenderer.isSupported(itemUri)) {
+        if(RendererFactory.isSupported(itemUri.toFile())) {
             holder.imageView.setImageResource(R.drawable.baseline_book_24)
             holder.itemView.setOnClickListener {
                 onFileClickListener(item)

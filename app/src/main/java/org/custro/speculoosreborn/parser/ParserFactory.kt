@@ -1,23 +1,31 @@
 package org.custro.speculoosreborn.parser
 
-import android.net.Uri
+import java.io.File
+import java.io.InputStream
 
-class ParserFactory() {
+class ParserFactory {
     companion object {
-        fun create(uri: Uri): Parser {
-            if (ZipFileParser.isSupported(uri)) return ZipFileParser(uri)
-            if (ZipStreamParser.isSupported(uri)) return ZipStreamParser(uri)
-            if (RarFileParser.isSupported(uri)) return RarFileParser(uri)
-            if (RarStreamParser.isSupported(uri)) return RarStreamParser(uri)
-            if (PdfFileParser.isSupported(uri)) return PdfFileParser(uri)
+        fun create(getInputStream: () -> InputStream): Parser {
+            if (ZipStreamParser.isSupported(getInputStream)) return ZipStreamParser(getInputStream)
+            if (RarStreamParser.isSupported(getInputStream)) return RarStreamParser(getInputStream)
+            throw Exception("Unsupported stream")
+        }
+
+        fun create(file: File): Parser {
+            if (ZipFileParser.isSupported(file)) return ZipFileParser(file)
+            if (RarFileParser.isSupported(file)) return RarFileParser(file)
+            if (PdfFileParser.isSupported(file)) return PdfFileParser(file)
             throw Exception("Unsupported file")
         }
-        fun isSupported(uri: Uri): Boolean {
-            return ZipFileParser.isSupported(uri) or
-                    ZipStreamParser.isSupported(uri) or
-                    RarFileParser.isSupported(uri) or
-                    RarStreamParser.isSupported(uri) or
-                    PdfFileParser.isSupported(uri)
+
+        fun isSupported(file: File): Boolean {
+            return ZipFileParser.isSupported(file) or
+                    RarFileParser.isSupported(file) or
+                    PdfFileParser.isSupported(file)
+        }
+        fun isSupported(getInputStream: () -> InputStream): Boolean {
+            return ZipStreamParser.isSupported(getInputStream) or
+                    RarStreamParser.isSupported(getInputStream)
         }
     }
 }

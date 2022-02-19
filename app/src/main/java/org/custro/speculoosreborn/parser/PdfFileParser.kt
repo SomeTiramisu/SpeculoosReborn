@@ -1,23 +1,20 @@
 package org.custro.speculoosreborn.parser
 
-import android.net.Uri
-import android.util.Log
-import androidx.core.net.toFile
 import com.tom_roush.pdfbox.cos.COSName
 import com.tom_roush.pdfbox.pdmodel.PDDocument
 import com.tom_roush.pdfbox.pdmodel.graphics.image.PDImageXObject
-import org.custro.speculoosreborn.App
 import org.custro.speculoosreborn.utils.bitmapToByteArray
+import java.io.File
 import java.nio.ByteBuffer
 
-class PdfFileParser(override val uri: Uri) : Parser {
-    private val pdfFile = PDDocument.load(uri.toFile())
+class PdfFileParser(file: File) : Parser {
+    private val pdfFile = PDDocument.load(file)
     private val headers: MutableList<COSName> = mutableListOf()
     override val size: Int
         get() = headers.size
 
     init {
-        Log.d("PdfFileParser", "scheme: ${uri.scheme}")
+        //Log.d("PdfFileParser", "scheme: ${uri.scheme}")
         for (page in pdfFile.pages) {
             val res = page.resources
             for (name in res.xObjectNames) {
@@ -45,12 +42,9 @@ class PdfFileParser(override val uri: Uri) : Parser {
     companion object {
         //fun isSupported(uri: Uri) = uri.scheme == "file"
         //        && uri.lastPathSegment?.lowercase()?.matches(Regex(".*\\.(pdf)$")) ?: false
-        fun isSupported(uri: Uri): Boolean {
-            if (uri.scheme != "file") {
-                return false
-            }
+        fun isSupported(file: File): Boolean {
             val buf = ByteArray(8)
-            App.instance.contentResolver.openInputStream(uri)?.use {
+            file.inputStream().use {
                 it.read(buf, 0, 5)
             }
             val magic = ByteBuffer.wrap(buf).long

@@ -20,8 +20,7 @@ import kotlinx.coroutines.launch
 import org.custro.speculoosreborn.App
 import org.custro.speculoosreborn.R
 import org.custro.speculoosreborn.databinding.FragmentFilePickerBinding
-import org.custro.speculoosreborn.renderer.MangaRenderer
-import org.custro.speculoosreborn.renderer.PdfRenderer
+import org.custro.speculoosreborn.renderer.RendererFactory
 import org.custro.speculoosreborn.ui.FileListAdapter
 import org.custro.speculoosreborn.ui.QuickpathAdapter
 import org.custro.speculoosreborn.ui.model.FilePickerModel
@@ -62,7 +61,7 @@ class FilePickerFragment : Fragment() {
         //TODO: support check may be not needed here
         val fileListAdapter = FileListAdapter({
             val uri = Uri.fromFile(it)
-            if(MangaRenderer.isSupported(uri) || PdfRenderer.isSupported(uri)) {
+            if(RendererFactory.isSupported(it)) {
                 model.viewModelScope.launch(Dispatchers.Default) {  //ugly ?
                     val entity = MangaUtils.genMangaEntity(Uri.fromFile(it))
                     App.db.mangaDao().insert(entity)

@@ -1,16 +1,13 @@
 package org.custro.speculoosreborn.parser
 
-import android.net.Uri
-import android.util.Log
-import androidx.core.net.toFile
-import org.custro.speculoosreborn.App
 import org.custro.speculoosreborn.utils.AlphanumComparator
+import java.io.File
 import java.nio.ByteBuffer
 import java.util.zip.ZipFile
 import java.util.zip.ZipFile.OPEN_READ
 
 
-class ZipFileParser(override val uri: Uri) : Parser {
+class ZipFileParser(private val file: File) : Parser {
     private val headers: MutableList<Header> = mutableListOf()
     override val size: Int
         get() {
@@ -18,8 +15,8 @@ class ZipFileParser(override val uri: Uri) : Parser {
         }
 
     init {
-        Log.d("ZipFileParser", "scheme: ${uri.scheme}")
-        val zipFile = ZipFile(uri.toFile(), OPEN_READ)
+        //Log.d("ZipFileParser", "scheme: ${uri.scheme}")
+        val zipFile = ZipFile(file, OPEN_READ)
         var count = 0
         for (entry in zipFile.entries()) {
             val name = entry.name
@@ -29,12 +26,12 @@ class ZipFileParser(override val uri: Uri) : Parser {
             count += 1
         }
         zipFile.close()
-        val entryNaturalOrder = compareBy<Header, String>(AlphanumComparator(), { it.filename })
+        val entryNaturalOrder = compareBy<Header, String>(AlphanumComparator()) { it.filename }
         headers.sortWith(entryNaturalOrder)
     }
 
     override fun at(index: Int): ByteArray {
-        Log.d("ZipFileParser", "Reading $index")
+        //Log.d("ZipFileParser", "Reading $index")
         val entryName = headers[index].filename
         return dataAt(entryName)
     }
@@ -45,7 +42,7 @@ class ZipFileParser(override val uri: Uri) : Parser {
 
     @Synchronized
     private fun dataAt(entryName: String): ByteArray {
-        val zipFile = ZipFile(uri.toFile(), OPEN_READ)
+        val zipFile = ZipFile(file, OPEN_READ)
         val entryInStream = zipFile.getInputStream(zipFile.getEntry(entryName))
         val r = entryInStream.readBytes()
         entryInStream.close()
@@ -57,14 +54,9 @@ class ZipFileParser(override val uri: Uri) : Parser {
     }
 
     companion object {
-        //fun isSupported(uri: Uri) = uri.scheme == "file"
-        //       && uri.lastPathSegment?.lowercase()?.matches(Regex(".*\\.(zip|cbz)$")) ?: false
-        fun isSupported(uri: Uri): Boolean {
-            if (uri.scheme != "file") {
-                return false
-            }
+        fun isSupported(file: File): Boolean {
             val buf = ByteArray(4)
-            App.instance.contentResolver.openInputStream(uri)?.use {
+            file.inputStream().use {
                 it.read(buf)
             }
             val magic = ByteBuffer.wrap(buf).int

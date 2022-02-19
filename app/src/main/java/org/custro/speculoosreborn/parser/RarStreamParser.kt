@@ -1,17 +1,13 @@
 package org.custro.speculoosreborn.parser
 
-import android.net.Uri
-import android.util.Log
-import androidx.core.net.toFile
 import com.github.junrar.Archive
 import com.github.junrar.rarfile.FileHeader
-import org.custro.speculoosreborn.App
 import org.custro.speculoosreborn.utils.AlphanumComparator
+import java.io.InputStream
 import java.nio.ByteBuffer
 
 
-class RarStreamParser(override val uri: Uri) : Parser {
-    private val resolver = App.instance.contentResolver
+class RarStreamParser(private val getInputStream: () -> InputStream) : Parser {
     private val headers: MutableList<Header> = mutableListOf()
     override val size: Int
         get() {
@@ -33,12 +29,12 @@ class RarStreamParser(override val uri: Uri) : Parser {
             count += 1
         }
         resetStreams()
-        val entryNaturalOrder = compareBy<Header, String>(AlphanumComparator(), { it.filename })
+        val entryNaturalOrder = compareBy<Header, String>(AlphanumComparator()) { it.filename }
         headers.sortWith(entryNaturalOrder)
     }
 
     override fun at(index: Int): ByteArray {
-        Log.d("RarStreamParser", "requested: $index")
+        //Log.d("RarStreamParser", "requested: $index")
         val entryIndex = headers[index].index
         return dataAt(entryIndex)
     }
@@ -50,14 +46,14 @@ class RarStreamParser(override val uri: Uri) : Parser {
 
     @Synchronized
     private fun dataAt(entryIndex: Int): ByteArray {
-        Log.d("RarStreamParser", "in file: $entryIndex")
-        Log.d("RarStreamParser", "current: $currentIndex")
+        //Log.d("RarStreamParser", "in file: $entryIndex")
+        //Log.d("RarStreamParser", "current: $currentIndex")
         var effectiveIndex = entryIndex - currentIndex
         if (effectiveIndex < 0) {
             resetStreams()
             effectiveIndex = entryIndex
         }
-        Log.d("RarStreamParser", "effective: $effectiveIndex")
+        //Log.d("RarStreamParser", "effective: $effectiveIndex")
 
         lateinit var e: FileHeader
         for (i in 0..effectiveIndex) {
@@ -77,9 +73,10 @@ class RarStreamParser(override val uri: Uri) : Parser {
         inStream.close()
     }
 
-    private fun getInputStream() =
-        if (uri.scheme == "file") uri.toFile().inputStream() else resolver.openInputStream(uri)!!
-
+    /*
+        private fun getInputStream() =
+            if (uri.scheme == "file") uri.toFile().inputStream() else resolver.openInputStream(uri)!!
+    */
     private fun resetStreams() {
         close()
         inStream = getInputStream()
@@ -90,9 +87,9 @@ class RarStreamParser(override val uri: Uri) : Parser {
     companion object {
         //fun isSupported(uri: Uri) =
         //    uri.lastPathSegment?.lowercase()?.matches(Regex(".*\\.(rar|cbr)$")) ?: false
-        fun isSupported(uri: Uri): Boolean {
+        fun isSupported(getInputStream: () -> InputStream): Boolean {
             val buf = ByteArray(8)
-            App.instance.contentResolver.openInputStream(uri)?.use {
+            getInputStream().use {
                 it.read(buf, 0, 7)
             }
             val magic = ByteBuffer.wrap(buf).long

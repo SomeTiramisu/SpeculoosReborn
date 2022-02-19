@@ -3,6 +3,7 @@ package org.custro.speculoosreborn.utils
 import android.graphics.Bitmap
 import android.net.Uri
 import android.util.Log
+import androidx.core.net.toFile
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -37,7 +38,8 @@ object MangaUtils {
 
     private fun genMangaCover(uri: Uri): String {
         val r: String
-        RendererFactory.create(uri).use { renderer ->
+        //TODO: enable for all uri type
+        RendererFactory.create(uri.toFile()).use { renderer ->
             renderer.openPage(0).use { rendererPage ->
                 val bitmap = Bitmap.createBitmap(
                     256,
