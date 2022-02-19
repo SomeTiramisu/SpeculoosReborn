@@ -22,7 +22,9 @@ class CropScaleRunner(
     fun preload(width: Int, height: Int) {
         Log.d("CropScapeRunner", "preloading")
         if (mPageRes == null || preloadConfig != Pair(width, height)) {
+            Log.d("CropScaleRunner", "scope active: ${runnerScope.isActive}, job cancelled: ${runnerJob.isCancelled}")
             runnerScope.launch {
+                Log.d("CropScaleRunner", "before work")
                 worker(width, height)
             }
         }

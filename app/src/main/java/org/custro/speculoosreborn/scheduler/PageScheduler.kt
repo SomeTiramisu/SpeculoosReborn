@@ -8,19 +8,18 @@ import org.custro.speculoosreborn.renderer.Renderer
 
 class PageScheduler(renderer: Renderer) {
     private val mImagePreload: Int = 3
-    private var mPageRunners: List<CropScaleRunner>
+    private val mPageRunners: List<CropScaleRunner> = List(renderer.pageCount) { index ->
+        val config = RenderConfig(
+            addBorders = index != 0,
+            doScale = true,
+            doCrop = index != 0,
+            doMask = true
+        )
+        CropScaleRunner({ renderer.openPage(index) }, config)
+    }
 
     init {
         //Log.d("Scheduler", "New scheduler with file: ${renderer.uri}")
-        mPageRunners = List(renderer.pageCount) { index ->
-            val config = RenderConfig(
-                addBorders = index != 0,
-                doScale = true,
-                doCrop = index != 0,
-                doMask = true
-            )
-            CropScaleRunner({ renderer.openPage(index) }, config)
-        }
     }
 
     //TODO: using withContext(Dispatches.IO) alone fail on second attempt, seems not related to mPageRunners
