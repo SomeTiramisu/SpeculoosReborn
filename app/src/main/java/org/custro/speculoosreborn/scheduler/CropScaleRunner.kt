@@ -6,6 +6,9 @@ import kotlinx.coroutines.*
 import org.custro.speculoosreborn.renderer.RenderConfig
 import org.custro.speculoosreborn.renderer.RenderInfo
 import org.custro.speculoosreborn.renderer.RendererPage
+import org.custro.speculoosreborn.utils.emptyBitmap
+import org.opencv.android.Utils
+import org.opencv.core.Mat
 
 class CropScaleRunner(
     private val getPage: () -> RendererPage,
@@ -37,15 +40,18 @@ class CropScaleRunner(
         Log.d("CropScaleRunner", "working")
         mPageRes = null
         preloadConfig = Pair(width, height)
-        val bitmap: Bitmap = if (width == 0 || height == 0) {
-            Bitmap.createBitmap(1080, 1920, Bitmap.Config.ARGB_8888)
-        } else {
-            Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        if(width*height == 0) {
+            mPageRes = Pair(emptyBitmap(), RenderInfo(false))
+            return
         }
+        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         val renderInfo: RenderInfo
         //slow down MangaRenderer, ensure PdfRenderer thread safety. We may remove @Syncronized from Parsers
         getPage().use {
-            renderInfo = it.render(bitmap, renderConfig)
+            val img = Mat()
+            renderInfo = it.render(img, width, height, renderConfig)
+            bitmap.reconfigure(img.width(), img.height(), Bitmap.Config.ARGB_8888)
+            Utils.matToBitmap(img, bitmap)
         }
         mPageRes = Pair(bitmap, renderInfo)
     }

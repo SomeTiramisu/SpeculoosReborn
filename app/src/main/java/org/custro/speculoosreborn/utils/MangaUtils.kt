@@ -15,6 +15,8 @@ import org.custro.speculoosreborn.App
 import org.custro.speculoosreborn.renderer.RenderConfig
 import org.custro.speculoosreborn.renderer.RendererFactory
 import org.custro.speculoosreborn.room.MangaEntity
+import org.opencv.android.Utils
+import org.opencv.core.Mat
 
 object MangaUtils {
 
@@ -52,7 +54,12 @@ object MangaUtils {
                     doCrop = false,
                     doMask = false
                 )
-                rendererPage.render(bitmap, config)
+
+                val img = Mat()
+                rendererPage.render(img, 256, 256, config)
+                //bitmap.reconfigure(img.width(), img.height(), Bitmap.Config.ARGB_8888)
+                Utils.matToBitmap(img, bitmap)
+
                 bitmapToByteArray(bitmap).inputStream().use {
                     r = CacheUtils.save(it)
                 }

@@ -176,7 +176,11 @@ fun maskProcessNew(src: Mat, dst: Mat) {
     tmp.copyTo(dst)
 }
 
-fun addBlackBorders(src: Mat, dst: Mat, width: Int, height: Int) {
+fun addBlackBorders(src: Mat, dst: Mat, width: Int, height: Int) {/*
+    if(src.cols() > width || src.rows() > height) {
+        src.copyTo(dst)
+        return
+    }*/
     val tmp = Mat(height, width, src.type(), Scalar(0.0, 0.0, 0.0, 255.0))
     val xOffset = (width-src.cols())/2
     val yOffset = (height-src.rows())/2
