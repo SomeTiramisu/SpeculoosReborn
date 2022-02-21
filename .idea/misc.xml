@@ -20,6 +20,7 @@
         <entry key="app/src/main/res/layout/fragment_init.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fragment_manga_card.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fragment_reader.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/fragment_reader_page.xml" value="0.19429347826086957" />
         <entry key="app/src/main/res/layout/init_fragment.xml" value="0.1" />
         <entry key="app/src/main/res/layout/item_externals_dir.xml" value="0.14260385005065856" />
         <entry key="app/src/main/res/layout/item_file_list.xml" value="0.25" />

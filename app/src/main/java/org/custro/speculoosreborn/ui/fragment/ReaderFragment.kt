@@ -19,9 +19,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
+import androidx.lifecycle.*
 import androidx.preference.PreferenceManager
 import com.google.android.material.slider.Slider
 import kotlinx.coroutines.Dispatchers
@@ -33,6 +31,7 @@ import org.custro.speculoosreborn.ui.model.ReaderModel
 import org.custro.speculoosreborn.utils.CacheUtils
 import org.custro.speculoosreborn.utils.fromByteArray
 import org.custro.speculoosreborn.utils.matToBitmap
+import kotlin.reflect.KProperty
 
 class ReaderFragment : Fragment() {
     private var _binding: FragmentReaderBinding? = null
@@ -44,7 +43,8 @@ class ReaderFragment : Fragment() {
     //Un seul viewModel pour tous les fragments. Similaire à compose. On peut zussi sauvearder
     // la derniere page dans la DB
     //private val model: ReaderModel by viewModels({requireParentFragment()})
-    private val model: ReaderModel by viewModels()
+    private var _model: Lazy<ReaderModel>? = null
+    private val model: ReaderModel by _model!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -52,6 +52,16 @@ class ReaderFragment : Fragment() {
     ): View {
         arguments?.getParcelable<Uri>("mangaUri")?.let {
             Log.d("ReaderFragment", "Uri is $it")
+
+            _model = viewModels {
+                object : ViewModelProvider.Factory {
+                    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                        return modelClass.getConstructor(Uri::class.java).newInstance(it)
+                    }
+                }
+            }
+
+
 
             viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
                 viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -65,9 +75,12 @@ class ReaderFragment : Fragment() {
                     CacheUtils.get("current").collect {
                         //CacheUtils.get(uuid).collect {
                         val uri = Uri.fromFile(it)
-                        withContext(Dispatchers.Main) {
-                            model.onUriChange(uri)
-                        }
+
+
+
+
+
+
                     }
                 }
             }
@@ -125,11 +138,6 @@ class ReaderFragment : Fragment() {
         }
 
 
-        //TODO: check why correct size is set
-        model.image.observe(viewLifecycleOwner) {
-            binding.pageImageView.setImageBitmap(it)
-        }
-
         val slider = binding.pageSlider
         slider.isTickVisible = false
         slider.valueFrom = 0f
@@ -166,12 +174,12 @@ class ReaderFragment : Fragment() {
             }
             //100ms needed to get correct size
             Handler(Looper.getMainLooper()).postDelayed({
-                model.onSizeChange(
+                /*model.onSizeChange(
                     Pair(
                         binding.pageImageView.width,
                         binding.pageImageView.height
                     )
-                )
+                )*/
             }, 100)
         }, 300)
 

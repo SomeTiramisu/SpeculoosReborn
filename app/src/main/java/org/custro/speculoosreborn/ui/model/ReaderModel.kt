@@ -15,9 +15,8 @@ import org.custro.speculoosreborn.renderer.RendererFactory
 import org.custro.speculoosreborn.scheduler.PageScheduler
 import org.custro.speculoosreborn.utils.emptyBitmap
 
-class ReaderModel : ViewModel() {
-    private var mScheduler: PageScheduler? = null
-    private var mRenderer: Renderer? = null
+class ReaderModel(uri: Uri) : ViewModel() {
+    val renderer: Renderer
 
     private val _index = MutableLiveData(0)
     val index: LiveData<Int> = _index
@@ -25,26 +24,24 @@ class ReaderModel : ViewModel() {
     private val _maxIndex = MutableLiveData(0)
     val maxIndex: LiveData<Int> = _maxIndex
 
-    private val _size = MutableLiveData(Pair(0, 0))
-    val size: LiveData<Pair<Int, Int>> = _size
-
-    private val _image = MutableLiveData(emptyBitmap())
-    val image: LiveData<Bitmap> = _image
-
-    private val _isBlackBorders = MutableLiveData(false)
-    val isBlackBorders: LiveData<Boolean> = _isBlackBorders
-
     init {
-        Log.d("ReaderModel", "new viewmodel")
+        //Log.d("ReaderModel", "new viewmodel")
+        if(uri != Uri.EMPTY && uri.scheme == "file") {
+            _index.value = 0
+            renderer = RendererFactory.create(uri.toFile())
+            _maxIndex.value = renderer.pageCount
+        } else {
+            throw Exception("invalid uri")
+        }
+
     }
 
 
     fun onIndexChange(value: Int) {
-        Log.d("PageModel", "new index: $value")
+        //Log.d("PageModel", "new index: $value")
         val normValue = normIndex(value)
         if (normValue != index.value) {
             _index.value = normValue
-            genRequest()
         }
     }
 
@@ -66,56 +63,9 @@ class ReaderModel : ViewModel() {
         return i
     }
 
-    fun onSizeChange(value: Pair<Int, Int>) {
-        Log.d("PageModel", "OnSizeChange called, new size: ${value.first}:${value.second}")
-        if (value != size.value) {
-            _size.value = value
-            //_image.value = ImageBitmap(1, 1) //to avoid flicker
-            genRequest()
-        }
-    }
-
-    //must be called before everything else. Called once
-    fun onUriChange(value: Uri) {
-        Log.d("PageModel", "onUriChange called")
-        //TODO: fix reload
-        //TODO: Enable for stream
-        if (mRenderer == null && value != Uri.EMPTY && value.scheme == "file")  {
-            _index.value = 0
-            mRenderer = RendererFactory.create(value.toFile())
-            _maxIndex.value = mRenderer!!.pageCount
-            mScheduler = PageScheduler(mRenderer!!)
-            genRequest()
-        }
-    }
-
-    private fun genRequest() {
-        if(mScheduler == null) {
-            return
-        }
-        Log.d("ReaderModel", "requesting ${index.value}")
-        //NOTE: Do not influence the problem
-        viewModelScope.launch {
-            Log.d("ReaderModel", "requesting in viewmodelScope")
-            //launch {
-                val res = mScheduler!!.at(index.value!!, size.value!!.first, size.value!!.second)
-                _image.postValue(res.first) //called from another thread
-                _isBlackBorders.postValue(res.second.isBlackBorders)
-                Log.d("ImageCallback", "imaged")
-           // }
-           // launch {
-                mScheduler!!.seekPagesOrdered(
-                    index.value!!,
-                    size.value!!.first,
-                    size.value!!.second
-                )
-
-           // }
-        }
-    }
 
     override fun onCleared() {
-        mRenderer?.close()
+        renderer.close()
         super.onCleared()
     }
 }
