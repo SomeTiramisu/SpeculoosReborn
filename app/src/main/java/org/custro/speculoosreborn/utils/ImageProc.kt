@@ -58,8 +58,10 @@ fun bitmapToByteArray(src: Bitmap): ByteArray {
 
 fun createMask(src: Mat, dst: Mat, notInv: Boolean = false) {
     cvtColor(src, dst, COLOR_RGBA2GRAY)
-    threshold(dst, dst, 242.35, 255.0,
-        if (notInv) THRESH_BINARY else THRESH_BINARY_INV)
+    threshold(
+        dst, dst, 242.35, 255.0,
+        if (notInv) THRESH_BINARY else THRESH_BINARY_INV
+    )
 }
 
 fun scale(src: Mat, dst: Mat, width: Int, height: Int) {
@@ -68,17 +70,17 @@ fun scale(src: Mat, dst: Mat, width: Int, height: Int) {
     var fx = 1.0
     var fy = 1.0
 
-    if (width==0 && height>0) {
-        fy = height.toDouble()/imgHeight.toDouble()
+    if (width == 0 && height > 0) {
+        fy = height.toDouble() / imgHeight.toDouble()
         fx = fy
     }
-    if (height==0 && width>0) {
-        fx = width.toDouble()/imgWidth.toDouble()
+    if (height == 0 && width > 0) {
+        fx = width.toDouble() / imgWidth.toDouble()
         fy = fx
     }
-    if (width>0 && height>0) {
-        fx = width.toDouble()/imgWidth.toDouble()
-        fy = height.toDouble()/imgHeight.toDouble()
+    if (width > 0 && height > 0) {
+        fx = width.toDouble() / imgWidth.toDouble()
+        fy = height.toDouble() / imgHeight.toDouble()
     }
     val f = min(fx, fy)
     if (f > 1) {
@@ -87,6 +89,7 @@ fun scale(src: Mat, dst: Mat, width: Int, height: Int) {
         resize(src, dst, Size(), f, f, INTER_AREA)
     }
 }
+
 /*
 fun cropDetect(src: Mat): Rect {
     val mask1 = Mat()
@@ -115,20 +118,20 @@ fun cropDetect(src: Mat): Rect {
     val recWhite = boundingRect(maskWhite)
     val recBlack = boundingRect(maskBlack)
 
-    return if (recWhite.area()>recBlack.area()) recBlack else recWhite
+    return if (recWhite.area() > recBlack.area()) recBlack else recWhite
 }
 
 fun blackDetect(src: Mat): Boolean {
     val mask = Mat()
     createMask(src, mask)
-    val total = (src.cols()+src.rows())*2
+    val total = (src.cols() + src.rows()) * 2
     var blacks = 0
     for (i in 0 until mask.cols()) {
         //Log.d("ImageProc", "coucou: ${mask.get(0, i).contentToString()}")
         if (mask.get(0, i).contentEquals(doubleArrayOf(255.0))) {
             blacks += 1
         }
-        if (mask.get(mask.rows()-1, i).contentEquals(doubleArrayOf(255.0))) {
+        if (mask.get(mask.rows() - 1, i).contentEquals(doubleArrayOf(255.0))) {
             blacks += 1
         }
     }
@@ -136,12 +139,12 @@ fun blackDetect(src: Mat): Boolean {
         if (mask.get(i, 0).contentEquals(doubleArrayOf(255.0))) {
             blacks += 1
         }
-        if (mask.get(i, src.cols()-1).contentEquals(doubleArrayOf(255.0))) {
+        if (mask.get(i, src.cols() - 1).contentEquals(doubleArrayOf(255.0))) {
             blacks += 1
         }
     }
     //Log.d("ImageProc", "blacks: $blacks")
-    return blacks.toDouble() > 0.5*total.toDouble()
+    return blacks.toDouble() > 0.5 * total.toDouble()
 }
 
 fun cropScaleMaskProcess(src: Mat, dst: Mat, roi: Rect?, width: Int, height: Int) {
@@ -153,7 +156,10 @@ fun cropScaleMaskProcess(src: Mat, dst: Mat, roi: Rect?, width: Int, height: Int
         scale(src.submat(roi), tmp, width, height)
     }
     createMask(tmp, mask)
-    tmp.copyTo(dst, mask) //do not work if tmp.size == dst.size, only work when dst needs to be reconfigured
+    tmp.copyTo(
+        dst,
+        mask
+    ) //do not work if tmp.size == dst.size, only work when dst needs to be reconfigured
 }
 
 fun cropProcessNew(src: Mat, dst: Mat, roi: Rect) {
@@ -182,10 +188,10 @@ fun addBlackBorders(src: Mat, dst: Mat, width: Int, height: Int) {/*
         return
     }*/
     val tmp = Mat(height, width, src.type(), Scalar(0.0, 0.0, 0.0, 255.0))
-    val xOffset = (width-src.cols())/2
-    val yOffset = (height-src.rows())/2
+    val xOffset = (width - src.cols()) / 2
+    val yOffset = (height - src.rows()) / 2
     //Log.d("ImageProc", "$xOffset, $yOffset")
-    val subRec = Rect(xOffset, yOffset,src.cols(), src.rows())
+    val subRec = Rect(xOffset, yOffset, src.cols(), src.rows())
     //val subMat = Mat(tmp, Rect(0, 0, src.cols(), src.rows()))
     val subMat = Mat(tmp, subRec)
     src.copyTo(subMat)

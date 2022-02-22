@@ -1,11 +1,9 @@
 package org.custro.speculoosreborn.ui.model
 
-import android.database.sqlite.SQLiteConstraintException
-import android.net.Uri
-import android.util.Log
-import androidx.lifecycle.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
+import androidx.lifecycle.ViewModel
 import org.custro.speculoosreborn.App
 import java.io.File
 
@@ -23,7 +21,8 @@ class FilePickerModel : ViewModel() {
     val currentDir: LiveData<File>
 
     init {
-        externalDirs = App.instance.applicationContext.getExternalFilesDirs(null).toList().map { getBaseDir(it) }
+        externalDirs = App.instance.applicationContext.getExternalFilesDirs(null).toList()
+            .map { getBaseDir(it) }
 
         currentExternalDir = Transformations.map(currentExternalDirIndex) {
             externalDirs[it]
@@ -38,14 +37,14 @@ class FilePickerModel : ViewModel() {
     }
 
     fun onExternalDirChange(index: Int) {
-        _currentExternalDirIndex.value =  index % externalDirs.size
+        _currentExternalDirIndex.value = index % externalDirs.size
     }
 
     fun getExternalDirName(index: Int): String {
-        return when(index) {
+        return when (index) {
             0 -> "Internal"
             else -> if (externalDirs.size > 2) {
-                "SD Card ${index-1}"
+                "SD Card ${index - 1}"
             } else {
                 "SD Card"
             }
@@ -53,7 +52,7 @@ class FilePickerModel : ViewModel() {
     }
 
     fun onDirChange(file: File) {
-        if(file.canRead()) {
+        if (file.canRead()) {
             _currentDir.value = file
         }
     }

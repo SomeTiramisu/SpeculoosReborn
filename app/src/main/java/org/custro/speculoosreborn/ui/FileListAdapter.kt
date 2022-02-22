@@ -14,14 +14,19 @@ import org.custro.speculoosreborn.databinding.ItemFileListBinding
 import org.custro.speculoosreborn.renderer.RendererFactory
 import java.io.File
 
-class FileListAdapter(private val onFileClickListener: (File) -> Unit, private val onDirClickListener: (File) -> Unit): ListAdapter<File, FileListAdapter.ViewHolder>(FileDiffCallback) {
-    class ViewHolder(itemViewBinding: ItemFileListBinding): RecyclerView.ViewHolder(itemViewBinding.root) {
+class FileListAdapter(
+    private val onFileClickListener: (File) -> Unit,
+    private val onDirClickListener: (File) -> Unit
+) : ListAdapter<File, FileListAdapter.ViewHolder>(FileDiffCallback) {
+    class ViewHolder(itemViewBinding: ItemFileListBinding) :
+        RecyclerView.ViewHolder(itemViewBinding.root) {
         val textView = itemViewBinding.textView
         val imageView = itemViewBinding.imageView
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val binding = ItemFileListBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding =
+            ItemFileListBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ViewHolder(binding)
     }
 
@@ -30,14 +35,14 @@ class FileListAdapter(private val onFileClickListener: (File) -> Unit, private v
         val itemUri = Uri.fromFile(item)
         holder.textView.text = item.name
 
-        if(RendererFactory.isSupported(itemUri.toFile())) {
+        if (RendererFactory.isSupported(itemUri.toFile())) {
             holder.imageView.setImageResource(R.drawable.baseline_book_24)
             holder.itemView.setOnClickListener {
                 onFileClickListener(item)
             }
-        } else if(item.isFile) {
+        } else if (item.isFile) {
             holder.imageView.setImageResource(R.drawable.baseline_file_24)
-        } else if(item.isDirectory) {
+        } else if (item.isDirectory) {
             holder.imageView.setImageResource(R.drawable.baseline_folder_24)
             holder.itemView.setOnClickListener {
                 onDirClickListener(item)

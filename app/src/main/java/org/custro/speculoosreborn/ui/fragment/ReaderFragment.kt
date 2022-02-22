@@ -121,7 +121,7 @@ class ReaderFragment : Fragment() {
         pageView.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageScrollStateChanged(state: Int) {
                 super.onPageScrollStateChanged(state)
- binding.pageBottomSheet.visibility = GONE
+                binding.pageBottomSheet.visibility = GONE
             }
 
             override fun onPageSelected(position: Int) {

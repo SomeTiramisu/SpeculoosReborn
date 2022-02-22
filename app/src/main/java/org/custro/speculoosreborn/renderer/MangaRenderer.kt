@@ -5,10 +5,11 @@ import org.custro.speculoosreborn.parser.ParserFactory
 import java.io.File
 import java.io.InputStream
 
-class MangaRenderer: Renderer {
-     constructor(file: File) {
-         parser = ParserFactory.create(file)
-     }
+class MangaRenderer : Renderer {
+    constructor(file: File) {
+        parser = ParserFactory.create(file)
+    }
+
     constructor(getInputStream: () -> InputStream) {
         parser = ParserFactory.create(getInputStream)
     }
@@ -31,6 +32,7 @@ class MangaRenderer: Renderer {
         fun isSupported(file: File): Boolean {
             return ParserFactory.isSupported(file)
         }
+
         fun isSupported(getInputStream: () -> InputStream): Boolean {
             return ParserFactory.isSupported(getInputStream)
         }

@@ -13,7 +13,7 @@ import java.io.InputStream
 import java.util.*
 
 object CacheUtils {
-    private val cacheDir = App.instance.externalCacheDir?: App.instance.cacheDir
+    private val cacheDir = App.instance.externalCacheDir ?: App.instance.cacheDir
     private val dao = App.db.cacheDao()
 
     init {

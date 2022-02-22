@@ -12,7 +12,7 @@ import org.custro.speculoosreborn.renderer.Renderer
 import org.custro.speculoosreborn.renderer.RendererFactory
 import org.custro.speculoosreborn.utils.CacheUtils
 
-class RendererStoreModel(uri: Uri): ViewModel() {
+class RendererStoreModel(uri: Uri) : ViewModel() {
     val renderer: LiveData<Renderer> = liveData(Dispatchers.IO) {
         App.instance.contentResolver.openInputStream(uri).use { stream ->
             CacheUtils.save(stream!!, "current")

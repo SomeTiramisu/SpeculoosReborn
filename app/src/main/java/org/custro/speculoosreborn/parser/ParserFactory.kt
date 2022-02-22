@@ -23,6 +23,7 @@ class ParserFactory {
                     RarFileParser.isSupported(file) or
                     PdfFileParser.isSupported(file)
         }
+
         fun isSupported(getInputStream: () -> InputStream): Boolean {
             return ZipStreamParser.isSupported(getInputStream) or
                     RarStreamParser.isSupported(getInputStream)

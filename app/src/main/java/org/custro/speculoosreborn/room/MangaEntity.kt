@@ -6,7 +6,13 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 
-@Entity(foreignKeys = [ForeignKey(entity = CachedFileEntity::class, parentColumns = ["uuid"], childColumns = ["coverId"])])
+@Entity(
+    foreignKeys = [ForeignKey(
+        entity = CachedFileEntity::class,
+        parentColumns = ["uuid"],
+        childColumns = ["coverId"]
+    )]
+)
 data class MangaEntity(
     @PrimaryKey val uri: String,
     val coverId: String,

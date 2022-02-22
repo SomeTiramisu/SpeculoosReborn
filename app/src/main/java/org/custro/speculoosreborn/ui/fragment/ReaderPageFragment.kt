@@ -17,7 +17,7 @@ import org.custro.speculoosreborn.ui.model.ReaderModel
 import org.custro.speculoosreborn.ui.model.ReaderPageModel
 import org.custro.speculoosreborn.ui.model.RendererStoreModel
 
-class ReaderPageFragment: Fragment() {
+class ReaderPageFragment : Fragment() {
     private var _binding: FragmentReaderPageBinding? = null
 
     // This property is only valid between onCreateView and

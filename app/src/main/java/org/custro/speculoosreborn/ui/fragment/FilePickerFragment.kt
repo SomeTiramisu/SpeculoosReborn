@@ -28,6 +28,7 @@ import org.custro.speculoosreborn.utils.MangaUtils
 
 class FilePickerFragment : Fragment() {
     private var _binding: FragmentFilePickerBinding? = null
+
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
@@ -61,7 +62,7 @@ class FilePickerFragment : Fragment() {
         //TODO: support check may be not needed here
         val fileListAdapter = FileListAdapter({
             val uri = Uri.fromFile(it)
-            if(RendererFactory.isSupported(it)) {
+            if (RendererFactory.isSupported(it)) {
                 model.viewModelScope.launch(Dispatchers.Default) {  //ugly ?
                     val entity = MangaUtils.genMangaEntity(Uri.fromFile(it))
                     App.db.mangaDao().insert(entity)
@@ -83,10 +84,16 @@ class FilePickerFragment : Fragment() {
 
 
         //Overriding getFilter to disable filtering: show full selection everytime
-        val menuAdapter = object: ArrayAdapter<String>(requireContext(), R.layout.item_externals_dir, model.externalDirs.mapIndexed { i, _ -> model.getExternalDirName(i) }) {
+        val menuAdapter = object : ArrayAdapter<String>(
+            requireContext(),
+            R.layout.item_externals_dir,
+            model.externalDirs.mapIndexed { i, _ -> model.getExternalDirName(i) }) {
             override fun getFilter(): Filter {
-                return object: Filter() {
-                    override fun performFiltering(p0: CharSequence?): FilterResults? { return null }
+                return object : Filter() {
+                    override fun performFiltering(p0: CharSequence?): FilterResults? {
+                        return null
+                    }
+
                     override fun publishResults(p0: CharSequence?, p1: FilterResults?) {}
                 }
             }

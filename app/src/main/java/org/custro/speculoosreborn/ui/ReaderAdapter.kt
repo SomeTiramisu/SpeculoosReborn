@@ -8,7 +8,8 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import org.custro.speculoosreborn.renderer.Renderer
 import org.custro.speculoosreborn.ui.fragment.ReaderPageFragment
 
-class ReaderAdapter(fragment: Fragment, private val uri: Uri, private val pageCount: Int): FragmentStateAdapter(fragment) {
+class ReaderAdapter(fragment: Fragment, private val uri: Uri, private val pageCount: Int) :
+    FragmentStateAdapter(fragment) {
     override fun getItemCount(): Int {
         return pageCount
     }
