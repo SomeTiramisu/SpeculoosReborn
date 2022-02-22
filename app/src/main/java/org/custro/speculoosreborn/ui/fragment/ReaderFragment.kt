@@ -21,6 +21,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.get
 import androidx.preference.PreferenceManager
+import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.slider.Slider
 import org.custro.speculoosreborn.databinding.FragmentReaderBinding
 import org.custro.speculoosreborn.ui.ReaderAdapter
@@ -66,6 +67,7 @@ class ReaderFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        /*
         //buttons
         binding.nextButton.setOnClickListener {
             model.onIndexInc()
@@ -80,7 +82,7 @@ class ReaderFragment : Fragment() {
                 INVISIBLE -> Unit
             }
         }
-
+*/
         //background
         //TODO: make this readable
         if (PreferenceManager.getDefaultSharedPreferences(requireContext())
@@ -108,6 +110,20 @@ class ReaderFragment : Fragment() {
         }
 
 
+        //viewpager
+        val pageView = binding.pageView
+        model.renderer.observe(viewLifecycleOwner) { renderer ->
+            binding.pageView.adapter = ReaderAdapter(this, renderer)
+        }
+        pageView.registerOnPageChangeCallback(object: ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+                binding.pageSlider.value = position.toFloat()
+            }
+        })
+
+
+
         //slider
         val slider = binding.pageSlider
         slider.isTickVisible = false
@@ -123,26 +139,9 @@ class ReaderFragment : Fragment() {
 
             override fun onStopTrackingTouch(slider: Slider) {
                 // Responds to when slider's touch event is being stopped
-                model.onIndexChange(slider.value.toInt())
+                pageView.currentItem = slider.value.toInt()
             }
         })
-        model.index.observe(viewLifecycleOwner) {
-            slider.value = it.toFloat()
-        }
-
-
-        //viewpager
-        model.renderer.observe(viewLifecycleOwner) { renderer ->
-            binding.pageView.adapter = ReaderAdapter(this, renderer)
-        }
-
-
-
-
-
-
-
-
 
     }
 
