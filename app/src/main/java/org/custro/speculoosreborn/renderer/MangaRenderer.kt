@@ -3,9 +3,17 @@ package org.custro.speculoosreborn.renderer
 import org.custro.speculoosreborn.parser.Parser
 import org.custro.speculoosreborn.parser.ParserFactory
 import java.io.File
+import java.io.InputStream
 
-class MangaRenderer(file: File): Renderer {
-    private var parser: Parser = ParserFactory.create(file)
+class MangaRenderer: Renderer {
+     constructor(file: File) {
+         parser = ParserFactory.create(file)
+     }
+    constructor(getInputStream: () -> InputStream) {
+        parser = ParserFactory.create(getInputStream)
+    }
+
+    private var parser: Parser
 
     override val pageCount: Int
         get() = parser.size
@@ -22,6 +30,9 @@ class MangaRenderer(file: File): Renderer {
     companion object {
         fun isSupported(file: File): Boolean {
             return ParserFactory.isSupported(file)
+        }
+        fun isSupported(getInputStream: () -> InputStream): Boolean {
+            return ParserFactory.isSupported(getInputStream)
         }
     }
 }

@@ -37,13 +37,9 @@ object MangaUtils {
     private fun genMangaCover(uri: Uri): String {
         val r: String
         //TODO: enable for all uri type
-        RendererFactory.create(uri.toFile()).use { renderer ->
+        RendererFactory.create { App.instance.contentResolver.openInputStream(uri)!! }
+            .use { renderer ->
             renderer.openPage(0).use { rendererPage ->
-                val bitmap = Bitmap.createBitmap(
-                    256,
-                    256,
-                    Bitmap.Config.ARGB_8888
-                )
                 val config = RenderConfig(
                     addBorders = false,
                     doScale = true,
@@ -54,6 +50,11 @@ object MangaUtils {
                 val img = Mat()
                 rendererPage.render(img, 256, 256, config)
                 //bitmap.reconfigure(img.width(), img.height(), Bitmap.Config.ARGB_8888)
+                val bitmap = Bitmap.createBitmap(
+                    img.cols(),
+                    img.rows(),
+                    Bitmap.Config.ARGB_8888
+                )
                 Utils.matToBitmap(img, bitmap)
 
                 bitmapToByteArray(bitmap).inputStream().use {
