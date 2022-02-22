@@ -40,7 +40,7 @@ class ReaderFragment : Fragment() {
     // la derniere page dans la DB
     //private val model: ReaderModel by viewModels({requireParentFragment()})
     private var _model: ReaderModel? = null
-    private val model get() =  _model!!
+    private val model get() = _model!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -50,10 +50,10 @@ class ReaderFragment : Fragment() {
             Log.d("ReaderFragment", "Uri is $it")
 
             _model = ViewModelProvider(this, object : ViewModelProvider.Factory {
-                    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                        return modelClass.getConstructor(Uri::class.java).newInstance(it)
-                    }
-                }).get()
+                override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                    return modelClass.getConstructor(Uri::class.java).newInstance(it)
+                }
+            }).get()
 
         }
 
@@ -74,7 +74,7 @@ class ReaderFragment : Fragment() {
         }
         binding.previousButton.setOnClickListener {
             model.onIndexDec()
-        }
+        }*/
         binding.middleButton.setOnClickListener {
             when (binding.pageBottomSheet.visibility) {
                 VISIBLE -> binding.pageBottomSheet.visibility = GONE
@@ -82,7 +82,7 @@ class ReaderFragment : Fragment() {
                 INVISIBLE -> Unit
             }
         }
-*/
+
         //background
         //TODO: make this readable
         if (PreferenceManager.getDefaultSharedPreferences(requireContext())
@@ -116,14 +116,17 @@ class ReaderFragment : Fragment() {
         model.renderer.observe(viewLifecycleOwner) { renderer ->
             binding.pageView.adapter = ReaderAdapter(this, renderer)
         }
-        pageView.registerOnPageChangeCallback(object: ViewPager2.OnPageChangeCallback() {
+        pageView.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageScrollStateChanged(state: Int) {
+                super.onPageScrollStateChanged(state)
+ binding.pageBottomSheet.visibility = GONE
+            }
+
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
                 binding.pageSlider.value = position.toFloat()
             }
         })
-
-
 
         //slider
         val slider = binding.pageSlider
