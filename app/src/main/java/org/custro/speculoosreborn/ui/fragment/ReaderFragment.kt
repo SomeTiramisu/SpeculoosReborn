@@ -17,6 +17,8 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.get
@@ -39,8 +41,15 @@ class ReaderFragment : Fragment() {
     //Un seul viewModel pour tous les fragments. Similaire à compose. On peut zussi sauvearder
     // la derniere page dans la DB
     //private val model: ReaderModel by viewModels({requireParentFragment()})
-    private var _model: ReaderModel? = null
-    private val model get() = _model!!
+    private var _uri: Uri? = null
+    private val model: ReaderModel by viewModels {
+        object : ViewModelProvider.Factory {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                return modelClass.getConstructor(Uri::class.java).newInstance(_uri!!)
+            }
+        }
+    }
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -48,13 +57,7 @@ class ReaderFragment : Fragment() {
     ): View {
         arguments?.getParcelable<Uri>("mangaUri")?.let {
             Log.d("ReaderFragment", "Uri is $it")
-
-            _model = ViewModelProvider(this, object : ViewModelProvider.Factory {
-                override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                    return modelClass.getConstructor(Uri::class.java).newInstance(it)
-                }
-            }).get()
-
+            _uri = it
         }
 
         _binding = FragmentReaderBinding.inflate(inflater, container, false)
