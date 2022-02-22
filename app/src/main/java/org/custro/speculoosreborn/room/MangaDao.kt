@@ -9,6 +9,9 @@ interface MangaDao {
     @Query("SELECT * FROM mangaEntity")
     suspend fun getAll(): List<MangaEntity>
 
+    @Query("SELECT pageCount FROM mangaEntity WHERE uri = :uri")
+    suspend fun getPageCount(uri: String): Int
+
     @Insert
     fun insert(vararg mangas: MangaEntity)
 

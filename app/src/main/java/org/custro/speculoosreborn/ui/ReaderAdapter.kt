@@ -1,16 +1,21 @@
 package org.custro.speculoosreborn.ui
 
+import android.net.Uri
+import android.os.Bundle
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import org.custro.speculoosreborn.renderer.Renderer
 import org.custro.speculoosreborn.ui.fragment.ReaderPageFragment
 
-class ReaderAdapter(fragment: Fragment, private val renderer: Renderer): FragmentStateAdapter(fragment) {
+class ReaderAdapter(fragment: Fragment, private val uri: Uri, private val pageCount: Int): FragmentStateAdapter(fragment) {
     override fun getItemCount(): Int {
-        return renderer.pageCount
+        return pageCount
     }
 
     override fun createFragment(position: Int): Fragment {
-        return ReaderPageFragment(renderer, position)
+        val fragment = ReaderPageFragment()
+        fragment.arguments = bundleOf("mangaUri" to uri, "index" to position)
+        return fragment
     }
 }

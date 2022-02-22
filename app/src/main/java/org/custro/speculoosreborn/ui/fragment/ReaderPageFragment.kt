@@ -1,6 +1,8 @@
 package org.custro.speculoosreborn.ui.fragment
 
+import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,19 +15,34 @@ import org.custro.speculoosreborn.databinding.FragmentReaderPageBinding
 import org.custro.speculoosreborn.renderer.Renderer
 import org.custro.speculoosreborn.ui.model.ReaderModel
 import org.custro.speculoosreborn.ui.model.ReaderPageModel
+import org.custro.speculoosreborn.ui.model.RendererStoreModel
 
-class ReaderPageFragment(renderer: Renderer, index: Int) : Fragment() {
+class ReaderPageFragment: Fragment() {
     private var _binding: FragmentReaderPageBinding? = null
 
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
 
+    private var _uri: Uri? = null
+    private val uri get() = _uri!!
+    private var _index: Int? = null
+    private val index get() = _index!!
+
     private val model: ReaderPageModel by viewModels {
         object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return modelClass.getConstructor(Renderer::class.java, Int::class.java)
-                    .newInstance(renderer, index)
+                return modelClass.getConstructor(Int::class.java)
+                    .newInstance(index)
+            }
+        }
+    }
+
+
+    private val rendererModel: RendererStoreModel by viewModels(::requireParentFragment) {
+        object : ViewModelProvider.Factory {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                return modelClass.getConstructor(Uri::class.java).newInstance(uri)
             }
         }
     }
@@ -34,6 +51,16 @@ class ReaderPageFragment(renderer: Renderer, index: Int) : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        arguments?.getParcelable<Uri>("mangaUri")?.let {
+            _uri = it
+        }
+        arguments?.getInt("index")?.let {
+            _index = it
+        }
+        rendererModel.renderer.observe(viewLifecycleOwner) {
+            model.renderer = it
+        }
+
         _binding = FragmentReaderPageBinding.inflate(inflater, container, false)
 
 

@@ -13,7 +13,13 @@ import org.custro.speculoosreborn.utils.emptyBitmap
 import org.opencv.android.Utils
 import org.opencv.core.Mat
 
-class ReaderPageModel(private val renderer: Renderer, private val index: Int) : ViewModel() {
+class ReaderPageModel(private val index: Int) : ViewModel() {
+    var renderer: Renderer? = null
+        set(value) {
+            field = value
+            render()
+        }
+
     private val config = RenderConfig(
         addBorders = index != 0,
         doScale = true,
@@ -29,10 +35,6 @@ class ReaderPageModel(private val renderer: Renderer, private val index: Int) : 
     private val _isBlackBorders = MutableLiveData(false)
     val isBlackBorders: LiveData<Boolean> = _isBlackBorders
 
-    init {
-        render()
-    }
-
     fun onSizeChange(value: Pair<Int, Int>) {
         //Log.d("PageModel", "OnSizeChange called, new size: ${value.first}:${value.second}")
         if (value != size) {
@@ -44,10 +46,11 @@ class ReaderPageModel(private val renderer: Renderer, private val index: Int) : 
 
     private fun render() {
         viewModelScope.launch {
-            renderer.openPage(index).use {
+            renderer?.openPage(index)?.use {
                 val img = Mat()
                 val renderInfo = it.render(img, size.first, size.second, config)
-                val bitmap = Bitmap.createBitmap(img.width(), img.height(), Bitmap.Config.ARGB_8888)
+                val bitmap =
+                    Bitmap.createBitmap(img.width(), img.height(), Bitmap.Config.ARGB_8888)
                 Utils.matToBitmap(img, bitmap)
                 _isBlackBorders.postValue(renderInfo.isBlackBorders)
                 _image.postValue(bitmap)

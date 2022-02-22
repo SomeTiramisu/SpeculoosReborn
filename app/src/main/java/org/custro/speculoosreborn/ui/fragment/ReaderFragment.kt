@@ -17,11 +17,9 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.get
 import androidx.preference.PreferenceManager
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.slider.Slider
@@ -42,10 +40,11 @@ class ReaderFragment : Fragment() {
     // la derniere page dans la DB
     //private val model: ReaderModel by viewModels({requireParentFragment()})
     private var _uri: Uri? = null
+    private val uri get() = _uri!!
     private val model: ReaderModel by viewModels {
         object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return modelClass.getConstructor(Uri::class.java).newInstance(_uri!!)
+                return modelClass.getConstructor(Uri::class.java).newInstance(uri)
             }
         }
     }
@@ -116,8 +115,8 @@ class ReaderFragment : Fragment() {
         //viewpager
         val pageView = binding.pageView
         pageView.offscreenPageLimit = 4
-        model.renderer.observe(viewLifecycleOwner) { renderer ->
-            binding.pageView.adapter = ReaderAdapter(this, renderer)
+        model.pageCount.observe(viewLifecycleOwner) {
+            binding.pageView.adapter = ReaderAdapter(this, uri, it)
         }
         pageView.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageScrollStateChanged(state: Int) {
@@ -135,7 +134,7 @@ class ReaderFragment : Fragment() {
         val slider = binding.pageSlider
         slider.isTickVisible = false
         slider.valueFrom = 0f
-        model.maxIndex.observe(viewLifecycleOwner) {
+        model.pageCount.observe(viewLifecycleOwner) {
             slider.valueTo = if (slider.valueFrom < it) it.toFloat() else slider.valueFrom + 1
         }
         slider.stepSize = 1f

@@ -14,30 +14,8 @@ import org.custro.speculoosreborn.renderer.RendererFactory
 import org.custro.speculoosreborn.utils.CacheUtils
 
 class ReaderModel(uri: Uri) : ViewModel() {
-    val renderer: LiveData<Renderer> = liveData(Dispatchers.IO) {
-        App.instance.contentResolver.openInputStream(uri).use { stream ->
-            CacheUtils.save(stream!!, "current")
-            //CacheUtils.save(stream!!, uuid)
-        }
-        val cacheUri = Uri.fromFile(CacheUtils.get("current"))
-        Log.d("ReaderModel", "loaded")
-
-        Log.d("ReaderModel", "loaded2")
-        if (cacheUri != Uri.EMPTY && cacheUri!!.scheme == "file") {
-            val r = RendererFactory.create(cacheUri.toFile())
-            emit(r)
-            _maxIndex.postValue(r.pageCount)
-        } else {
-            throw Exception("invalid uri")
-        }
+    val pageCount: LiveData<Int> = liveData(Dispatchers.IO) {
+        emit(App.db.mangaDao().getPageCount(uri.toString()))
     }
 
-    private val _maxIndex = MutableLiveData(0)
-    val maxIndex: LiveData<Int> = _maxIndex
-
-
-    override fun onCleared() {
-        renderer.value?.close()
-        super.onCleared()
-    }
 }
