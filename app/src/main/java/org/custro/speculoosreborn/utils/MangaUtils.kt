@@ -2,15 +2,6 @@ package org.custro.speculoosreborn.utils
 
 import android.graphics.Bitmap
 import android.net.Uri
-import android.util.Log
-import androidx.core.net.toFile
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import org.custro.speculoosreborn.App
 import org.custro.speculoosreborn.renderer.RenderConfig
 import org.custro.speculoosreborn.renderer.RendererFactory
@@ -22,46 +13,43 @@ object MangaUtils {
 
     private val dao = App.db.mangaDao()
 
-    fun genMangaEntity(uri: Uri): MangaEntity {
-        return MangaEntity(uri.toString(), genMangaCover(uri))
-    }
-
     suspend fun correctManga(entity: MangaEntity) {
-            var newEntity = entity
-            if (!CacheUtils.get(entity.coverId).exists()) {
-                newEntity = MangaEntity(entity.uri, genMangaCover(Uri.parse(entity.uri)))
-            }
-            dao.update(newEntity)
+        var newEntity = entity
+        if (!CacheUtils.get(entity.coverId).exists()) {
+            newEntity = genMangaEntity(Uri.parse(entity.uri))
+        }
+        dao.update(newEntity)
     }
 
-    private fun genMangaCover(uri: Uri): String {
-        val r: String
-        //TODO: enable for all uri type
+    fun genMangaEntity(uri: Uri): MangaEntity {
+        val coverId: String
+        val pageCount: Int
         RendererFactory.create { App.instance.contentResolver.openInputStream(uri)!! }
             .use { renderer ->
-            renderer.openPage(0).use { rendererPage ->
-                val config = RenderConfig(
-                    addBorders = false,
-                    doScale = true,
-                    doCrop = false,
-                    doMask = false
-                )
+                pageCount = renderer.pageCount
+                renderer.openPage(0).use { rendererPage ->
+                    val config = RenderConfig(
+                        addBorders = false,
+                        doScale = true,
+                        doCrop = false,
+                        doMask = false
+                    )
 
-                val img = Mat()
-                rendererPage.render(img, 256, 256, config)
-                //bitmap.reconfigure(img.width(), img.height(), Bitmap.Config.ARGB_8888)
-                val bitmap = Bitmap.createBitmap(
-                    img.cols(),
-                    img.rows(),
-                    Bitmap.Config.ARGB_8888
-                )
-                Utils.matToBitmap(img, bitmap)
+                    val img = Mat()
+                    rendererPage.render(img, 256, 256, config)
+                    //bitmap.reconfigure(img.width(), img.height(), Bitmap.Config.ARGB_8888)
+                    val bitmap = Bitmap.createBitmap(
+                        img.cols(),
+                        img.rows(),
+                        Bitmap.Config.ARGB_8888
+                    )
+                    Utils.matToBitmap(img, bitmap)
 
-                bitmapToByteArray(bitmap).inputStream().use {
-                    r = CacheUtils.save(it)
+                    bitmapToByteArray(bitmap).inputStream().use {
+                        coverId = CacheUtils.save(it)
+                    }
                 }
             }
-        }
-        return r
+        return MangaEntity(uri.toString(), coverId, pageCount)
     }
 }

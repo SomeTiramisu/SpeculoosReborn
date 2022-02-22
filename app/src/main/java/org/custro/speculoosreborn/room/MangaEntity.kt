@@ -10,6 +10,6 @@ import androidx.room.PrimaryKey
 data class MangaEntity(
     @PrimaryKey val uri: String,
     val coverId: String,
-    //val maxIndex: Int,
+    val pageCount: Int,
     //val order: List<Int>
 )
