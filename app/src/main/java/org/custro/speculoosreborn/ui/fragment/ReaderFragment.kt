@@ -3,7 +3,6 @@ package org.custro.speculoosreborn.ui.fragment
 import android.graphics.BitmapFactory
 import android.graphics.Shader
 import android.graphics.drawable.BitmapDrawable
-import android.graphics.pdf.PdfRenderer
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -18,20 +17,16 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.*
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.get
 import androidx.preference.PreferenceManager
 import com.google.android.material.slider.Slider
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.custro.speculoosreborn.databinding.FragmentReaderBinding
+import org.custro.speculoosreborn.ui.ReaderAdapter
 import org.custro.speculoosreborn.ui.model.ReaderModel
-import org.custro.speculoosreborn.utils.CacheUtils
 import org.custro.speculoosreborn.utils.fromByteArray
 import org.custro.speculoosreborn.utils.matToBitmap
-import kotlin.reflect.KProperty
 
 class ReaderFragment : Fragment() {
     private var _binding: FragmentReaderBinding? = null
@@ -43,8 +38,8 @@ class ReaderFragment : Fragment() {
     //Un seul viewModel pour tous les fragments. Similaire à compose. On peut zussi sauvearder
     // la derniere page dans la DB
     //private val model: ReaderModel by viewModels({requireParentFragment()})
-    private var _model: Lazy<ReaderModel>? = null
-    private val model: ReaderModel by _model!!
+    private var _model: ReaderModel? = null
+    private val model get() =  _model!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -53,37 +48,11 @@ class ReaderFragment : Fragment() {
         arguments?.getParcelable<Uri>("mangaUri")?.let {
             Log.d("ReaderFragment", "Uri is $it")
 
-            _model = viewModels {
-                object : ViewModelProvider.Factory {
+            _model = ViewModelProvider(this, object : ViewModelProvider.Factory {
                     override fun <T : ViewModel> create(modelClass: Class<T>): T {
                         return modelClass.getConstructor(Uri::class.java).newInstance(it)
                     }
-                }
-            }
-
-
-
-            viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
-                viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-
-                    val uuid = System.currentTimeMillis().toString()
-
-                    requireActivity().contentResolver.openInputStream(it).use { stream ->
-                        CacheUtils.save(stream!!, "current")
-                        //CacheUtils.save(stream!!, uuid)
-                    }
-                    CacheUtils.get("current").collect {
-                        //CacheUtils.get(uuid).collect {
-                        val uri = Uri.fromFile(it)
-
-
-
-
-
-
-                    }
-                }
-            }
+                }).get()
 
         }
 
@@ -97,6 +66,7 @@ class ReaderFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        //buttons
         binding.nextButton.setOnClickListener {
             model.onIndexInc()
         }
@@ -111,7 +81,7 @@ class ReaderFragment : Fragment() {
             }
         }
 
-
+        //background
         //TODO: make this readable
         if (PreferenceManager.getDefaultSharedPreferences(requireContext())
                 .getBoolean("enable_background", false)
@@ -125,7 +95,7 @@ class ReaderFragment : Fragment() {
                     ?.let {
                         val background = BitmapDrawable(resources, matToBitmap(fromByteArray(it)))
                         background.setTileModeXY(Shader.TileMode.REPEAT, Shader.TileMode.REPEAT)
-                        binding.pageImageView.background = background
+                        binding.pageView.background = background
                     }
             }
         } else { //TODO remove non-free background from assets
@@ -134,10 +104,11 @@ class ReaderFragment : Fragment() {
                 BitmapFactory.decodeStream(context?.assets?.open("background.png"))
             )
             background.setTileModeXY(Shader.TileMode.REPEAT, Shader.TileMode.REPEAT)
-            binding.pageImageView.background = background
+            binding.pageView.background = background
         }
 
 
+        //slider
         val slider = binding.pageSlider
         slider.isTickVisible = false
         slider.valueFrom = 0f
@@ -158,6 +129,21 @@ class ReaderFragment : Fragment() {
         model.index.observe(viewLifecycleOwner) {
             slider.value = it.toFloat()
         }
+
+
+        //viewpager
+        model.renderer.observe(viewLifecycleOwner) { renderer ->
+            binding.pageView.adapter = ReaderAdapter(this, renderer)
+        }
+
+
+
+
+
+
+
+
+
     }
 
     override fun onResume() {

@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface MangaDao {
     @Query("SELECT * FROM mangaEntity")
-    fun getAll(): Flow<List<MangaEntity>>
+    suspend fun getAll(): List<MangaEntity>
 
     @Insert
     fun insert(vararg mangas: MangaEntity)

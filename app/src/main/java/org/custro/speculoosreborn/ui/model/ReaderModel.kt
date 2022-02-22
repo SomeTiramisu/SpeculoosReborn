@@ -4,38 +4,43 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.util.Log
 import androidx.core.net.toFile
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.single
+import org.custro.speculoosreborn.App
 import org.custro.speculoosreborn.renderer.Renderer
 import org.custro.speculoosreborn.renderer.RendererFactory
+import org.custro.speculoosreborn.renderer.RendererPage
 import org.custro.speculoosreborn.scheduler.PageScheduler
+import org.custro.speculoosreborn.utils.CacheUtils
 import org.custro.speculoosreborn.utils.emptyBitmap
 
 class ReaderModel(uri: Uri) : ViewModel() {
-    val renderer: Renderer
+    val renderer: LiveData<Renderer> = liveData(Dispatchers.IO) {
+        App.instance.contentResolver.openInputStream(uri).use { stream ->
+            CacheUtils.save(stream!!, "current")
+            //CacheUtils.save(stream!!, uuid)
+        }
+        val cacheUri = Uri.fromFile(CacheUtils.get("current"))
+        Log.d("ReaderModel", "loaded")
+
+        Log.d("ReaderModel", "loaded2")
+        if(cacheUri != Uri.EMPTY && cacheUri!!.scheme == "file") {
+            val r = RendererFactory.create(cacheUri!!.toFile())
+            _index.postValue(0)
+            emit(r)
+            _maxIndex.postValue(r.pageCount)
+        } else {
+            throw Exception("invalid uri")
+        }
+    }
 
     private val _index = MutableLiveData(0)
     val index: LiveData<Int> = _index
 
     private val _maxIndex = MutableLiveData(0)
     val maxIndex: LiveData<Int> = _maxIndex
-
-    init {
-        //Log.d("ReaderModel", "new viewmodel")
-        if(uri != Uri.EMPTY && uri.scheme == "file") {
-            _index.value = 0
-            renderer = RendererFactory.create(uri.toFile())
-            _maxIndex.value = renderer.pageCount
-        } else {
-            throw Exception("invalid uri")
-        }
-
-    }
-
 
     fun onIndexChange(value: Int) {
         //Log.d("PageModel", "new index: $value")
@@ -63,9 +68,8 @@ class ReaderModel(uri: Uri) : ViewModel() {
         return i
     }
 
-
     override fun onCleared() {
-        renderer.close()
+        renderer.value?.close()
         super.onCleared()
     }
 }

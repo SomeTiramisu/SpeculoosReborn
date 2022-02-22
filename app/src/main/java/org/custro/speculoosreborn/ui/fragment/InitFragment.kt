@@ -85,13 +85,12 @@ class InitFragment : Fragment() {
         recyclerView.layoutManager = LinearLayoutManager(context)
         recyclerView.adapter = adapter
 
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                model.mangas.collect {
-                    adapter.submitList(it.map(::MangaCardModel))
-                }
-            }
+
+        model.mangas.observe(viewLifecycleOwner) {
+            Log.d("InitFragment", "Mangas: $it")
+            adapter.submitList(it.map(::MangaCardModel))
         }
+
 
         val appBar = binding.toolbar
         appBar.setOnMenuItemClickListener {

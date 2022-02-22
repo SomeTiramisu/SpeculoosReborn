@@ -6,13 +6,13 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface CacheDao {
     @Query("SELECT * FROM cachedFileEntity")
-    fun getAll(): Flow<List<CachedFileEntity>>
+    suspend fun getAll(): List<CachedFileEntity>
 
     //@Query("SELECT * FROM cachedFileEntity")
     //fun getAllNow(): List<CachedFileEntity>
 
     @Query("SELECT * FROM cachedFileEntity WHERE uuid=:uuid")
-    fun get(uuid: String): Flow<CachedFileEntity>
+    suspend fun get(uuid: String): CachedFileEntity
 
     //@Query("SELECT * FROM cachedFileEntity WHERE uuid=:uuid")
     //fun getNow(uuid: String): CachedFileEntity?

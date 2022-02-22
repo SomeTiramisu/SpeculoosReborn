@@ -26,16 +26,12 @@ object MangaUtils {
         return MangaEntity(uri.toString(), genMangaCover(uri))
     }
 
-    fun correctManga(entity: MangaEntity) {
-        runBlocking {
+    suspend fun correctManga(entity: MangaEntity) {
             var newEntity = entity
-            CacheUtils.get(entity.coverId).collect {
-                if(!it.exists()) {
-                    newEntity = MangaEntity(entity.uri, genMangaCover(Uri.parse(entity.uri)))
-                }
+            if (!CacheUtils.get(entity.coverId).exists()) {
+                newEntity = MangaEntity(entity.uri, genMangaCover(Uri.parse(entity.uri)))
             }
             dao.update(newEntity)
-        }
     }
 
     private fun genMangaCover(uri: Uri): String {

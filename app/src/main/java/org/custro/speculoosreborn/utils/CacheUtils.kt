@@ -3,6 +3,7 @@ package org.custro.speculoosreborn.utils
 import android.util.Log
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.runBlocking
 import org.custro.speculoosreborn.App
 import org.custro.speculoosreborn.room.CachedFileEntity
@@ -44,11 +45,9 @@ object CacheUtils {
         dao.insert(CachedFileEntity(uuid, output.path, System.currentTimeMillis(), ""))
     }
 
-    fun get(uuid: String): Flow<File> {
+    suspend fun get(uuid: String): File {
         Log.d("CacheUtil", "loading $uuid")
-        return dao.get(uuid).map {
-            File(it.path)
-        }
+        return File(dao.get(uuid).path)
     }
 
     private fun genUUID(): String {
