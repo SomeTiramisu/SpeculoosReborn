@@ -112,6 +112,7 @@ class ReaderFragment : Fragment() {
 
         //viewpager
         val pageView = binding.pageView
+        pageView.offscreenPageLimit = 4
         model.renderer.observe(viewLifecycleOwner) { renderer ->
             binding.pageView.adapter = ReaderAdapter(this, renderer)
         }

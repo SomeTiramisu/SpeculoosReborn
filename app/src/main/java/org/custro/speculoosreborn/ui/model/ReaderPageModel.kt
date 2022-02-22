@@ -21,7 +21,7 @@ class ReaderPageModel(private val renderer: Renderer, private val index: Int) : 
         doMask = true
     )
 
-    private var size = Pair(1920, 1080)
+    private var size = Pair(1080, 1920)
 
     private val _image = MutableLiveData(emptyBitmap())
     val image: LiveData<Bitmap> = _image
