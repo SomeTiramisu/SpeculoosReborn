@@ -28,22 +28,19 @@ class ReaderPageModel(private val index: Int) : ViewModel() {
         doMask = true
     )
 
-    private var size = Pair(1080, 1920)
+    var size = Pair(1080, 1920)
+        set(value) {
+            if(value != field) {
+                field = value
+                render()
+            }
+        }
 
     private val _image = MutableLiveData(emptyBitmap())
     val image: LiveData<Bitmap> = _image
 
     private val _isBlackBorders = MutableLiveData(false)
     val isBlackBorders: LiveData<Boolean> = _isBlackBorders
-
-    fun onSizeChange(value: Pair<Int, Int>) {
-        //Log.d("PageModel", "OnSizeChange called, new size: ${value.first}:${value.second}")
-        if (value != size) {
-            size = value
-            //_image.value = ImageBitmap(1, 1) //to avoid flicker
-            render()
-        }
-    }
 
     private fun render() {
         viewModelScope.launch(Dispatchers.Default) {

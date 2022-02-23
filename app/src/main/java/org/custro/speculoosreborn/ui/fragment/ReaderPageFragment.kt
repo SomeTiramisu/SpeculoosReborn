@@ -2,6 +2,8 @@ package org.custro.speculoosreborn.ui.fragment
 
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -77,9 +79,11 @@ class ReaderPageFragment : Fragment() {
 
     }
 
+
     override fun onResume() {
         super.onResume()
 
         //TODO: handle size change
+        model.size = Pair(binding.pageImageView.width, binding.pageImageView.height)
     }
 }
