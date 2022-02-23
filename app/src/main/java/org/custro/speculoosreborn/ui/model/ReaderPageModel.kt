@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.custro.speculoosreborn.renderer.RenderConfig
 import org.custro.speculoosreborn.renderer.Renderer
@@ -45,7 +46,7 @@ class ReaderPageModel(private val index: Int) : ViewModel() {
     }
 
     private fun render() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Default) {
             renderer?.openPage(index)?.use {
                 val img = Mat()
                 val renderInfo = it.render(img, size.first, size.second, config)
