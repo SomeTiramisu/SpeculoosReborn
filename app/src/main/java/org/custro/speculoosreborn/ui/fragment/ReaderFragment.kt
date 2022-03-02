@@ -165,12 +165,10 @@ class ReaderFragment : Fragment() {
             }
             //100ms needed to get correct size
             Handler(Looper.getMainLooper()).postDelayed({
-                /*model.onSizeChange(
-                    Pair(
-                        binding.pageImageView.width,
-                        binding.pageImageView.height
-                    )
-                )*/
+                model.onSizeChange(
+                        binding.pageView.width,
+                        binding.pageView.height
+                )
             }, 100)
         }, 300)
 
