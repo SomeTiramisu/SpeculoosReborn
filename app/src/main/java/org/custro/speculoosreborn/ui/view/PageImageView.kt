@@ -3,6 +3,8 @@ package org.custro.speculoosreborn.ui.view
 import android.content.Context
 import android.graphics.Bitmap
 import android.util.AttributeSet
+import androidx.annotation.NonNull
+import androidx.annotation.Nullable
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.lifecycle.findViewTreeLifecycleOwner
 import androidx.lifecycle.findViewTreeViewModelStoreOwner
@@ -10,13 +12,23 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.custro.speculoosreborn.renderer.RenderConfig
 import org.custro.speculoosreborn.renderer.Renderer
 import org.custro.speculoosreborn.ui.model.ReaderPageModel
 import org.opencv.android.Utils
 import org.opencv.core.Mat
 
-class PageImageView(context: Context) : AppCompatImageView(context) {
+class PageImageView : AppCompatImageView {
+    constructor(@NonNull context: Context) : super(context)
+    constructor(@NonNull context: Context, @Nullable attrs: AttributeSet?) : super(context, attrs)
+    constructor(
+        @NonNull context: Context,
+        @Nullable attrs: AttributeSet?,
+        defStyleAttr: Int
+    ) : super(context, attrs, defStyleAttr)
+
+
     private val scope = CoroutineScope(Dispatchers.Default)
     var renderer: Renderer? = null
         set(value) {
@@ -38,7 +50,7 @@ class PageImageView(context: Context) : AppCompatImageView(context) {
 
     private fun render() {
         scope.launch {
-            if (renderer != null && index != null) {
+            if (renderer != null && index != null && width*height > 0) {
                 renderer!!.openPage(index!!).use {
                     val img = Mat()
                     val config = RenderConfig(
@@ -52,7 +64,9 @@ class PageImageView(context: Context) : AppCompatImageView(context) {
                         Bitmap.createBitmap(img.width(), img.height(), Bitmap.Config.ARGB_8888)
                     Utils.matToBitmap(img, bitmap)
                     // _isBlackBorders.postValue(renderInfo.isBlackBorders)
-                    setImageBitmap(bitmap)
+                    withContext(Dispatchers.Main) {
+                        setImageBitmap(bitmap)
+                    }
                 }
             }
         }

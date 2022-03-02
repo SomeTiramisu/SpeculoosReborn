@@ -35,6 +35,8 @@ class ReaderModel(uri: Uri) : ViewModel() {
         }
     }
 
+
+
     private val _size = MutableLiveData<Pair<Int, Int>>()
     val size: LiveData<Pair<Int, Int>> = _size
 

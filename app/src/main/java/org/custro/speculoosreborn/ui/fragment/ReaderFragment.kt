@@ -25,6 +25,7 @@ import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.slider.Slider
 import org.custro.speculoosreborn.databinding.FragmentReaderBinding
 import org.custro.speculoosreborn.ui.ReaderAdapter
+import org.custro.speculoosreborn.ui.ReaderAdapter2
 import org.custro.speculoosreborn.ui.model.ReaderModel
 import org.custro.speculoosreborn.utils.fromByteArray
 import org.custro.speculoosreborn.utils.matToBitmap
@@ -115,8 +116,9 @@ class ReaderFragment : Fragment() {
         //viewpager
         val pageView = binding.pageView
         pageView.offscreenPageLimit = 4
-        model.pageCount.observe(viewLifecycleOwner) {
-            binding.pageView.adapter = ReaderAdapter(this, uri, it)
+        //TODO: if pageCount ready after renderer ?
+        model.renderer.observe(viewLifecycleOwner) {
+            binding.pageView.adapter = ReaderAdapter2(model.pageCount.value!!, it)
         }
         pageView.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageScrollStateChanged(state: Int) {
@@ -163,13 +165,6 @@ class ReaderFragment : Fragment() {
                 systemBarsBehavior =
                     WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
             }
-            //100ms needed to get correct size
-            Handler(Looper.getMainLooper()).postDelayed({
-                model.onSizeChange(
-                        binding.pageView.width,
-                        binding.pageView.height
-                )
-            }, 100)
         }, 300)
 
         //Log.d("ReaderFragment","Fragment resumed")
