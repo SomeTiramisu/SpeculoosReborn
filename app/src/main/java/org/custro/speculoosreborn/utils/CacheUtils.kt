@@ -50,6 +50,12 @@ object CacheUtils {
         return File(dao.get(uuid).path)
     }
 
+    suspend fun delete(uuid: String) {
+        val entity = dao.get(uuid)
+        dao.delete(entity)
+        File(entity.path).delete()
+    }
+
     private fun genUUID(): String {
         return UUID.randomUUID().toString()
     }

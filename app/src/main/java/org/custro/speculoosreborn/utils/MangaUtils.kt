@@ -21,10 +21,12 @@ object MangaUtils {
         dao.update(newEntity)
     }
 
-    fun genMangaEntity(uri: Uri): MangaEntity {
+    suspend fun genMangaEntity(uri: Uri): MangaEntity {
         val coverId: String
         val pageCount: Int
-        RendererFactory.create { App.instance.contentResolver.openInputStream(uri)!! }
+        val uuid = CacheUtils.save(App.instance.contentResolver.openInputStream(uri)!!)
+        val cachedFile = CacheUtils.get(uuid)
+        RendererFactory.create(cachedFile)
             .use { renderer ->
                 pageCount = renderer.pageCount
                 renderer.openPage(0).use { rendererPage ->
@@ -50,6 +52,7 @@ object MangaUtils {
                     }
                 }
             }
+        CacheUtils.delete(uuid)
         return MangaEntity(uri.toString(), coverId, pageCount)
     }
 }
