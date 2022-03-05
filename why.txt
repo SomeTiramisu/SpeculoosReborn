@@ -1,6 +1,0 @@
-Several manga readers already exist, including really good ones such as the well-known tachiyomi, so what's the point of making another one ?
-Yet, they all lack something to get as close as possible to a real life reading experience, therefore I want to mimic the paper texture. Of all existing readers, however, only FBReader properly handles background textures on images by making all whites transparent. Unfortunately, it does not do a good job on resizing images, which makes the final render look awful.
-Moreover, mangakas are used to add a black background to dark scenes or flashbacks. In a normal reader, surrounding spaces around the image are left untouched with the default background color, whether black or white, which does not necessarily match the scene color. I want the reader to extend the background scene to the full screen.
-Consequently, this project aims to give you a first-class manga reading experience on android devices.
-https://xkcd.com/927/
-
