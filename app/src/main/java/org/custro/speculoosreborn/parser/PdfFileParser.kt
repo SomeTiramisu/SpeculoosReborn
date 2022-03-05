@@ -48,7 +48,7 @@ class PdfFileParser(file: File) : Parser {
                 it.read(buf, 0, 5)
             }
             val magic = ByteBuffer.wrap(buf).long
-            return magic == 0x255044462D
+            return magic == 0x255044462D000000
         }
     }
 }

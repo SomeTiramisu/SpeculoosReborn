@@ -93,7 +93,8 @@ class RarStreamParser(private val getInputStream: () -> InputStream) : Parser {
                 it.read(buf, 0, 7)
             }
             val magic = ByteBuffer.wrap(buf).long
-            return magic == 0x526172211A0700
+            //remaining are set to 0
+            return magic == 0x526172211A070000
         }
     }
 }
