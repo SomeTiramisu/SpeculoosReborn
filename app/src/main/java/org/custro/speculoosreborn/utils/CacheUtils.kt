@@ -56,6 +56,24 @@ object CacheUtils {
         File(entity.path).delete()
     }
 
+    suspend fun clearCache() {
+        val cachedFileEntities = dao.getAll()
+        val cachedFiles = cachedFileEntities.map { File(it.path) }
+        val cacheDirFiles = cacheDir.listFiles()?.toList() ?: emptyList()
+        val orphansFiles = cacheDirFiles.minus(cachedFiles)
+
+        cachedFileEntities.map {
+            if (System.currentTimeMillis() - it.lastAccess > 2592000000L) {
+                File(it.path).delete()
+                dao.delete(it)
+            }
+        }
+        orphansFiles.map {
+            it.delete()
+        }
+        Log.d("CacheUtils", "cache cleared")
+    }
+
     private fun genUUID(): String {
         return UUID.randomUUID().toString()
     }

@@ -7,7 +7,11 @@ import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import org.custro.speculoosreborn.R
+import org.custro.speculoosreborn.utils.CacheUtils
 
 class SettingsFragment : PreferenceFragmentCompat() {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
@@ -30,6 +34,15 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
         findPreference<Preference>("background")?.setOnPreferenceClickListener {
             getContent.launch(arrayOf("image/*"))
+            true
+        }
+
+        findPreference<Preference>("clear_cache")?.setOnPreferenceClickListener {
+            runBlocking {
+                withContext(Dispatchers.Default) {
+                    CacheUtils.clearCache()
+                }
+            }
             true
         }
 

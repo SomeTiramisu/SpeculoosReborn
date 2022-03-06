@@ -11,6 +11,9 @@
         android:title="Background texture"
         android:summary="Select texture"
         android:dependency="enable_background"/>
-
+    <Preference
+        android:key="clear_cache"
+        android:title="Clear cache"
+        android:summary="Remove all unused files from cache" />
 
 </PreferenceScreen>

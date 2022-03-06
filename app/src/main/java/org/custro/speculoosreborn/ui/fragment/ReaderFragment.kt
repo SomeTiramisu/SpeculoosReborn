@@ -116,9 +116,8 @@ class ReaderFragment : Fragment() {
         //viewpager
         val pageView = binding.pageView
         pageView.offscreenPageLimit = 4
-        //TODO: if pageCount ready after renderer ?
         model.renderer.observe(viewLifecycleOwner) {
-            binding.pageView.adapter = ReaderAdapter2(model.pageCount.value!!, it)
+            binding.pageView.adapter = ReaderAdapter2(it.pageCount, it)
         }
         pageView.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageScrollStateChanged(state: Int) {
