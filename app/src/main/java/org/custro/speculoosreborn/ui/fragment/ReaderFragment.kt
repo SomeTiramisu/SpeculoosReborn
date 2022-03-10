@@ -23,6 +23,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.preference.PreferenceManager
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.slider.Slider
+import org.custro.speculoosreborn.R
 import org.custro.speculoosreborn.databinding.FragmentReaderBinding
 import org.custro.speculoosreborn.ui.ReaderAdapter
 import org.custro.speculoosreborn.ui.ReaderAdapter2
@@ -42,6 +43,8 @@ class ReaderFragment : Fragment() {
     //private val model: ReaderModel by viewModels({requireParentFragment()})
     private var _uri: Uri? = null
     private val uri get() = _uri!!
+
+    private val shortAnimationDuration = android.R.integer.config_shortAnimTime
     private val model: ReaderModel by viewModels {
         object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -80,8 +83,27 @@ class ReaderFragment : Fragment() {
         }*/
         binding.middleButton.setOnClickListener {
             when (binding.pageBottomSheet.visibility) {
-                VISIBLE -> binding.pageBottomSheet.visibility = GONE
-                GONE -> binding.pageBottomSheet.visibility = VISIBLE
+                VISIBLE -> binding.pageBottomSheet.animate()
+                    .alpha(0f)
+                    .setDuration(100)
+                    .setListener(null)
+                    .withEndAction {
+                        binding.pageBottomSheet.visibility = GONE
+                    }
+
+                GONE -> binding.pageBottomSheet.apply {
+                    // Set the content view to 0% opacity but visible, so that it is visible
+                    // (but fully transparent) during the animation.
+                    alpha = 0f
+                    visibility = View.VISIBLE
+
+                    // Animate the content view to 100% opacity, and clear any animation
+                    // listener set on the view.
+                    animate()
+                        .alpha(1f)
+                        .setDuration(100)
+                        .setListener(null)
+                }
                 INVISIBLE -> Unit
             }
         }
@@ -122,7 +144,13 @@ class ReaderFragment : Fragment() {
         pageView.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageScrollStateChanged(state: Int) {
                 super.onPageScrollStateChanged(state)
-                binding.pageBottomSheet.visibility = GONE
+                binding.pageBottomSheet.animate()
+                    .alpha(0f)
+                    .setDuration(100)
+                    .setListener(null)
+                    .withEndAction {
+                        binding.pageBottomSheet.visibility = GONE
+                    }
             }
 
             override fun onPageSelected(position: Int) {
