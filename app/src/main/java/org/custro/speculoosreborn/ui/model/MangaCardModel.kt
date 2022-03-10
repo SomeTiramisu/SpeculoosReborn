@@ -11,5 +11,5 @@ import java.io.File
 
 class MangaCardModel(val entity: MangaEntity) : ViewModel() {
     val cover = flow { emit(CacheUtils.get(entity.coverId)) }
-    val name = Uri.parse(entity.uri).lastPathSegment?.split(":")?.last()
+    val name = Uri.parse(entity.uri).path?.split(":")?.last()?.split("/")?.last()
 }
