@@ -53,6 +53,6 @@ object MangaUtils {
                 }
             }
         CacheUtils.delete(uuid)
-        return MangaEntity(uri.toString(), coverId, pageCount)
+        return MangaEntity(uri.toString(), coverId, pageCount, 0, emptyList())
     }
 }

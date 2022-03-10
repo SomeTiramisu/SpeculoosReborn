@@ -16,5 +16,6 @@ data class MangaEntity(
     @PrimaryKey val uri: String,
     @ColumnInfo(index = true) val coverId: String,
     val pageCount: Int,
-    //val order: List<Int>
+    val lastPage: Int,
+    val order: List<Int>
 )
